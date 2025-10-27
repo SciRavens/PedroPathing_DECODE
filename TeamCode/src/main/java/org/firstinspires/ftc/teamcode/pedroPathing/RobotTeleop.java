@@ -2,16 +2,15 @@ package org.firstinspires.ftc.teamcode.pedroPathing;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.Pose;
 
 /**
  * Standard Robot TeleOp for FTC using Pedro Pathing.
- * Handles robot driving, shooter motor control, and turret control.
+ * Handles robot driving, shooter motor control, and turret control (CRServo).
  *
  * Author:
  *   Baron Henderson – 20077 The Indubitables (modified by Kushal Madhabhaktula)
@@ -24,37 +23,34 @@ public class RobotTeleop extends OpMode {
     private Follower follower;
     private static final double DEAD_ZONE = 0.1;
 
-
     private DcMotorEx shooterMotor;
-    private Turret turret;
+    private DcMotorEx intakeMotor;
+    private DcMotorEx transferMotor;
 
-    private double currentTurretPose = 0.5;
-    private static final double INITIAL_TURRET_POSE = 0.5;
-    private static final double TURRET_INCREMENT = 0.2;
-
-    private boolean lastRight = false;
-    private boolean lastLeft = false;
-
+    private CRServo turretCR;
+    private static final double TURRET_POWER = 0.45;
     private final Pose startPose = new Pose(0, 0, 0);
-
     @Override
     public void init() {
-
         follower = Constants.createFollower(hardwareMap);
         follower.setStartingPose(startPose);
         follower.startTeleopDrive();
 
+        intakeMotor = hardwareMap.get(DcMotorEx.class, "intakeMotor");
+        intakeMotor.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+        intakeMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+
+        transferMotor = hardwareMap.get(DcMotorEx.class, "transferMotor");
+        transferMotor.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+        transferMotor.setDirection(DcMotorSimple.Direction.FORWARD);
 
         shooterMotor = hardwareMap.get(DcMotorEx.class, "shooterMotor");
-        shooterMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        shooterMotor.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
         shooterMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+        turretCR = hardwareMap.get(CRServo.class, "turretServo");
+        turretCR.setPower(0.0); // start stopped
 
-        Servo rawTurret = hardwareMap.get(Servo.class, "servoTurret");
-        turret = new Turret(rawTurret);
-        turret.setTarget(INITIAL_TURRET_POSE);
-        turret.apply();
-
-        telemetry.addLine("RobotTeleop Initialized");
+        telemetry.addLine("RobotTeleop Initialized (CRServo turret)");
         telemetry.update();
     }
 
@@ -82,41 +78,51 @@ public class RobotTeleop extends OpMode {
 
         follower.update();
 
-
-        if (gamepad1.a) {
+        // Shooter RPM presets
+        if (gamepad2.b) {
             shooterMotor.setVelocity(1420);
-        } else if (gamepad1.b) {
+        } else if (gamepad2.a) {
             shooterMotor.setVelocity(0);
-        } else if (gamepad1.x) {
+        } else if (gamepad2.x) {
             shooterMotor.setVelocity(1035);
-        } else if (gamepad1.y) {
+        } else if (gamepad2.y) {
             shooterMotor.setVelocity(1200);
         }
 
 
-        boolean rightPressed = gamepad1.dpad_right;
-        boolean leftPressed = gamepad1.dpad_left;
-
-        // Only increment once per press
-        if (rightPressed && !lastRight) {
-            currentTurretPose += TURRET_INCREMENT;
-        } else if (leftPressed && !lastLeft) {
-            currentTurretPose -= TURRET_INCREMENT;
+        if (gamepad2.dpad_right && !gamepad2.dpad_left) {
+            turretCR.setPower(TURRET_POWER); // rotate right (adjust sign/positive depending on wiring)
+        } else if (gamepad2.dpad_left && !gamepad1.dpad_right) {
+            turretCR.setPower(-TURRET_POWER); // rotate left
+        } else {
+            turretCR.setPower(0.0); // stop when no dpad pressed or both pressed
         }
 
-        currentTurretPose = Math.max(0, Math.min(1, currentTurretPose));
-        turret.setTarget(currentTurretPose);
-        turret.apply();
+        // Intake / transfer
+        if (gamepad2.right_bumper) {
+            intakeMotor.setPower(0.5);
+        } else if (gamepad2.left_bumper) {
+            intakeMotor.setPower(-0.5);
+        } else {
+            intakeMotor.setPower(0.0);
+        }
 
-
-        lastRight = rightPressed;
-        lastLeft = leftPressed;
+        if (gamepad2.dpad_up) {
+            transferMotor.setPower(0.75);
+        }
+        else if (gamepad2.dpad_down) {
+            intakeMotor.setPower(0.75);
+            transferMotor.setPower(-0.75);
+        }
+        else {
+            transferMotor.setPower(0.0);
+        }
 
         telemetry.addData("Drive X", xInput);
         telemetry.addData("Drive Y", yInput);
         telemetry.addData("Turn", turnInput);
         telemetry.addData("Shooter RPM", shooterMotor.getVelocity());
-        telemetry.addData("Turret Pos", currentTurretPose);
+        telemetry.addData("Turret Power", turretCR.getPower());
         telemetry.addData("Pose X", follower.getPose().getX());
         telemetry.addData("Pose Y", follower.getPose().getY());
         telemetry.addData("Heading (deg)", Math.toDegrees(follower.getPose().getHeading()));
@@ -126,5 +132,8 @@ public class RobotTeleop extends OpMode {
     @Override
     public void stop() {
         shooterMotor.setPower(0);
+        intakeMotor.setPower(0);
+        transferMotor.setPower(0);
+        if (turretCR != null) turretCR.setPower(0.0);
     }
 }
