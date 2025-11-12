@@ -66,7 +66,7 @@ public class BlueFarAuto extends OpMode {
     @Override
     public void start() {
         opmodeTimer.resetTimer();
-        follower.setMaxPower(0.8);
+        follower.setMaxPower(1.0);
         setPathState(0);
     }
 
@@ -118,7 +118,7 @@ public class BlueFarAuto extends OpMode {
                 break;
             case 6:
                 if(!follower.isBusy() || pathTimer.getElapsedTime() > 4000) {//TBD: change 2 secs to shorter if possible
-                    follower.setMaxPower(0.8);
+                    follower.setMaxPower(1.0);
                     robot.shooter.startCloseShoot();
                     setPathState(7);
                 }

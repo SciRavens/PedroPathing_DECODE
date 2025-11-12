@@ -21,13 +21,13 @@ public class RedFarAuto extends OpMode {
     private final Pose firstPattern = new Pose(129, 93, Math.toRadians(0));
     private final Pose controlPoint5 = new Pose(87, 116, Math.toRadians(0));
     private final Pose controlPoint6 = new Pose(68.5, 85, Math.toRadians(0));
-    private final Pose secondPattern = new Pose(132, 68, Math.toRadians(0));
-    private final Pose controlPoint3 = new Pose(81, 85, Math.toRadians(0));
-    private final Pose controlPoint4 = new Pose(69, 66, Math.toRadians(0));
-    private final Pose thirdPattern = new Pose(131, 44, Math.toRadians(0));
+    private final Pose secondPattern = new Pose(135, 68.5, Math.toRadians(0));
+    private final Pose controlPoint3 = new Pose(80.7, 76, Math.toRadians(0));
+    private final Pose controlPoint4 = new Pose(65.7, 67, Math.toRadians(0));
+    private final Pose thirdPattern = new Pose(132.5, 44, Math.toRadians(0));
     private final Pose controlPoint1 = new Pose(83, 55, Math.toRadians(0));
     private final Pose controlPoint2 = new Pose(69,43,Math.toRadians(0));
-    private final Pose shootingPose = new Pose(73.5, 13, Math.toRadians(0));
+    private final Pose shootingPose = new Pose(72.5, 14, Math.toRadians(0));
 
     @Override
     public void init() {
@@ -54,7 +54,7 @@ public class RedFarAuto extends OpMode {
         shootStack2.setConstantHeadingInterpolation(secondPattern.getHeading());
         getFirstPattern = new Path(new BezierCurve(shootingPose, controlPoint5, controlPoint6, firstPattern));
         getFirstPattern.setConstantHeadingInterpolation(shootingPose.getHeading());
-        shootStack3 = new Path(new BezierLine(firstPattern, shootingPose));
+        shootStack3 = new Path(new BezierCurve(firstPattern, controlPoint6,controlPoint5, shootingPose));
         shootStack3.setConstantHeadingInterpolation(firstPattern.getHeading());
 //
 
@@ -108,7 +108,6 @@ public class RedFarAuto extends OpMode {
                 break;
             case 4:
                 if(!follower.isBusy() || pathTimer.getElapsedTime() > 2000) {
-                    follower.setMaxPower(0.8);
                     robot.shooter.startFarShoot();
                     setPathState(5);
                 }
@@ -123,30 +122,29 @@ public class RedFarAuto extends OpMode {
                 if (pathTimer.getElapsedTime() > 2000){
                     robot.shooter.stopFlyWheel();
                     robot.intake.stopTransfer();
-                    follower.setMaxPower(0.25);
+                    follower.setMaxPower(0.2);
                     follower.followPath(getSecondPattern, true);
                     setPathState(7);
                 }
                 break;
             case 7:
-                if(!follower.isBusy() || pathTimer.getElapsedTime() > 2000)  {
+                if(!follower.isBusy() || pathTimer.getElapsedTime() > 3000)  {
                     follower.followPath(shootStack2, true);
                     setPathState(8);
                 }
                 break;
             case 8:
                 if(!follower.isBusy() || pathTimer.getElapsedTime() > 2000) {
-                    follower.setMaxPower(0.8);
                     robot.shooter.startFarShoot();
                     setPathState(9);
                 }
             case 9:
-                if (robot.shooter.reachFarSpeed() || pathTimer.getElapsedTime() > 4000) {
+                if (robot.shooter.reachFarSpeed()) {
                     robot.intake.shootArtifacts();
                     setPathState(10);
                 }
             case 10:
-                if (pathTimer.getElapsedTime() > 2000){
+                if (pathTimer.getElapsedTime() > 4000){
                     robot.shooter.stopFlyWheel();
                     robot.intake.stopTransfer();
                     follower.setMaxPower(0.25);
@@ -155,14 +153,13 @@ public class RedFarAuto extends OpMode {
                 }
                 break;
             case 11:
-                if(!follower.isBusy() || pathTimer.getElapsedTime() > 2000)  {
+                if(!follower.isBusy())  {
                     follower.followPath(shootStack3, true);
                     setPathState(12);
                 }
                 break;
             case 12:
                 if(!follower.isBusy() || pathTimer.getElapsedTime() > 2000) {
-                    follower.setMaxPower(0.8);
                     robot.shooter.startFarShoot();
                     setPathState(13);
                 }
