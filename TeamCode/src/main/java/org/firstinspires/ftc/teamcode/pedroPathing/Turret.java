@@ -1,33 +1,26 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.pedroPathing;
 
 import com.qualcomm.robotcore.hardware.CRServo;
 
 /**
  * Turret control class for continuous rotation servo
- * Supports both power-based control (for PID/vision tracking) and manual control
+ * Supports both power-based control (for PID) and position tracking
  */
 public class Turret {
     private final CRServo turretServo;
     private double currentPower = 0.0;
 
-    // Manual control power
-    private static final double MANUAL_POWER = 0.45;
-
     // Optional: position tracking (if you add an encoder later)
     private double estimatedPosition = 0.0;
     private long lastUpdateTime = System.nanoTime();
 
-    /**
-     * Constructor - initializes turret with CRServo
-     * @param turretServo The continuous rotation servo for the turret
-     */
     public Turret(CRServo turretServo) {
         this.turretServo = turretServo;
         this.turretServo.setPower(0.0);
     }
 
     /**
-     * Set turret rotation power (for PID/vision control)
+     * Set turret rotation power
      * @param power -1.0 (full left) to 1.0 (full right)
      */
     public void setTurretPower(double power) {
@@ -36,29 +29,14 @@ public class Turret {
     }
 
     /**
-     * Rotate turret right at manual speed
-     */
-    public void goRight() {
-        setTurretPower(MANUAL_POWER);
-    }
-
-    /**
-     * Rotate turret left at manual speed
-     */
-    public void goLeft() {
-        setTurretPower(-MANUAL_POWER);
-    }
-
-    /**
      * Stop the turret
      */
-    public void stopTurret() {
+    public void stop() {
         setTurretPower(0.0);
     }
 
     /**
      * Get current power being sent to servo
-     * @return Current power (-1.0 to 1.0)
      */
     public double getCurrentPower() {
         return currentPower;
@@ -67,7 +45,6 @@ public class Turret {
     /**
      * Get estimated position (requires encoder or time integration)
      * This is a simple time-based estimator - not accurate without encoder
-     * @return Estimated position in degrees
      */
     public double getEstimatedPosition() {
         long currentTime = System.nanoTime();
@@ -89,18 +66,6 @@ public class Turret {
         lastUpdateTime = System.nanoTime();
     }
 
-    /**
-     * Set manual control power (allows tuning without recompiling)
-     * @param power Power for manual left/right control (0.0 to 1.0)
-     */
-    public void setManualPower(double power) {
-        // This would require making MANUAL_POWER non-final
-        // For now, just use the constant above
-    }
-
-    /**
-     * Clamp a value between min and max
-     */
     private double clamp(double value, double min, double max) {
         return Math.max(min, Math.min(max, value));
     }

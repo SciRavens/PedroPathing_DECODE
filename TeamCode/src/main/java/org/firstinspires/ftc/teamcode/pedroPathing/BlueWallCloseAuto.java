@@ -68,7 +68,7 @@ public class BlueWallCloseAuto extends OpMode {
 
     // Limelight
     private Limelight3A limelight;
-    private static final int TARGET_TAG_ID = 24;
+    private static final int TARGET_TAG_ID = 20;
     private static final int PIPELINE_ID_BLUE = 8;
 
     private double turretClosePosition = 0.25; // changed to double

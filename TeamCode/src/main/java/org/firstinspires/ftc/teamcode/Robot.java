@@ -4,6 +4,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Intake;
 import org.firstinspires.ftc.teamcode.Shooter;
 import org.firstinspires.ftc.teamcode.Turret;
+import com.qualcomm.robotcore.hardware.CRServo;
 
 public class Robot {
 
@@ -23,7 +24,8 @@ public class Robot {
         this.hardwareMap = hardwareMap;
         intake = new Intake(hardwareMap);
         shooter = new Shooter(hardwareMap);
-        turret = new Turret(hardwareMap);
+        CRServo turretServo = hardwareMap.get(CRServo.class, "turretServo");
+        turret = new Turret(turretServo);  // ✅ CORRECT - passing the CRServo
         this.telemetry = telemetry;
     }
 }
