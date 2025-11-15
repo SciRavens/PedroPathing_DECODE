@@ -16,8 +16,6 @@ public class VisionTest {
     private Turret turret;
 
     // Target configuration
-    private static final int TARGET_TAG_ID = 24;
-    private static final int PIPELINE_ID = 2;
 
     // Turret PID constants - START HERE for tuning
     private static final double TURRET_KP = 0.035;  // TUNE THIS FIRST: Increase until it oscillates, then back off
@@ -53,7 +51,7 @@ public class VisionTest {
 
         // Initialize Limelight
         limelight = hardwareMap.get(Limelight3A.class, "limelight");
-        limelight.pipelineSwitch(PIPELINE_ID);
+        limelight.pipelineSwitch(Robot.current_pipeline_id);
         limelight.start();
 
         lastLoopTime = System.nanoTime();
@@ -81,7 +79,7 @@ public class VisionTest {
             if (fiducials != null && !fiducials.isEmpty()) {
                 // Look for our target tag
                 for (LLResultTypes.FiducialResult fiducial : fiducials) {
-                    if (fiducial.getFiducialId() == TARGET_TAG_ID) {
+                    if (fiducial.getFiducialId() == Robot.current_tag_id) {
                         rawTx = fiducial.getTargetXDegrees();
                         detectedTagID = fiducial.getFiducialId();
                         trackingTag = true;
