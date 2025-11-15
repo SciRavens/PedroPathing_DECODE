@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 public class Shooter {
 
-    public final int shooterCloseRPM = 900;
+    public final int shooterCloseRPM = 950;
     public final int shooterFarRPM = 1375;
     public final int autonShooterFarRPM = 1375;
     public final int shooterMidRPM = 975;
@@ -62,6 +62,9 @@ public class Shooter {
         currentRPM = shooterOffRPM;
         shooterMotor.setVelocity(shooterOffRPM); // converting RPM to ticks per second
         shooterLight.setPattern(RevBlinkinLedDriver.BlinkinPattern.WHITE);
+    }
+    public double getShooterRPM() {
+        return shooterMotor.getVelocity();
     }
 
     public boolean reachedSpeed() {

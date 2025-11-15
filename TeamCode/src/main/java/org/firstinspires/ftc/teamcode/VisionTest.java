@@ -48,8 +48,8 @@ public class VisionTest {
     private int detectedTagID = -1;
     private double rawTx = 0.0;
 
-    public VisionTest(HardwareMap hardwareMap, Turret turret) {
-        this.turret = turret;
+    public VisionTest(HardwareMap hardwareMap, Robot robot) {
+        this.turret = robot.turret;
 
         // Initialize Limelight
         limelight = hardwareMap.get(Limelight3A.class, "limelight");
