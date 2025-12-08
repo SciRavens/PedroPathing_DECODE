@@ -14,7 +14,20 @@
 // Include common definitions from above.
 apply from: '../build.common.gradle'
 apply from: '../build.dependencies.gradle'
+// there should be 2 or 3 more lines that start with 'apply plugin:' here
+apply plugin: 'dev.frozenmilk.sinister.sloth.load'
 
+buildscript {
+    repositories {
+        mavenCentral()
+        maven {
+            url "https://repo.dairy.foundation/releases"
+        }
+    }
+    dependencies {
+        classpath "dev.frozenmilk:Load:0.2.4"
+    }
+}
 android {
     namespace = 'org.firstinspires.ftc.teamcode'
 
@@ -22,7 +35,12 @@ android {
         jniLibs.useLegacyPackaging true
     }
 }
-
+repositories {
+    maven {
+        url = "https://repo.dairy.foundation/releases"
+    }
+}
 dependencies {
     implementation project(':FtcRobotController')
+    implementation("dev.frozenmilk.sinister:Sloth:0.2.4")
 }

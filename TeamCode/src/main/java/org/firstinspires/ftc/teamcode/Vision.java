@@ -1,10 +1,17 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.pedropathing.follower.Follower;
+import com.pedropathing.geometry.Pose;
+import com.pedropathing.util.Timer;
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+
+import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
 import java.util.List;
 
@@ -45,6 +52,31 @@ public class Vision {
         lastLoopTime = System.nanoTime();
         this.turret = robot.turret;
         this.robot = robot;
+    }
+    public double getDistance() {
+        LLResult result = limelight.getLatestResult();
+        boolean trackingTag = false;
+        double tx = 0.0;
+        double ty = 0.0;
+        int detectedTagID = -1;
+
+        if (result != null && result.isValid()) {
+            List<LLResultTypes.FiducialResult> fiducials = result.getFiducialResults();
+
+            if (fiducials != null && !fiducials.isEmpty()) {
+                for (LLResultTypes.FiducialResult fiducial : fiducials) {
+                    if (fiducial.getFiducialId() == Robot.current_tag_id) {
+                        tx = fiducial.getTargetXDegrees();
+                        ty = fiducial.getTargetYDegrees();
+                        detectedTagID = fiducial.getFiducialId();
+                        trackingTag = true;
+                        double distance = Math.sqrt(tx*tx + ty*ty);
+                        return distance;
+                    }
+                }
+            }
+        }
+        return -1;
     }
 
     public void update() {

@@ -17,13 +17,17 @@ public class Robot {
     public Intake intake;
     public Shooter shooter;
     public Turret turret;
+
     public HardwareMap hardwareMap;
     public Telemetry telemetry;
+    public DistanceSensor distanceSensor;
     public Robot (HardwareMap hardwareMap, Telemetry telemetry) {
         this.hardwareMap = hardwareMap;
         intake = new Intake(hardwareMap);
         shooter = new Shooter(hardwareMap);
         turret = new Turret(hardwareMap);
+        distanceSensor = new DistanceSensor(hardwareMap);
+
         this.telemetry = telemetry;
     }
 }

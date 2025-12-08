@@ -7,16 +7,18 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.Servo;
 
 @TeleOp(name = "Shooter RPM Test", group = "Examples")
 public class ShooterRPMTest extends OpMode {
     public int currentRPM = 500;
 
     public DcMotorEx shooterMotor;
-    public RevBlinkinLedDriver shooterLight;
+    public Servo shooterLight;
 
     public Robot robot;
     private Timer buttontimer;
+
 
 
     @Override
@@ -26,7 +28,6 @@ public class ShooterRPMTest extends OpMode {
         shooterMotor.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
         shooterMotor.setDirection(DcMotorSimple.Direction.FORWARD);
         shooterMotor.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
-        shooterLight = hardwareMap.get(RevBlinkinLedDriver.class, "shooterLight");
         buttontimer = new Timer();
         buttontimer.resetTimer();
     }
@@ -38,40 +39,45 @@ public class ShooterRPMTest extends OpMode {
 
     @Override
     public void loop() {
-        if (gamepad2.y && buttontimer.getElapsedTime() > 500) {
+        if (gamepad2.dpad_up && buttontimer.getElapsedTime() > 500) {
             currentRPM += 25;
+            shooterMotor.setVelocity(currentRPM);
             buttontimer.resetTimer();
-        } else if (gamepad2.a && buttontimer.getElapsedTime() > 500) {
+        } else if (gamepad2.dpad_down && buttontimer.getElapsedTime() > 500) {
             currentRPM -= 25;
+            shooterMotor.setVelocity(currentRPM);
             buttontimer.resetTimer();
         }
 
         if (gamepad2.b) {
-            shooterMotor.setVelocity(currentRPM);
-        }
-        else if (gamepad2.x) {
+            shooterMotor.setVelocity(robot.shooter.shooterCloseRPM);
+            currentRPM = robot.shooter.shooterCloseRPM;
+        } else if (gamepad2.a) {
             shooterMotor.setVelocity(0);
-        }
-        if (currentRPM > 0 && shooterMotor.getVelocity() >= currentRPM) {
-            shooterLight.setPattern(RevBlinkinLedDriver.BlinkinPattern.GREEN);
-        } else {
-            shooterLight.setPattern(RevBlinkinLedDriver.BlinkinPattern.RED);
+        } else if (gamepad2.y) {
+            shooterMotor.setVelocity(robot.shooter.shooterMidRPM);
+            currentRPM = robot.shooter.shooterMidRPM;
+
+        } else if (gamepad2.x) {
+            shooterMotor.setVelocity(robot.shooter.shooterFarRPM);
+            currentRPM = robot.shooter.shooterFarRPM;
         }
 
-        if (gamepad2.dpad_up) {
-            if (shooterMotor.getVelocity() >= currentRPM) {
-                robot.intake.startTransferOnly();
-                gamepad1.rumble(1000);
-                gamepad2.rumble(1000);
-            }
-        } else if (gamepad2.left_bumper) {
+//        if (currentRPM > 0 && shooterMotor.getVelocity() >= currentRPM) {
+//            shooterLight.setPattern(RevBlinkinLedDriver.BlinkinPattern.GREEN);
+//        } else {
+//            shooterLight.setPattern(RevBlinkinLedDriver.BlinkinPattern.RED);
+//        }
+
+        if (gamepad2.right_trigger > 0.1) {
             robot.intake.startIntakeOnly();
         } else {
             robot.intake.stopIntake();
         }
 
-
+        robot.shooter.shooterLightUpdate();
         telemetry.addData("Target RPM", currentRPM);
+        telemetry.addData("Current Velocity", shooterMotor.getVelocity());
         telemetry.update();
     }
 }

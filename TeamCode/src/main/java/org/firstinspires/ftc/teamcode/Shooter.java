@@ -1,17 +1,19 @@
 package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
+import com.qualcomm.robotcore.hardware.Servo;
+
+import org.opencv.core.Mat;
+
 public class Shooter {
 
-    public final int shooterCloseRPM = 970; //950
-    public final int shooterFarRPM = 1375;
+    public final int shooterCloseRPM = 1060; //950
+    public final int shooterFarRPM = 1435;
     public final int autonShooterFarRPM = 1370;
     public final int autonMidRPM = 1050;
-    public final int shooterMidRPM = 975;
+    public final int shooterMidRPM = 1215;
     public final int shooterHumanRPM = -1200;
     public final int shooterOffRPM = 0;
     public final int autoClose = 800;
@@ -19,14 +21,14 @@ public class Shooter {
     private int currentRPM = 0;
 
     public DcMotorEx shooterMotor;
-    public RevBlinkinLedDriver shooterLight;
+    public Servo shooterLight;
 
     public Shooter(HardwareMap hardwareMap) {
         shooterMotor = hardwareMap.get(DcMotorEx.class, "shooterMotor");
         shooterMotor.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
         shooterMotor.setDirection(DcMotorSimple.Direction.FORWARD);
         shooterMotor.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
-        shooterLight = hardwareMap.get(RevBlinkinLedDriver.class, "shooterLight");
+        shooterLight = hardwareMap.get(Servo.class, "shooterLight");
     }
 
     public void startCloseShoot() {
@@ -62,11 +64,19 @@ public class Shooter {
         shooterMotor.setVelocity(shooterHumanRPM); // converting RPM to ticks per second
     }
 
+    public void startTargetShooterSpeed(double distance) {
+        int newRPM = (int)Math.round(3.88735 * distance + 729.40636);
+        if (currentRPM != newRPM) {
+            shooterMotor.setVelocity(newRPM);
+            currentRPM = newRPM;
+        }
+    }
+
     public void stopShoot() {
-        shooterMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE); // converting RPM to ticks per second
+//        shooterMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE); // converting RPM to ticks per second
         currentRPM = shooterOffRPM;
         shooterMotor.setVelocity(shooterOffRPM); // converting RPM to ticks per second
-        shooterLight.setPattern(RevBlinkinLedDriver.BlinkinPattern.WHITE);
+        shooterLight.setPosition(0);
     }
 
     public boolean reachedSpeed() {
@@ -103,10 +113,10 @@ public class Shooter {
             return;
         }
         if (reachedSpeed()) {
-            shooterLight.setPattern(RevBlinkinLedDriver.BlinkinPattern.GREEN);
+            shooterLight.setPosition(0.5); //sets color to green
         }
         else {
-            shooterLight.setPattern(RevBlinkinLedDriver.BlinkinPattern.RED);
+            shooterLight.setPosition(0.3); //sets color to red
         }
     }
 

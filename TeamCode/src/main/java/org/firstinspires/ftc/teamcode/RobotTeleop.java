@@ -24,6 +24,8 @@ public class RobotTeleop extends OpMode {
 
     private Follower follower;
     private Robot robot;
+    public Gate gate;
+
 
     private Vision vision;
     private TurretTracker turretTracker;
@@ -39,6 +41,8 @@ public class RobotTeleop extends OpMode {
 
     private String currentAlliance = "RED";
 
+    private boolean currentlyShooting = false;
+
 
     @Override
     public void init() {
@@ -49,6 +53,8 @@ public class RobotTeleop extends OpMode {
         follower.setStartingPose(startPose);
         follower.startTeleopDrive();
         robot = new Robot(hardwareMap, telemetry);
+        gate = new Gate(hardwareMap, telemetry);
+
         if(gamepad1.y) {
             Robot.current_pipeline_id = Robot.PIPELINE_ID_BLUE;
             Robot.current_tag_id = Robot.BLUE_TARGET_TAG_ID;
@@ -77,13 +83,20 @@ public class RobotTeleop extends OpMode {
     private boolean is_FarShot() {
         return gamepad2.x;
     }
-
-    private boolean is_Intaking() {
-        return gamepad2.left_bumper;
+    private boolean is_CloseShot() {
+        return gamepad2.b;
     }
 
-    private boolean is_Shooting() {
-        return gamepad2.right_bumper;
+    private boolean is_MidShot() {
+        return gamepad2.y;
+    }
+
+    private boolean is_Intaking() {
+        return gamepad2.right_trigger > 0.1;
+    }
+
+    private boolean is_OpeningGate() {
+        return gamepad2.left_trigger > 0.1;
     }
 
     private boolean is_HumanPlayer() {
@@ -94,6 +107,10 @@ public class RobotTeleop extends OpMode {
         return gamepad2.a;
     }
 
+//    private boolean is_DistanceShot() {
+//        return gamepad2.b;
+//    }
+
 //    private boolean is_TurretLeft() {
 //        return gamepad2.dpad_left;
 //    }
@@ -101,12 +118,8 @@ public class RobotTeleop extends OpMode {
 //    private boolean is_TurretRight() {
 //        return gamepad2.dpad_right;
 //    }
+    private boolean is_ReverseIntaking() {return gamepad2.right_bumper;}
 
-    private boolean is_ShootingRapidFireCloseRange() {return gamepad2.b;}
-
-    private boolean is_ShootingRapidFireMidRange() {
-        return gamepad2.y;
-    }
 
 
 
@@ -119,7 +132,6 @@ public class RobotTeleop extends OpMode {
         double turnInput = Math.abs(gamepad1.right_stick_x) > DEAD_ZONE ? -gamepad1.right_stick_x : 0;
 
         double powerScale = gamepad1.right_trigger > 0.5 ? 0.25 : 1.0;
-
         follower.updateErrors();
         follower.updateVectors();
         follower.setTeleOpDrive(
@@ -134,79 +146,45 @@ public class RobotTeleop extends OpMode {
             vision.update();
         }
 
-        if (is_FarShot()) {
-            robot.shooter.startFarShoot();
-        } else if (is_ShootingRapidFireCloseRange()) {
-            robot.shooter.startCloseShoot();
-        } else if (is_HumanPlayer()) {
-            robot.shooter.startHumanIntake();
-        } else if (is_FlywheelOff()){
+//        if (currentlyShooting) {
+//            robot.shooter.startTargetShooterSpeed(vision.getDistance());
+//        } else { robot.shooter.stopShoot(); }
+
+//        if (is_DistanceShot()) {
+//            currentlyShooting = true;
+//        }
+//        else if (is_HumanPlayer()) {
+//            robot.shooter.startHumanIntake();
+//        }
+        if (is_FlywheelOff()){
             robot.shooter.stopShoot();
         }
+        else if (is_FarShot()) {
+            robot.shooter.startFarShoot();
+        }
+        else if (is_CloseShot()) {
+            robot.shooter.startCloseShoot();
+        }
+        else if (is_MidShot()) {
+            robot.shooter.startMidShoot();
+        }
 
-         if (is_Intaking()) {
+
+        if (is_Intaking()) {
             robot.intake.startIntakeOnly();
+        }  else if (is_ReverseIntaking()) {
+            robot.intake.startReverseIntake();
         } else {
             robot.intake.stopIntake();
-         }
-
-        if (is_ShootingRapidFireMidRange() && !is_RapidFireOn) {
-            is_RapidFireOn = true;
-            robot.shooter.startMidShoot();
-            rapidTimer.resetTimer();
-        }
-        if (is_RapidFireOn) {
-            if (robot.shooter.reachedSpeed()) {
-                robot.intake.shootArtifacts();
-                gamepad1.rumble(1000);
-                gamepad2.rumble(1000);
-            }
-            if (rapidTimer.getElapsedTime() >= 5750) {
-                robot.shooter.stopFlyWheel();
-                robot.intake.intakeStop();
-                robot.intake.stopTransfer();
-                is_RapidFireOn = false;
-            }
-        } else {
-            if (is_Shooting()) {
-                if (robot.shooter.reachedSpeed()) {
-                    robot.intake.startTransferOnly();
-                    gamepad1.rumble(1000);
-                    gamepad2.rumble(1000);
-                }
-            } else {
-                robot.intake.stopTransfer();
-            }
         }
 
-        if (is_ShootingRapidFireCloseRange() && !is_RapidFireOn) {
-            is_RapidFireOn = true;
-            robot.shooter.startCloseShoot();
-            rapidTimer.resetTimer();
-        }
-        if (is_RapidFireOn) {
-            if (robot.shooter.reachedSpeed()) {
-                robot.intake.shootArtifacts();
-                gamepad1.rumble(1000);
-                gamepad2.rumble(1000);
-            }
-            if (rapidTimer.getElapsedTime() >= 5750) {
-                robot.shooter.stopFlyWheel();
-                robot.intake.intakeStop();
-                robot.intake.stopTransfer();
-                is_RapidFireOn = false;
-            }
+
+        if (is_OpeningGate()) {
+            gate.gateOpen();
         } else {
-            if (is_Shooting()) {
-                if (robot.shooter.reachedSpeed()) {
-                    robot.intake.startTransferOnly();
-                    gamepad1.rumble(1000);
-                    gamepad2.rumble(1000);
-                }
-            } else {
-                robot.intake.stopTransfer();
-            }
+            gate.gateClose();
         }
+
 
 
         // Turret control (fixed: check gamepad2 on both dpad sides)
@@ -236,6 +214,5 @@ public class RobotTeleop extends OpMode {
     public void stop() {
         robot.shooter.stopShoot();
         robot.intake.stopIntake();
-        robot.intake.stopTransfer();
     }
 }
