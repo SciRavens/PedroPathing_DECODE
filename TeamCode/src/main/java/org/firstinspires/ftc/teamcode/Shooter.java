@@ -9,7 +9,7 @@ public class Shooter {
 
     public final int shooterCloseRPM = 970; //950
     public final int shooterFarRPM = 1375;
-    public final int autonShooterFarRPM = 1370;
+    public final int autonShooterFarRPM = 1400;
     public final int autonMidRPM = 1050;
     public final int shooterMidRPM = 975;
     public final int shooterHumanRPM = -1200;
@@ -19,14 +19,14 @@ public class Shooter {
     private int currentRPM = 0;
 
     public DcMotorEx shooterMotor;
-    public RevBlinkinLedDriver shooterLight;
+//    public RevBlinkinLedDriver shooterLight;
 
     public Shooter(HardwareMap hardwareMap) {
         shooterMotor = hardwareMap.get(DcMotorEx.class, "shooterMotor");
         shooterMotor.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
         shooterMotor.setDirection(DcMotorSimple.Direction.FORWARD);
         shooterMotor.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
-        shooterLight = hardwareMap.get(RevBlinkinLedDriver.class, "shooterLight");
+//        shooterLight = hardwareMap.get(RevBlinkinLedDriver.class, "shooterLight");
     }
 
     public void startCloseShoot() {
@@ -66,7 +66,7 @@ public class Shooter {
         shooterMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE); // converting RPM to ticks per second
         currentRPM = shooterOffRPM;
         shooterMotor.setVelocity(shooterOffRPM); // converting RPM to ticks per second
-        shooterLight.setPattern(RevBlinkinLedDriver.BlinkinPattern.WHITE);
+//        shooterLight.setPattern(RevBlinkinLedDriver.BlinkinPattern.WHITE);
     }
 
     public boolean reachedSpeed() {
@@ -98,17 +98,17 @@ public class Shooter {
         }
     }
 
-    public void shooterLightUpdate() {
-        if(currentRPM == 0){
-            return;
-        }
-        if (reachedSpeed()) {
-            shooterLight.setPattern(RevBlinkinLedDriver.BlinkinPattern.GREEN);
-        }
-        else {
-            shooterLight.setPattern(RevBlinkinLedDriver.BlinkinPattern.RED);
-        }
-    }
+//    public void shooterLightUpdate() {
+//        if(currentRPM == 0){
+//            return;
+//        }
+//        if (reachedSpeed()) {
+//            shooterLight.setPattern(RevBlinkinLedDriver.BlinkinPattern.GREEN);
+//        }
+//        else {
+//            shooterLight.setPattern(RevBlinkinLedDriver.BlinkinPattern.RED);
+//        }
+//    }
 
 
 

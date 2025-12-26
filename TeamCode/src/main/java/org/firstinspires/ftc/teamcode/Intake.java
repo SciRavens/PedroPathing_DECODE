@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 public class Intake {
     public DcMotorEx intakeMotor;
-    public DcMotorEx transferMotor;
+//    public DcMotorEx transferMotor;
     private final double INTAKE_POWER = 0.75;
 
     private final double SHOOTING_POWER = 0.5;
@@ -26,18 +26,18 @@ public class Intake {
         intakeMotor.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
         intakeMotor.setDirection(DcMotorEx.Direction.FORWARD);
 
-        transferMotor = hardwareMap.get(DcMotorEx.class, "transferMotor");
-        transferMotor.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
-        transferMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+//        transferMotor = hardwareMap.get(DcMotorEx.class, "transferMotor");
+//        transferMotor.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+//        transferMotor.setDirection(DcMotorSimple.Direction.FORWARD);
     }
     public void startIntakeAndTransfer() {
         intakeMotor.setPower(INTAKE_POWER);
-        transferMotor.setPower(TRANSFER_INTAKE_POWER);
+//        transferMotor.setPower(TRANSFER_INTAKE_POWER);
     }
 
-    public void startTransferOnly() {
-        transferMotor.setPower(TRANSFER_INTAKE_POWER);
-    }
+//    public void startTransferOnly() {
+//        transferMotor.setPower(TRANSFER_INTAKE_POWER);
+//    }
 
     public void startIntakeOnly() {
         intakeMotor.setPower(INTAKE_POWER);
@@ -45,23 +45,27 @@ public class Intake {
 
     public void shootArtifacts() {
         intakeMotor.setPower(SHOOTING_POWER);
-        transferMotor.setPower(TRANFER_SHOOTING_POWER);
+//        transferMotor.setPower(TRANFER_SHOOTING_POWER);
+    }
+    public void slowShootArtifacts() {
+        intakeMotor.setPower(SHOOTING_POWER-0.25);
+//        transferMotor.setPower(TRANFER_SHOOTING_POWER+0.25);
     }
     public void intakeStop(){
         intakeMotor.setPower(0);
-        transferMotor.setPower(0);
+//        transferMotor.setPower(0);
     }
     public void transferOnly() {
         intakeMotor.setPower(0);
-        transferMotor.setPower(0.75);
+//        transferMotor.setPower(0.75);
     }
     public void stopIntake() {
         intakeMotor.setPower(INTAKE_OFF);
     }
 
-    public void stopTransfer() {
-        transferMotor.setPower(TRANSFER_OFF);
-    }
+//    public void stopTransfer() {
+//        transferMotor.setPower(TRANSFER_OFF);
+//    }
 
 
 }

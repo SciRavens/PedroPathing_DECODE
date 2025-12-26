@@ -164,18 +164,18 @@ public class RobotTeleop extends OpMode {
             if (rapidTimer.getElapsedTime() >= 5750) {
                 robot.shooter.stopFlyWheel();
                 robot.intake.intakeStop();
-                robot.intake.stopTransfer();
+//                robot.intake.stopTransfer();
                 is_RapidFireOn = false;
             }
         } else {
             if (is_Shooting()) {
                 if (robot.shooter.reachedSpeed()) {
-                    robot.intake.startTransferOnly();
+//                    robot.intake.startTransferOnly();
                     gamepad1.rumble(1000);
                     gamepad2.rumble(1000);
                 }
             } else {
-                robot.intake.stopTransfer();
+//                robot.intake.stopTransfer();
             }
         }
 
@@ -193,18 +193,18 @@ public class RobotTeleop extends OpMode {
             if (rapidTimer.getElapsedTime() >= 5750) {
                 robot.shooter.stopFlyWheel();
                 robot.intake.intakeStop();
-                robot.intake.stopTransfer();
+//                robot.intake.stopTransfer();
                 is_RapidFireOn = false;
             }
         } else {
             if (is_Shooting()) {
                 if (robot.shooter.reachedSpeed()) {
-                    robot.intake.startTransferOnly();
+//                    robot.intake.startTransferOnly();
                     gamepad1.rumble(1000);
                     gamepad2.rumble(1000);
                 }
             } else {
-                robot.intake.stopTransfer();
+//                robot.intake.stopTransfer();
             }
         }
 
@@ -219,7 +219,7 @@ public class RobotTeleop extends OpMode {
         }
 
         currentPose = follower.getPose();
-        robot.shooter.shooterLightUpdate();
+//        robot.shooter.shooterLightUpdate();
         telemetry.addData("Current Alliance: ", currentAlliance);
         telemetry.addData("Rapid Fire On: ", is_RapidFireOn);
         telemetry.addData("Drive X", xInput);
@@ -236,6 +236,6 @@ public class RobotTeleop extends OpMode {
     public void stop() {
         robot.shooter.stopShoot();
         robot.intake.stopIntake();
-        robot.intake.stopTransfer();
+//        robot.intake.stopTransfer();
     }
 }

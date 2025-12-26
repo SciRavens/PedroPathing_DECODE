@@ -1,4 +1,4 @@
-//package org.firstinspires.ftc.teamcode; // make sure this aligns with class location
+//package org.firstinspires.ftc.teamcode.pedroPathing; // make sure this aligns with class location
 //
 //import com.pedropathing.follower.Follower;
 //import com.pedropathing.geometry.BezierCurve;
@@ -10,40 +10,42 @@
 //import com.qualcomm.hardware.limelightvision.LLResultTypes;
 //import com.qualcomm.hardware.limelightvision.Limelight3A;
 //import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+//import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 //import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 //import com.qualcomm.robotcore.hardware.CRServo;
 //
 //import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 //import org.firstinspires.ftc.teamcode.experimental.LimelightTracker;
 //import org.firstinspires.ftc.teamcode.experimental.TurretPIDController;
+//import org.firstinspires.ftc.teamcode.Robot;
+//
 //
 //import java.util.List;
-//
-//@Autonomous(name = "Blue Wall Close Auto V2", group = "Competition", preselectTeleOp="RobotTeleop")
-//public class BlueWallCloseAutoV2 extends OpMode {
+//@Autonomous(name = "BlueFarAutoW/LimeLight", group = "Competition", preselectTeleOp="RobotTeleop")
+//public class BlueFarAutonLimeLight extends OpMode {
 //    private Robot robot;
 //    private Follower follower;
 //    private Timer pathTimer, opmodeTimer;
 //    private int pathState;
 //    private LimelightTracker limelightTracker;
 //    private TurretPIDController turretController;
-//    private Path scorePreload, intakeStack1, turn, scoreStack1, openGate, initialIntakeStack2, intakeStack2, reverseInitialIntakeStack2, scoreStack2, intakeStack3, scoreStack3;
-//    private final Pose startPose = new Pose(31, 135, Math.toRadians(90));
-//    private final Pose intakePose1Control1 = new Pose(66, 80);
-//    private final Pose intakePose1Contol2 = new Pose(52,85);
-//    private final Pose scorePose = new Pose(58, 86, Math.toRadians(143));
-//
-//    private final Pose intakePose1 = new Pose(12, 84, Math.toRadians(180));
-//
-//    private final Pose openGatePose = new Pose(133, 70, Math.toRadians(180));
-//    private final Pose openGateControlPoint = new Pose(90,76.5);
-//    private final Pose initialIntakePose2 = new Pose(84, 60, Math.toRadians(180));
-//    private final Pose intakePose2Control1 = new Pose(45, 51);
-//    private final Pose intakePose2Control2 = new Pose(58, 61);
-//    private final Pose intakePose2 = new Pose(10, 60, Math.toRadians(180));
-//    private final Pose intakePose3Control1 = new Pose(41, 16);
-//    private final Pose intakePose3Control2 = new Pose(63, 39);
-//    private final Pose intakePose3 = new Pose(9, 36, Math.toRadians(180));
+//    private Path goToFirstPattern, shootStack1, goToSecondPattern, shootStack2, goToThirdPattern,
+//            shootStack3, getFirstPattern, getSecondPattern, getThirdPattern, endingAuton;
+//    private final Pose startPose = new Pose(68, 8, Math.toRadians(180));
+//    private final Pose firstPattern = new Pose(49, 83.4, Math.toRadians(180));
+//    private final Pose firstPatternPickUp = new Pose(0, 83.5, Math.toRadians(180));
+//    private final Pose controlPoint5 = new Pose(55, 89);
+//    private final Pose controlPoint6 = new Pose(77.5, 84.7);
+//    private final Pose secondPattern = new Pose(46, 59, Math.toRadians(180));
+//    private final Pose secondPatternPickUp = new Pose(0, 59, Math.toRadians(180));
+//    private final Pose controlPoint3 = new Pose(63.6, 62.5);
+//    private final Pose controlPoint4 = new Pose(78.1, 60.1);
+//    private final Pose thirdPattern = new Pose(46, 35, Math.toRadians(180));
+//    private final Pose thirdPatternPickUp = new Pose(0, 35, Math.toRadians(180));
+//    private final Pose controlPoint1 = new Pose(66.2, 44);
+//    private final Pose controlPoint2 = new Pose(72.1,32.3);
+//    private final Pose shootingPose = new Pose(68, 7, Math.toRadians(180));
+//    private final Pose finalPose = new Pose(24, 10, Math.toRadians(0));
 //    private CRServo turretCR;
 //
 //    // Turret PID constants - TUNED for smooth tracking
@@ -75,8 +77,8 @@
 //    private Limelight3A limelight;
 //    private static final int TARGET_TAG_ID = 20;
 //    private static final int PIPELINE_ID_BLUE = 8;
+//    private double turretClosePosition = 0.25;
 //
-//    private double turretClosePosition = 0.25; // changed to double
 //
 //    @Override
 //    public void init() {
@@ -104,29 +106,43 @@
 //    }
 //
 //    public void buildPaths() {
-//        scorePreload = new Path(new BezierLine(startPose, scorePose));
-//        scorePreload.setLinearHeadingInterpolation(startPose.getHeading(), scorePose.getHeading());
-//        openGate = new Path(new BezierCurve(intakePose1, openGateControlPoint, openGatePose));
-//        intakeStack1 = new Path(new BezierCurve(startPose, intakePose1Control1, intakePose1Contol2, intakePose1));
-//        scoreStack1 = new Path(new BezierLine(intakePose1, scorePose));
-//        scoreStack1.setLinearHeadingInterpolation(intakePose1.getHeading(), scorePose.getHeading());
-//        intakeStack2 = new Path(new BezierCurve(scorePose, intakePose2Control1, intakePose2Control2, intakePose2));
-//        intakeStack2.setLinearHeadingInterpolation(scorePose.getHeading(), intakePose2.getHeading());
-//        scoreStack2 = new Path(new BezierLine(intakePose2, scorePose));
-//        scoreStack2.setLinearHeadingInterpolation(intakePose2.getHeading(), scorePose.getHeading());
-//        intakeStack3 = new Path(new BezierCurve(scorePose, intakePose3Control1, intakePose3Control2, intakePose3));
-//        intakeStack3.setLinearHeadingInterpolation(scorePose.getHeading(), intakePose3.getHeading());
-//        scoreStack3 = new Path(new BezierLine(intakePose3, scorePose));
-//        scoreStack3.setLinearHeadingInterpolation(intakePose3.getHeading(), scorePose.getHeading());
-////
+//        goToThirdPattern = new Path(new BezierLine(startPose, thirdPattern));
+//        goToThirdPattern.setLinearHeadingInterpolation(startPose.getHeading(), thirdPattern.getHeading());
+//
+//        getThirdPattern = new Path(new BezierLine(thirdPattern, thirdPatternPickUp));
+//        getThirdPattern.setConstantHeadingInterpolation(thirdPatternPickUp.getHeading());
+//
+//        shootStack1 = new Path(new BezierLine(thirdPattern, shootingPose));
+//        shootStack1.setConstantHeadingInterpolation(shootingPose.getHeading());
+//
+//        goToSecondPattern = new Path(new BezierLine(shootingPose, secondPattern));
+//        goToSecondPattern.setLinearHeadingInterpolation(shootingPose.getHeading(), secondPattern.getHeading());
+//
+//        getSecondPattern = new Path(new BezierLine(secondPattern, secondPatternPickUp));
+//        getSecondPattern.setConstantHeadingInterpolation(secondPatternPickUp.getHeading());
+//
+//        shootStack2 = new Path(new BezierLine(secondPattern, shootingPose));
+//        shootStack2.setConstantHeadingInterpolation(shootingPose.getHeading());
+//
+//        goToFirstPattern = new Path(new BezierLine(shootingPose, firstPattern));
+//        goToFirstPattern.setLinearHeadingInterpolation(shootingPose.getHeading(), thirdPattern.getHeading());
+//
+//        getFirstPattern = new Path(new BezierLine(firstPattern, firstPatternPickUp));
+//        getFirstPattern.setConstantHeadingInterpolation(firstPatternPickUp.getHeading());
+//
+//        shootStack3 = new Path(new BezierLine(firstPattern, shootingPose));
+//        shootStack3.setConstantHeadingInterpolation(shootingPose.getHeading());
+//
+//        endingAuton = new Path(new BezierLine(shootingPose, finalPose));
+//        endingAuton.setConstantHeadingInterpolation(shootingPose.getHeading());
 //
 //    }
 //
 //    @Override
 //    public void start() {
 //        opmodeTimer.resetTimer();
-//        follower.setMaxPower(1.0);
 //        setPathState(0);
+//        follower.setMaxPower(1.0);
 //    }
 //
 //    @Override
@@ -136,7 +152,7 @@
 ////        double dt = (currentTime - lastLoopTime) / 1e9; // seconds
 ////        lastLoopTime = currentTime;
 ////        dt = Math.max(dt, 0.001); // Prevent division by zero
-////        // -------------------- TURRET CONTROL --------------------
+////
 ////        LLResult result = limelight.getLatestResult();
 ////        boolean trackingTag = false;
 ////        double tx = 0.0;
@@ -160,6 +176,7 @@
 ////                }
 ////            }
 ////        }
+////
 ////        if (trackingTag) {
 ////            // Low-pass filter to smooth noisy measurements
 ////            filteredTx = FILTER_ALPHA * tx + (1 - FILTER_ALPHA) * filteredTx;
@@ -223,7 +240,7 @@
 ////            lastError = 0;
 ////            filteredTx = 0;
 ////        }
-//// -------------------- 1. READ SENSORS (Limelight) --------------------
+//
 //        limelightTracker.update();
 //        boolean trackingTag = limelightTracker.isTargetFound();
 //        double tx = limelightTracker.getTx();
@@ -251,106 +268,98 @@
 //
 //    public void autonomousPathUpdate() {
 //        switch (pathState) {
-//            case 0: // Sready to score preload
-//                follower.followPath(scorePreload);
-//                robot.shooter.startCloseShoot(); // start shooter for close shots
+//            case 0:
+//                robot.shooter.startAutonFarShoot();
 //                setPathState(1);
 //                break;
-//            case 1: // actually scores preload
-//                if ((!follower.isBusy() || pathTimer.getElapsedTime() > 5000) && robot.shooter.reachCloseSpeed()) {
-//                    robot.intake.startIntakeAndTransfer(); // start intake to shoot
+//            case 1:
+//                if (robot.shooter.reachedSpeed() || pathTimer.getElapsedTime() > 3500) {
+//                    robot.intake.shootArtifacts();
 //                    setPathState(2);
 //                }
 //                break;
-//            case 2: // stop everything and head to first stack
-//                if (pathTimer.getElapsedTime() > 4000) {
-//                    robot.shooter.stopShoot();
+//            case 2:
+//                if (pathTimer.getElapsedTime() > 3000){ //decrease if necessary
+//                    robot.shooter.stopFlyWheel();
 //                    robot.intake.stopTransfer();
-//                    robot.intake.startIntakeOnly();
-//
-//                    follower.followPath(intakeStack1);
+//                    follower.followPath(goToThirdPattern, true);
+//                    setPathState(21);
+//                }
+//                break;
+//            case 21:
+//                if(!follower.isBusy() || pathTimer.getElapsedTime() > 1000) {
+//                    follower.followPath(getThirdPattern, true);
+//                    setPathState(3);
+//                }
+//                break;
+//            case 3:
+//                if(!follower.isBusy() || pathTimer.getElapsedTime() > 1500)  {
+//                    follower.followPath(shootStack1, true);
 //                    setPathState(4);
 //                }
 //                break;
 //            case 4:
-//                if (!follower.isBusy() || pathTimer.getElapsedTime() > 4000){
-//                    robot.shooter.startCloseShoot();
-//                    follower.followPath(scoreStack1);
+//                if(!follower.isBusy() || pathTimer.getElapsedTime() > 1000) {
+//                    robot.shooter.startAutonFarShoot();
 //                    setPathState(5);
 //                }
 //                break;
 //            case 5:
-//                if ((!follower.isBusy() || pathTimer.getElapsedTime() > 4000) && robot.shooter.reachCloseSpeed()){
-//                    robot.intake.startIntakeAndTransfer(); //Shoot to score
+//                if (robot.shooter.reachedSpeed() || pathTimer.getElapsedTime() > 3000) {
+//                    robot.intake.shootArtifacts();
 //                    setPathState(6);
 //                }
 //                break;
 //            case 6:
-//                if (pathTimer.getElapsedTime() > 4000) {
-//                    robot.shooter.stopShoot();
+//                if (pathTimer.getElapsedTime() > 3000){
+//                    robot.shooter.stopFlyWheel();
 //                    robot.intake.stopTransfer();
-//                    robot.intake.startIntakeOnly();
-//                    follower.followPath(intakeStack2);
+//                    follower.followPath(goToSecondPattern, true);
+//                    setPathState(61);
+//                }
+//                break;
+//            case 61:
+//                if(!follower.isBusy() || pathTimer.getElapsedTime() > 1000) {
+//                    follower.followPath(getSecondPattern, true);
 //                    setPathState(7);
 //                }
 //                break;
 //            case 7:
-//                if (pathTimer.getElapsedTime()>500){
-//                    robot.shooter.startAutoMidShoot();
+//                if(!follower.isBusy() || pathTimer.getElapsedTime() > 2000)  {
+//                    follower.followPath(shootStack2, true);
 //                    setPathState(8);
 //                }
 //                break;
 //            case 8:
-//                if (!follower.isBusy() || pathTimer.getElapsedTime()>4000){
-//                    follower.followPath(scoreStack2);
+//                if(!follower.isBusy() || pathTimer.getElapsedTime() > 2500) {
+//                    robot.shooter.startAutonFarShoot();
 //                    setPathState(9);
 //                }
-//                break;
 //            case 9:
-//                if ((!follower.isBusy() || pathTimer.getElapsedTime()>4000) && robot.shooter.reachAutoMidSpeed()){
-//                    robot.intake.startIntakeAndTransfer(); //shoot to score
+//                if (robot.shooter.reachedSpeed()|| pathTimer.getElapsedTime() > 3000) {
+//                    robot.intake.shootArtifacts();
 //                    setPathState(10);
 //                }
 //                break;
 //            case 10:
-//                if (pathTimer.getElapsedTime()>4000) {
-//                    robot.shooter.stopShoot();
+//                if (pathTimer.getElapsedTime() > 2500){
+//                    robot.shooter.stopFlyWheel();
 //                    robot.intake.stopTransfer();
-//                    robot.intake.startIntakeOnly();
+//                    follower.followPath(endingAuton, true);
 //                    setPathState(11);
 //                }
 //                break;
 //            case 11:
-//                if (pathTimer.getElapsedTime()>500){
-//                    follower.followPath(intakeStack3);
-//                    setPathState(-1);
-//                }
-//                break;
-//            case 12:
-//                if (!follower.isBusy() || pathTimer.getElapsedTime()>4000){
-//                    robot.shooter.startCloseShoot();
-//                    follower.followPath(scoreStack3);
-//                    setPathState(13);
-//                }
-//                break;
-//            case 13:
-//                if (!follower.isBusy() || pathTimer.getElapsedTime()>4000 && robot.shooter.reachCloseSpeed()){
-//                    robot.intake.startIntakeAndTransfer();
-//                    setPathState(14);
-//                }
-//                break;
-//            case 14:
-//                if (pathTimer.getElapsedTime()>4000){
-//                    robot.shooter.stopShoot();
-//                    robot.intake.stopIntake();
-//                    robot.intake.stopTransfer();
+//                if(pathTimer.getElapsedTime() > 1000)  {
 //                    setPathState(-1);
 //                }
 //                break;
 //        }
 //    }
+//
 //    public void setPathState(int pState) {
 //        pathState = pState;
 //        pathTimer.resetTimer();
 //    }
 //}
+//
