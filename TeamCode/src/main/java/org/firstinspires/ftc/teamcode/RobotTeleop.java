@@ -20,6 +20,9 @@ import com.pedropathing.util.Timer;
 @TeleOp(name = "RobotTeleop", group = "Competition")
 public class RobotTeleop extends OpMode {
     private Timer timer;
+    private Timer gateTimer;
+
+    int counter;
     private Timer rapidTimer;
 
     private Follower follower;
@@ -48,6 +51,7 @@ public class RobotTeleop extends OpMode {
     public void init() {
 
         timer = new Timer();
+        gateTimer = new Timer();
         rapidTimer = new Timer();
         follower = Constants.createFollower(hardwareMap);
         follower.setStartingPose(startPose);
@@ -58,14 +62,22 @@ public class RobotTeleop extends OpMode {
         if(gamepad1.y) {
             Robot.current_pipeline_id = Robot.PIPELINE_ID_BLUE;
             Robot.current_tag_id = Robot.BLUE_TARGET_TAG_ID;
+            Robot.current_goal_x = Robot.BLUE_GOAL_X;
+            Robot.current_goal_y = Robot.BLUE_GOAL_Y;
             currentAlliance = "BLUE";
         }
-        else{
+        else {
             Robot.current_pipeline_id = Robot.PIPELINE_ID_RED;
             Robot.current_tag_id = Robot.RED_TARGET_TAG_ID;
+            Robot.current_goal_x = Robot.RED_GOAL_X;
+            Robot.current_goal_y = Robot.RED_GOAL_Y;
+            currentAlliance = "RED";
         }
 //        turretTracker = new TurretTracker(robot);
         vision = new Vision(hardwareMap, robot);
+        telemetry.addData("Saved Position X: ", SavePosition.getSavedPosition().getX());
+        telemetry.addData("Saved Position Y: ", SavePosition.getSavedPosition().getY());
+        telemetry.addData("Saved Position Heading (deg): ", Math.toDegrees(SavePosition.getSavedPosition().getHeading()));
         telemetry.addData("Current Alliance: ", currentAlliance);
         telemetry.addLine("RobotTeleop Initialized (CRServo turret)");
         telemetry.update();
@@ -80,16 +92,16 @@ public class RobotTeleop extends OpMode {
 
 //    private boolean is_CloseShot() {return gamepad2.b; }
 
-    private boolean is_FarShot() {
-        return gamepad2.x;
-    }
-    private boolean is_CloseShot() {
-        return gamepad2.b;
-    }
-
-    private boolean is_MidShot() {
-        return gamepad2.y;
-    }
+//    private boolean is_FarShot() {
+//        return gamepad2.x;
+//    }
+//    private boolean is_CloseShot() {
+//        return gamepad2.b;
+//    }
+//
+//    private boolean is_MidShot() {
+//        return gamepad2.y;
+//    }
 
     private boolean is_Intaking() {
         return gamepad2.right_trigger > 0.1;
@@ -107,9 +119,9 @@ public class RobotTeleop extends OpMode {
         return gamepad2.a;
     }
 
-//    private boolean is_DistanceShot() {
-//        return gamepad2.b;
-//    }
+    private boolean is_DistanceShot() {
+        return gamepad2.b;
+    }
 
 //    private boolean is_TurretLeft() {
 //        return gamepad2.dpad_left;
@@ -120,7 +132,10 @@ public class RobotTeleop extends OpMode {
 //    }
     private boolean is_ReverseIntaking() {return gamepad2.right_bumper;}
 
-
+    public double getDistanceFromGoal() {
+        return Math.sqrt(Math.pow(Robot.current_goal_x - currentPose.getX(), 2)
+                + Math.pow(Robot.current_goal_y - currentPose.getY(), 2));
+    }
 
 
     @Override
@@ -146,28 +161,21 @@ public class RobotTeleop extends OpMode {
             vision.update();
         }
 
-//        if (currentlyShooting) {
-//            robot.shooter.startTargetShooterSpeed(vision.getDistance());
-//        } else { robot.shooter.stopShoot(); }
 
-//        if (is_DistanceShot()) {
-//            currentlyShooting = true;
-//        }
-//        else if (is_HumanPlayer()) {
-//            robot.shooter.startHumanIntake();
-//        }
         if (is_FlywheelOff()){
             robot.shooter.stopShoot();
+        } else if (is_DistanceShot()) {
+            robot.shooter.startTargetShooterSpeed(getDistanceFromGoal());
         }
-        else if (is_FarShot()) {
-            robot.shooter.startFarShoot();
-        }
-        else if (is_CloseShot()) {
-            robot.shooter.startCloseShoot();
-        }
-        else if (is_MidShot()) {
-            robot.shooter.startMidShoot();
-        }
+//        else if (is_FarShot()) {
+//            robot.shooter.startFarShoot();
+//        }
+//        else if (is_CloseShot()) {
+//            robot.shooter.startCloseShoot();
+//        }
+//        else if (is_MidShot()) {
+//            robot.shooter.startMidShoot();
+//        }
 
 
         if (is_Intaking()) {
@@ -179,10 +187,14 @@ public class RobotTeleop extends OpMode {
         }
 
 
-        if (is_OpeningGate()) {
+        if (is_OpeningGate() && gate.gateClosed && gateTimer.getElapsedTime() > 300) {
             gate.gateOpen();
-        } else {
+            gateTimer.resetTimer();
+            }
+
+        if (is_OpeningGate() && !gate.gateClosed && gateTimer.getElapsedTime() > 300) {
             gate.gateClose();
+            gateTimer.resetTimer();
         }
 
 
@@ -197,15 +209,17 @@ public class RobotTeleop extends OpMode {
         }
 
         currentPose = follower.getPose();
+        SavePosition.saveCurrentPosition(currentPose);
         robot.shooter.shooterLightUpdate();
         telemetry.addData("Current Alliance: ", currentAlliance);
-        telemetry.addData("Rapid Fire On: ", is_RapidFireOn);
+        telemetry.addData("Distance From Goal", getDistanceFromGoal());
         telemetry.addData("Drive X", xInput);
         telemetry.addData("Drive Y", yInput);
         telemetry.addData("Turn", turnInput);
-        //telemetry.addData("Turret Power", turretCR.getPower());
-        telemetry.addData("Pose X", follower.getPose().getX());
-        telemetry.addData("Pose Y", follower.getPose().getY());
+        telemetry.addData("Goal X", Robot.current_goal_x);
+        telemetry.addData("Goal Y", Robot.current_goal_y);
+        telemetry.addData("Pose X", currentPose.getX());
+        telemetry.addData("Pose Y", currentPose.getY());
         telemetry.addData("Heading (deg)", Math.toDegrees(follower.getPose().getHeading()));
         telemetry.update();
     }

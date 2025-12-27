@@ -1,9 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.Intake;
-import org.firstinspires.ftc.teamcode.Shooter;
-import org.firstinspires.ftc.teamcode.Turret;
 
 public class Robot {
 
@@ -13,6 +10,15 @@ public class Robot {
     public static final int PIPELINE_ID_RED = 2;
     public static int current_pipeline_id = PIPELINE_ID_RED;
     public static int current_tag_id = RED_TARGET_TAG_ID;
+    public static final int RED_GOAL_X = 144;
+    public static final int RED_GOAL_Y = 144;
+    public static final int BLUE_GOAL_X = 0;
+    public static final int BLUE_GOAL_Y = 144;
+    public static int current_goal_x = RED_GOAL_X;
+    public static int current_goal_y = RED_GOAL_Y;
+
+
+
 
     public Intake intake;
     public Shooter shooter;
@@ -20,13 +26,11 @@ public class Robot {
 
     public HardwareMap hardwareMap;
     public Telemetry telemetry;
-    public DistanceSensor distanceSensor;
     public Robot (HardwareMap hardwareMap, Telemetry telemetry) {
         this.hardwareMap = hardwareMap;
         intake = new Intake(hardwareMap);
         shooter = new Shooter(hardwareMap);
         turret = new Turret(hardwareMap);
-        distanceSensor = new DistanceSensor(hardwareMap);
 
         this.telemetry = telemetry;
     }

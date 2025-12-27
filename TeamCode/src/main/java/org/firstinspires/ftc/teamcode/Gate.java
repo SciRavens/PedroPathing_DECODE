@@ -17,12 +17,12 @@ public class Gate {
     }
 
     public void gateOpen () {
-        gateServo.setPosition(0.0);
+        gateServo.setPosition(0.1);
         gateClosed = false;
     }
 
     public void gateClose() {
-        gateServo.setPosition(0.15);
+        gateServo.setPosition(0.18);
         gateClosed = true;
     }
 

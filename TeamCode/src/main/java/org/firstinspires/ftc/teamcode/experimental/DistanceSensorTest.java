@@ -60,7 +60,7 @@ public class DistanceSensorTest extends OpMode {
 
     @Override
     public void loop() {
-            telemetry.addData("Distance (mm)", "%.1f", robot.distanceSensor.getDistance());
+//            telemetry.addData("Distance (mm)", "%.1f", robot.distanceSensor.getDistance());
             telemetry.update();
     }
 }
