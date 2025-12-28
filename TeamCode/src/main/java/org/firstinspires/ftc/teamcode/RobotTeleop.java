@@ -35,7 +35,7 @@ public class RobotTeleop extends OpMode {
     private static final double DEAD_ZONE = 0.1;
     private static final double TURRET_DEADZONE = 0.3; // Tighter alignment threshold
 
-    private final Pose startPose = new Pose(0, 0, 0);
+    private final Pose startPose = new Pose(96, 96, 0);
 
     private Pose currentPose = new Pose(0,0,0);
 

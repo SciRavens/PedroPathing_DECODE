@@ -10,7 +10,7 @@ public class Robot {
     public static final int PIPELINE_ID_RED = 2;
     public static int current_pipeline_id = PIPELINE_ID_RED;
     public static int current_tag_id = RED_TARGET_TAG_ID;
-    public static final int RED_GOAL_X = 144;
+    public static final int RED_GOAL_X = 0;
     public static final int RED_GOAL_Y = 144;
     public static final int BLUE_GOAL_X = 0;
     public static final int BLUE_GOAL_Y = 144;

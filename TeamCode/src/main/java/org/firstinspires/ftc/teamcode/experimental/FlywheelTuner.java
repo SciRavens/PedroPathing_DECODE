@@ -5,10 +5,14 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 
+import org.firstinspires.ftc.teamcode.Robot;
+
 @TeleOp(name = "Flywheel Tuner", group = "Experimental")
 public class FlywheelTuner extends OpMode {
     public DcMotorEx shooterMotor;
-    double shooterCloseRPM = 1375.0;
+    public Robot robot;
+
+    double shooterCloseRPM = 1600.0;
     double shooterFarRPM = 970.0;
     double currTargetVelocity = shooterFarRPM;
     double F = 0.0;
@@ -18,6 +22,7 @@ public class FlywheelTuner extends OpMode {
 
     @Override
     public void init() {
+        robot = new Robot(hardwareMap, telemetry);
         shooterMotor = hardwareMap.get(DcMotorEx.class, "shooterMotor");
         shooterMotor.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
         shooterMotor.setDirection(DcMotorEx.Direction.FORWARD);
@@ -37,6 +42,14 @@ public class FlywheelTuner extends OpMode {
             } else {
                 currTargetVelocity = shooterFarRPM;
             }
+        }
+
+        if (gamepad1.right_trigger > 0.1) {
+            robot.intake.startIntakeOnly();
+        } else if (gamepad1.right_bumper) {
+            robot.intake.startReverseIntake();
+        } else {
+            robot.intake.stopIntake();
         }
 
         if (gamepad1.bWasPressed()){

@@ -29,6 +29,12 @@ public class Shooter {
         shooterMotor.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
         shooterMotor.setDirection(DcMotorSimple.Direction.FORWARD);
         shooterMotor.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
+        shooterMotor.setVelocityPIDFCoefficients(
+                528.1,   // P
+                0,       // I
+                0,       // D
+                21.788   // F
+        );
         shooterLight = hardwareMap.get(Servo.class, "shooterLight");
     }
 
