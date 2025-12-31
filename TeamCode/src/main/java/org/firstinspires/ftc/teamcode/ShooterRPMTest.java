@@ -25,9 +25,16 @@ public class ShooterRPMTest extends OpMode {
     public void init() {
         robot = new Robot(hardwareMap, telemetry);
         shooterMotor = hardwareMap.get(DcMotorEx.class, "shooterMotor");
-        shooterMotor.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+        shooterMotor.resetDeviceConfigurationForOpMode();
         shooterMotor.setDirection(DcMotorSimple.Direction.FORWARD);
-        shooterMotor.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
+        shooterMotor.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+        shooterMotor.setVelocityPIDFCoefficients(
+                350.0 ,   // P
+                0,       // I
+                0,       // D
+                20.0   // F
+        );
+        //shooterMotor.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
         buttontimer = new Timer();
         buttontimer.resetTimer();
     }
@@ -64,9 +71,9 @@ public class ShooterRPMTest extends OpMode {
         }
 
 //        if (currentRPM > 0 && shooterMotor.getVelocity() >= currentRPM) {
-//            shooterLight.setPattern(RevBlinkinLedDriver.BlinkinPattern.GREEN);
+//            shooter.shooterLight.setPosition(0.5);
 //        } else {
-//            shooterLight.setPattern(RevBlinkinLedDriver.BlinkinPattern.RED);
+//            shooterLight.setPosition(0.3);
 //        }
 
         if (gamepad2.right_trigger > 0.1) {
@@ -78,6 +85,7 @@ public class ShooterRPMTest extends OpMode {
         robot.shooter.shooterLightUpdate();
         telemetry.addData("Target RPM", currentRPM);
         telemetry.addData("Current Velocity", shooterMotor.getVelocity());
+        telemetry.addData("Motor Direction: ", shooterMotor.getDirection());
         telemetry.update();
     }
 }

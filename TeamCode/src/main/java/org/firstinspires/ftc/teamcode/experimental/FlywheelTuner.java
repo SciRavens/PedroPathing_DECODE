@@ -7,18 +7,25 @@ import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 
 import org.firstinspires.ftc.teamcode.Robot;
 
+import com.pedropathing.util.Timer;
+
 @TeleOp(name = "Flywheel Tuner", group = "Experimental")
 public class FlywheelTuner extends OpMode {
     public DcMotorEx shooterMotor;
     public Robot robot;
 
-    double shooterCloseRPM = 1600.0;
-    double shooterFarRPM = 970.0;
+    double shooterCloseRPM = 975.0;
+    double shooterFarRPM = 1170;
     double currTargetVelocity = shooterFarRPM;
     double F = 0.0;
     double P = 0.0;
-    double[] stepSizes = {10.0, 1.0, 0.1, 0.001, 0.001};
-    int stepIndex = 1;
+    double[] stepSizes = {10.0, 1.0, 0.1, 0.001};
+    int stepIndex = 0;
+
+    Timer timer = new Timer();
+    long recoveryTime = 0;
+    boolean recovered = true;
+    int maxThreshold = 20;
 
     @Override
     public void init() {
@@ -36,6 +43,19 @@ public class FlywheelTuner extends OpMode {
 
     @Override
     public void loop() {
+        if (shooterMotor.getVelocity() < currTargetVelocity - maxThreshold) {  // not recovered state
+            if (recovered) {
+                recovered = false;
+                timer.resetTimer();
+            }
+        } else {                                                // recovered state
+            if (!recovered && timer.getElapsedTime() > 300) {
+                recovered = true;
+                recoveryTime = timer.getElapsedTime();
+            }
+        }
+
+
         if (gamepad1.yWasPressed()){
             if (currTargetVelocity == shooterFarRPM) {
                 currTargetVelocity = shooterCloseRPM;
@@ -80,6 +100,8 @@ public class FlywheelTuner extends OpMode {
         telemetry.addData("P: ", P);
         telemetry.addData("F: ", F);
         telemetry.addData("Step Size: ", stepSizes[stepIndex]);
+        telemetry.addData("Recovered: ", recovered);
+        telemetry.addData("Recovery Time (ms): ", recovered ? recoveryTime : "N/A");
         telemetry.update();
 
     }

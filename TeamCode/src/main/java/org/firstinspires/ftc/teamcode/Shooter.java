@@ -30,10 +30,10 @@ public class Shooter {
         shooterMotor.setDirection(DcMotorSimple.Direction.FORWARD);
         shooterMotor.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
         shooterMotor.setVelocityPIDFCoefficients(
-                528.1,   // P
+                350.0 ,   // P
                 0,       // I
                 0,       // D
-                21.788   // F
+                20.0   // F
         );
         shooterLight = hardwareMap.get(Servo.class, "shooterLight");
     }

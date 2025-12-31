@@ -190,11 +190,13 @@ public class RobotTeleop extends OpMode {
         if (is_OpeningGate() && gate.gateClosed && gateTimer.getElapsedTime() > 300) {
             gate.gateOpen();
             gateTimer.resetTimer();
-            }
+            telemetry.addData("Gate Input", "Opening");
+        }
 
         if (is_OpeningGate() && !gate.gateClosed && gateTimer.getElapsedTime() > 300) {
             gate.gateClose();
             gateTimer.resetTimer();
+            telemetry.addData("Gate Input", "Closing");
         }
 
 
@@ -221,6 +223,7 @@ public class RobotTeleop extends OpMode {
         telemetry.addData("Pose X", currentPose.getX());
         telemetry.addData("Pose Y", currentPose.getY());
         telemetry.addData("Heading (deg)", Math.toDegrees(follower.getPose().getHeading()));
+        telemetry.addData("Gate Closed", gate.gateClosed);
         telemetry.update();
     }
 
