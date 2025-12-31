@@ -29,12 +29,6 @@ public class Shooter {
         shooterMotor.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
         shooterMotor.setDirection(DcMotorSimple.Direction.FORWARD);
         shooterMotor.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
-        shooterMotor.setVelocityPIDFCoefficients(
-                350.0 ,   // P
-                0,       // I
-                0,       // D
-                20.0   // F
-        );
         shooterLight = hardwareMap.get(Servo.class, "shooterLight");
     }
 
@@ -73,6 +67,21 @@ public class Shooter {
 
     public void startTargetShooterSpeed(double distance) {
         int newRPM = (int)Math.round(3.88735 * distance + 729.40636);
+        if (shooterMotor.getVelocity() >= 1325) {
+            shooterMotor.setVelocityPIDFCoefficients(
+                    350.0 ,   // P
+                    0,       // I
+                    0,       // D
+                    20.0   // F
+            );
+        } else {
+            shooterMotor.setVelocityPIDFCoefficients(
+                    150 ,   // P
+                    0,       // I
+                    0,       // D
+                    21.3   // F
+            );
+        }
         if (currentRPM != newRPM) {
             shooterMotor.setVelocity(newRPM);
             currentRPM = newRPM;
