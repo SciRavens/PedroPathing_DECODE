@@ -6,6 +6,7 @@ import com.pedropathing.geometry.Pose;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
 import com.pedropathing.util.Timer;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 
 
 /**
@@ -140,7 +141,7 @@ public class RobotTeleop extends OpMode {
 
     @Override
     public void loop() {
-
+        currentPose = follower.getPose();
         double xInput = Math.abs(gamepad1.left_stick_x) > DEAD_ZONE ? -gamepad1.left_stick_x : 0;
         double yInput = Math.abs(gamepad1.left_stick_y) > DEAD_ZONE ? -gamepad1.left_stick_y : 0;
         // NOTE: rotation is negated to match PedroPathing's TeleOp example (prevents reversed/odd rotation behavior)
@@ -210,10 +211,10 @@ public class RobotTeleop extends OpMode {
             robot.turret.stopTurret();
         }
 
-        currentPose = follower.getPose();
         SavePosition.saveCurrentPosition(currentPose);
         robot.shooter.shooterLightUpdate();
         telemetry.addData("Current Alliance: ", currentAlliance);
+        telemetry.addData("Current Flywheel RPM", robot.shooter.getCurrentRPM());
         telemetry.addData("Distance From Goal", getDistanceFromGoal());
         telemetry.addData("Drive X", xInput);
         telemetry.addData("Drive Y", yInput);

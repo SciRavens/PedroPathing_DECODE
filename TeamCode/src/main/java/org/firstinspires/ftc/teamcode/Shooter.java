@@ -1,12 +1,8 @@
 package org.firstinspires.ftc.teamcode;
-import com.pedropathing.math.MathFunctions;
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
-
-import org.opencv.core.Mat;
 
 public class Shooter {
 
@@ -36,10 +32,12 @@ public class Shooter {
         currentRPM = shooterCloseRPM;
         shooterMotor.setVelocity(shooterCloseRPM); // converting RPM to ticks per second
     }
+
     public void startAutoCloseShoot() {
         currentRPM = autoClose;
         shooterMotor.setVelocity(autoClose); // converting RPM to ticks per second
     }
+
     public void startAutoMidShoot() {
         currentRPM = autonMidRPM;
         shooterMotor.setVelocity(autonMidRPM); // converting RPM to ticks per second
@@ -65,9 +63,13 @@ public class Shooter {
         shooterMotor.setVelocity(shooterHumanRPM); // converting RPM to ticks per second
     }
 
+    public double getCurrentRPM() {
+       return shooterMotor.getVelocity();
+    }
+
     public void startTargetShooterSpeed(double distance) {
-        int newRPM = (int)Math.round(3.88735 * distance + 729.40636);
-        if (shooterMotor.getVelocity() >= 1325) {
+        int newRPM = (int)(Math.pow(-0.0000915882 * distance, 4) + Math.pow(0.0393786 * distance, 3) + Math.pow(-6.18693 * distance, 2) + (426.45244 * distance) - 9804.42961); // y=-0.0000915882x^{4}+0.0393786x^{3}-6.18693x^{2}+426.45244x-9804.42961
+        if (Math.abs(currentRPM - newRPM) > 20)  {
             shooterMotor.setVelocityPIDFCoefficients(
                     350.0 ,   // P
                     0,       // I

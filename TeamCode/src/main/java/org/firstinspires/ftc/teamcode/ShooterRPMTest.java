@@ -29,10 +29,10 @@ public class ShooterRPMTest extends OpMode {
         shooterMotor.setDirection(DcMotorSimple.Direction.FORWARD);
         shooterMotor.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
         shooterMotor.setVelocityPIDFCoefficients(
-                350.0 ,   // P
+                350 ,   // P
                 0,       // I
                 0,       // D
-                20.0   // F
+                20   // F
         );
         //shooterMotor.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
         buttontimer = new Timer();

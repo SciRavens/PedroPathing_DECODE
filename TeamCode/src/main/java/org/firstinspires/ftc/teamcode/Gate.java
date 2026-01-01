@@ -12,8 +12,8 @@ public class Gate {
 
     public Gate(HardwareMap hardwareMap, Telemetry telemetry) {
         gateServo = hardwareMap.get(Servo.class, "gateServo");
-//        gateOpen();
-        gateClosed = false;
+        gateClose();
+        gateClosed = true;
     }
 
     public void gateOpen () {
