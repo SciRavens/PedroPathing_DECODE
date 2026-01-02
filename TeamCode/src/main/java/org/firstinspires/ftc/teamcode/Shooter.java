@@ -106,11 +106,7 @@ public class Shooter {
     }
 
     public boolean reachedSpeed() {
-        if (shooterMotor.getVelocity() >= currentRPM) {
-            return true;
-        } else {
-            return false;
-        }
+        return Math.abs(shooterMotor.getVelocity() - currentRPM) <= 40;
     }
     public boolean reachMidSpeed () {
         if (shooterMotor.getVelocity() >= shooterMidRPM) {
@@ -140,8 +136,7 @@ public class Shooter {
         }
         if (reachedSpeed()) {
             shooterLight.setPosition(0.5); //sets color to green
-        }
-        else {
+        } else {
             shooterLight.setPosition(0.3); //sets color to red
         }
     }
