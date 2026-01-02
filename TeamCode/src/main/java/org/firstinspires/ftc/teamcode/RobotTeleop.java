@@ -40,7 +40,7 @@ public class RobotTeleop extends OpMode {
 
     private Pose currentPose = new Pose(0,0,0);
 
-    private boolean is_RapidFireOn = false;
+    private boolean flywheelOn = false;
     private boolean targetTracking_enabled = true;
 
     private String currentAlliance = "RED";
@@ -91,19 +91,6 @@ public class RobotTeleop extends OpMode {
         follower.setMaxPower(1.0);
     }
 
-//    private boolean is_CloseShot() {return gamepad2.b; }
-
-//    private boolean is_FarShot() {
-//        return gamepad2.x;
-//    }
-//    private boolean is_CloseShot() {
-//        return gamepad2.b;
-//    }
-//
-//    private boolean is_MidShot() {
-//        return gamepad2.y;
-//    }
-
     private boolean is_Intaking() {
         return gamepad2.right_trigger > 0.1;
     }
@@ -124,18 +111,20 @@ public class RobotTeleop extends OpMode {
         return gamepad2.b;
     }
 
-//    private boolean is_TurretLeft() {
-//        return gamepad2.dpad_left;
-//    }
-//
-//    private boolean is_TurretRight() {
-//        return gamepad2.dpad_right;
-//    }
     private boolean is_ReverseIntaking() {return gamepad2.right_bumper;}
 
     public double getDistanceFromGoal() {
         return Math.sqrt(Math.pow(Robot.current_goal_x - currentPose.getX(), 2)
                 + Math.pow(Robot.current_goal_y - currentPose.getY(), 2));
+    }
+
+    public int getTargetShooterRPM(double distance) {
+        // y=-0.0000915882x^{4}+0.0393786x^{3}-6.18693x^{2}+426.45244x-9804.42961
+        double rpm = -0.0000915882 * Math.pow(distance, 4)
+                + 0.0393786 * Math.pow(distance, 3)
+                - 6.18693 * Math.pow(distance, 2)
+                + 426.45244 * distance - 9804.42961;
+        return (int) rpm;
     }
 
 
@@ -162,21 +151,20 @@ public class RobotTeleop extends OpMode {
             vision.update();
         }
 
-
-        if (is_FlywheelOff()){
-            robot.shooter.stopShoot();
-        } else if (is_DistanceShot()) {
-            robot.shooter.startTargetShooterSpeed(getDistanceFromGoal());
+        if (is_DistanceShot()) {
+            flywheelOn = true;
         }
-//        else if (is_FarShot()) {
-//            robot.shooter.startFarShoot();
-//        }
-//        else if (is_CloseShot()) {
-//            robot.shooter.startCloseShoot();
-//        }
-//        else if (is_MidShot()) {
-//            robot.shooter.startMidShoot();
-//        }
+        if (is_FlywheelOff()) {
+            flywheelOn = false;
+        }
+
+        if (flywheelOn) {
+            int targetRPM = getTargetShooterRPM(getDistanceFromGoal());
+            robot.shooter.startTargetShooterSpeed(targetRPM);
+
+        } else {
+            robot.shooter.stopShoot();
+        }
 
 
         if (is_Intaking()) {
@@ -214,8 +202,9 @@ public class RobotTeleop extends OpMode {
         SavePosition.saveCurrentPosition(currentPose);
         robot.shooter.shooterLightUpdate();
         telemetry.addData("Current Alliance: ", currentAlliance);
-        telemetry.addData("Current Flywheel RPM", robot.shooter.getCurrentRPM());
-        telemetry.addData("Distance From Goal", getDistanceFromGoal());
+        telemetry.addData("Target RPM: ", getTargetShooterRPM(getDistanceFromGoal()));
+        telemetry.addData("Current RPM: ", robot.shooter.getCurrentRPM());
+        telemetry.addData("Distance From Goal: ", getDistanceFromGoal());
         telemetry.addData("Drive X", xInput);
         telemetry.addData("Drive Y", yInput);
         telemetry.addData("Turn", turnInput);

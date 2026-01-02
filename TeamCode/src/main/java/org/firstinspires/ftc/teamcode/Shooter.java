@@ -4,6 +4,8 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
+
 public class Shooter {
 
     public final int shooterCloseRPM = 1060; //950
@@ -19,13 +21,16 @@ public class Shooter {
 
     public DcMotorEx shooterMotor;
     public Servo shooterLight;
+    private Telemetry telemetry;
 
-    public Shooter(HardwareMap hardwareMap) {
+    public Shooter(HardwareMap hardwareMap, Telemetry telemetry) {
         shooterMotor = hardwareMap.get(DcMotorEx.class, "shooterMotor");
         shooterMotor.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
         shooterMotor.setDirection(DcMotorSimple.Direction.FORWARD);
         shooterMotor.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
         shooterLight = hardwareMap.get(Servo.class, "shooterLight");
+        this.telemetry = telemetry;
+
     }
 
     public void startCloseShoot() {
@@ -67,27 +72,30 @@ public class Shooter {
        return shooterMotor.getVelocity();
     }
 
-    public void startTargetShooterSpeed(double distance) {
-        int newRPM = (int)(Math.pow(-0.0000915882 * distance, 4) + Math.pow(0.0393786 * distance, 3) + Math.pow(-6.18693 * distance, 2) + (426.45244 * distance) - 9804.42961); // y=-0.0000915882x^{4}+0.0393786x^{3}-6.18693x^{2}+426.45244x-9804.42961
-        if (Math.abs(currentRPM - newRPM) > 20)  {
-            shooterMotor.setVelocityPIDFCoefficients(
-                    350.0 ,   // P
-                    0,       // I
-                    0,       // D
-                    20.0   // F
-            );
-        } else {
-            shooterMotor.setVelocityPIDFCoefficients(
-                    150 ,   // P
-                    0,       // I
-                    0,       // D
-                    21.3   // F
-            );
-        }
+    public void startTargetShooterSpeed(int newRPM) {
+        telemetry.addData("Start Shoot Called", "Yes");
         if (currentRPM != newRPM) {
+            if (newRPM >= 1325)  {
+                shooterMotor.setVelocityPIDFCoefficients(
+                        350.0 ,   // P
+                        0,       // I
+                        0,       // D
+                        20.0   // F
+                );
+            } else {
+                shooterMotor.setVelocityPIDFCoefficients(
+                        150 ,   // P
+                        0,       // I
+                        0,       // D
+                        21.3   // F
+                );
+            }
+
             shooterMotor.setVelocity(newRPM);
             currentRPM = newRPM;
         }
+        telemetry.addData("New Velocity: ", newRPM);
+        telemetry.addData("Current Velocity: ", currentRPM);
     }
 
     public void stopShoot() {

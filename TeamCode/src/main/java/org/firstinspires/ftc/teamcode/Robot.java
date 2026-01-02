@@ -29,7 +29,7 @@ public class Robot {
     public Robot (HardwareMap hardwareMap, Telemetry telemetry) {
         this.hardwareMap = hardwareMap;
         intake = new Intake(hardwareMap);
-        shooter = new Shooter(hardwareMap);
+        shooter = new Shooter(hardwareMap, telemetry);
         turret = new Turret(hardwareMap);
 
         this.telemetry = telemetry;
