@@ -14,9 +14,9 @@ import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.Robot;
 import com.pedropathing.util.Timer;
 
-@Autonomous(name = "New Red Close Auto", group = "Autonomous")
+@Autonomous(name = "New Red Close Repeat Auto", group = "Autonomous")
 @Configurable
-public class NewRedCloseAuto extends OpMode {
+public class NewRedCloseRepeatAuto extends OpMode {
 
     private TelemetryManager panelsTelemetry;
     private Timer pathTimer, opmodeTimer;
@@ -29,14 +29,13 @@ public class NewRedCloseAuto extends OpMode {
 
     private final Pose startPose = new Pose(111, 136.5, Math.toRadians(90));
     private final Pose scoringPose = new Pose(96, 96, Math.toRadians(90));
+    private final Pose openGatePose = new Pose(133, 62.5);
+    private final Pose openGateControlPoint = new Pose(107.4, 32.7);
+    private final Pose shootControlPoint = new Pose(107.4, 32.7);
 
     private final Pose intakePose1 = new Pose(128, 59.5, Math.toRadians(0));
     private final Pose intakePose1Control1 = new Pose(100, 51);
     private final Pose intakePose1Control2 = new Pose(80, 60);
-
-    private final Pose openGatePose = new Pose(131, 65.5, Math.toRadians(0));
-    private final Pose openGateControlPoint = new Pose(98, 58);
-    private final Pose shootControlPoint = new Pose(88, 61);
 
     private final Pose intakePose2 = new Pose(131, 83, Math.toRadians(0));
     private final Pose intakePose2Control1 = new Pose(95, 75);
@@ -92,7 +91,7 @@ public class NewRedCloseAuto extends OpMode {
 
         public PathChain shootPreload;
         public PathChain intakeStack1;
-        public PathChain openGate;
+        public PathChain openGateIntake;
         public PathChain scoreWithControl;
         public PathChain intakeStack2;
         public PathChain scoreStack2;
@@ -116,13 +115,13 @@ public class NewRedCloseAuto extends OpMode {
                     .setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(0))
                     .build();
 
-            openGate = follower.pathBuilder()
+            openGateIntake = follower.pathBuilder()
                     .addPath(new BezierCurve(
                             intakePose1,
                             openGateControlPoint,
                             openGatePose
                     ))
-                    .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
+                    .setTangentHeadingInterpolation()
                     .build();
 
             scoreWithControl = follower.pathBuilder()
@@ -131,7 +130,7 @@ public class NewRedCloseAuto extends OpMode {
                             shootControlPoint,
                             scoringPose
                     ))
-                    .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(90))
+                    .setLinearHeadingInterpolation(Math.toRadians(50), Math.toRadians(90))
                     .build();
 
             intakeStack2 = follower.pathBuilder()
@@ -187,7 +186,7 @@ public class NewRedCloseAuto extends OpMode {
             case 2:
                 if (!follower.isBusy() && pathTimer.getElapsedTime() > 1500) {
                     robot.gate.gateClose();
-                    follower.followPath(paths.intakeStack1);
+                    follower.followPath(paths.intakeStack2);
                     pathState = 3;
                 }
                 break;
@@ -195,60 +194,36 @@ public class NewRedCloseAuto extends OpMode {
             case 3:
                 if (!follower.isBusy()) {
                     robot.intake.stopIntake();
-                    follower.followPath(paths.openGate);
+                    follower.followPath(paths.scoreStack2);
                     pathState = 4;
                 }
                 break;
 
             case 4:
                 if (!follower.isBusy()) {
-                    follower.followPath(paths.scoreWithControl);
+                    robot.intake.startIntakeOnly();
+                    robot.gate.gateOpen();
                     pathState = 5;
                 }
                 break;
 
             case 5:
-                if (!follower.isBusy()) {
-                    robot.intake.startIntakeOnly();
-                    robot.gate.gateOpen();
+                if (!follower.isBusy() && pathTimer.getElapsedTime() > 1500) {
+                    robot.gate.gateClose();
+                    follower.followPath(paths.openGateIntake);
                     pathState = 6;
                 }
                 break;
 
             case 6:
-                if (!follower.isBusy()) {
-                    robot.gate.gateClose();
-                    follower.followPath(paths.intakeStack2);
+                if (!follower.isBusy() && pathTimer.getElapsedTime() > 3000) {
+                    follower.followPath(paths.scoreWithControl);
                     pathState = 7;
                 }
                 break;
 
             case 7:
                 if (!follower.isBusy()) {
-                    follower.followPath(paths.scoreStack2);
-                    pathState = 8;
-                }
-                break;
-
-            case 8:
-                if (!follower.isBusy()) {
-                    robot.intake.startIntakeOnly();
-                    robot.gate.gateOpen();
-                    pathState = 9;
-                }
-                break;
-
-            case 9:
-                if (!follower.isBusy() && pathTimer.getElapsedTime() > 1500) {
-                    robot.gate.gateClose();
-                    follower.followPath(paths.intakeStack3);
-                    pathState = 10;
-                }
-                break;
-
-            case 10:
-                if (!follower.isBusy()) {
-                    follower.followPath(paths.scoreStack3);
                     robot.intake.startIntakeOnly();
                     robot.gate.gateOpen();
                     pathState = -1;
