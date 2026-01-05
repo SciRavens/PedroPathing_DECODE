@@ -75,7 +75,7 @@ public class RobotTeleop extends OpMode {
             currentAlliance = "RED";
         }
 //        turretTracker = new TurretTracker(robot);
-        vision = new Vision(hardwareMap, robot);
+        vision = new Vision(hardwareMap, robot, telemetry);
         telemetry.addData("Saved Position X: ", SavePosition.getSavedPosition().getX());
         telemetry.addData("Saved Position Y: ", SavePosition.getSavedPosition().getY());
         telemetry.addData("Saved Position Heading (deg): ", Math.toDegrees(SavePosition.getSavedPosition().getHeading()));

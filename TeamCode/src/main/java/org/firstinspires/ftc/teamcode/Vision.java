@@ -11,6 +11,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
 import java.util.List;
@@ -21,6 +22,7 @@ public class Vision {
     private Limelight3A limelight;
     private Turret turret;
     private long lastLoopTime = 0;
+    private Telemetry telemetry;
 
     private double lastError = 0.0;
     private double integralSum = 0.0;
@@ -32,12 +34,12 @@ public class Vision {
     private double lastTurretPower = 0.0;
     private static final double INTEGRAL_LIMIT = 0.3; // Prevent integral windup
     private static final double TURRET_MANUAL_POWER = 0.45;
-    private static final double TURRET_KP = 0.045;  // Proportional - reduced for less aggression
-    private static final double TURRET_KI = 0.002;  // Integral - for steady-state accuracy
-    private static final double TURRET_KD = 0.015;  // Derivative - dampens oscillation
+    private static final double TURRET_KP = 0;  //0.045  Proportional - reduced for less aggression
+    private static final double TURRET_KI = 0;  //0.002 Integral - for steady-state accuracy
+    private static final double TURRET_KD = 0;  //0.015 Derivative - dampens oscillation
     private static final double TURRET_DEADZONE = 0.3; // Tighter alignment threshold
     private static final double TURRET_MAX_POWER = 0.7; // Increased max for fast response
-    private static final double TURRET_MIN_POWER = 0.05; // Minimum power to overcome friction
+    private static final double TURRET_MIN_POWER = 0.15; // Minimum power to overcome friction
 
     // Velocity limiting - prevents servo from quitting on fast turns
     private static final double TURRET_MAX_ACCELERATION = 1.5; // Max power change per loop
@@ -45,13 +47,14 @@ public class Vision {
     // Low-pass filter for smoothing
     private static final double FILTER_ALPHA = 0.7; // 0=all history, 1=no filtering
 
-    public Vision (HardwareMap hardwareMap, Robot robot) {
+    public Vision (HardwareMap hardwareMap, Robot robot, Telemetry telemetry) {
         limelight = hardwareMap.get(Limelight3A.class, "limelight");
         limelight.pipelineSwitch(Robot.current_pipeline_id);
         limelight.start();
         lastLoopTime = System.nanoTime();
         this.turret = robot.turret;
         this.robot = robot;
+        this.telemetry = telemetry;
     }
 //    public double getDistance() {
 //        LLResult result = limelight.getLatestResult();
@@ -159,11 +162,11 @@ public class Vision {
             lastTurretPower = turretPower;
             lastTx = tx;
 
-//            telemetry.addData("Turret Mode", "AUTO (Tag 24)");
-//            telemetry.addData("Raw Error", "%.2f°", tx);
-//            telemetry.addData("Filtered Error", "%.2f°", filteredTx);
-//            telemetry.addData("P | I | D", "%.3f | %.3f | %.3f", pTerm, iTerm, dTerm);
-//            telemetry.addData("Turret Power", "%.3f", turretPower);
+            telemetry.addData("Turret Mode", "AUTO (Tag 24)");
+            telemetry.addData("Raw Error", "%.2f°", tx);
+            telemetry.addData("Filtered Error", "%.2f°", filteredTx);
+            telemetry.addData("P | I | D", "%.3f | %.3f | %.3f", pTerm, iTerm, dTerm);
+            telemetry.addData("Turret Power", "%.3f", turretPower);
         } else {
         // Reset PID when target lost
         integralSum = 0;

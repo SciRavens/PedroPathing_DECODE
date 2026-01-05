@@ -1,11 +1,12 @@
 package org.firstinspires.ftc.teamcode;
 import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.hardware.CRServo;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 public class Turret {
-    public CRServo turretCR;
-    private static final double TURRET_POWER = 0.45;
+    public DcMotorEx turretMotor;
+    private static final double TURRET_POWER = 0.3;
 
     private static final double TURRET_STOP = 0.0;
 
@@ -33,24 +34,24 @@ public class Turret {
     private double lastTx = 0.0;
 
     public Turret (HardwareMap hardwareMap) {
-        turretCR = hardwareMap.get(CRServo.class, "turretServo");
-        turretCR.setPower(0.0); // start stopped
+        turretMotor = hardwareMap.get(DcMotorEx.class, "turretMotor");
+        turretMotor.setPower(0.0); // start stopped
     }
 
     public void goLeft() {
-        turretCR.setPower(-TURRET_POWER); // rotate left
+        turretMotor.setPower(TURRET_POWER); // rotate left
     }
 
     public void goRight() {
-        turretCR.setPower(TURRET_POWER); // rotate right
+        turretMotor.setPower(-TURRET_POWER); // rotate right
     }
 
     public void stopTurret() {
-        turretCR.setPower(TURRET_STOP); // stop turret
+        turretMotor.setPower(TURRET_STOP); // stop turret
     }
 
     public void setTurretPower(double power) {
-        turretCR.setPower(power);
+        turretMotor.setPower(power);
     }
 
     public double calculatePower(double currentTx, boolean isTargetVisible, Pose currentRobotPose, double dt) {
