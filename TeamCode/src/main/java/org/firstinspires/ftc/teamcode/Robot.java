@@ -23,6 +23,7 @@ public class Robot {
     public Intake intake;
     public Shooter shooter;
     public Turret turret;
+    public Gate gate;
 
     public HardwareMap hardwareMap;
     public Telemetry telemetry;
