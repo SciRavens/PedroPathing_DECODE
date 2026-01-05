@@ -23,6 +23,7 @@ public class Robot {
     public Intake intake;
     public Shooter shooter;
     public Turret turret;
+    public Gate gate;
 
     public HardwareMap hardwareMap;
     public Telemetry telemetry;
@@ -31,6 +32,7 @@ public class Robot {
         intake = new Intake(hardwareMap);
         shooter = new Shooter(hardwareMap, telemetry);
         turret = new Turret(hardwareMap);
+        gate = new Gate(hardwareMap, telemetry);
 
         this.telemetry = telemetry;
     }
