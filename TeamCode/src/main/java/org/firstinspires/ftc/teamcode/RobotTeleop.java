@@ -99,6 +99,8 @@ public class RobotTeleop extends OpMode {
         return gamepad2.left_trigger > 0.1;
     }
 
+    private boolean is_ClosingGate() { return gamepad2.left_bumper; }
+
     private boolean is_HumanPlayer() {
         return gamepad1.a;
     }
@@ -182,7 +184,7 @@ public class RobotTeleop extends OpMode {
             telemetry.addData("Gate Input", "Opening");
         }
 
-        if (is_OpeningGate() && !gate.gateClosed && gateTimer.getElapsedTime() > 300) {
+        if (is_ClosingGate() && !gate.gateClosed && gateTimer.getElapsedTime() > 300) {
             gate.gateClose();
             gateTimer.resetTimer();
             telemetry.addData("Gate Input", "Closing");
