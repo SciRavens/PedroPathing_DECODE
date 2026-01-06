@@ -45,8 +45,8 @@ public class Constants {
             .yVelocity(58.81567959522638);
 
     public static PinpointConstants localizerConstants = new PinpointConstants()
-            .forwardPodY(4.25)
-            .strafePodX(3)
+            .forwardPodY(-4.25)
+            .strafePodX(-3)
             .distanceUnit(DistanceUnit.INCH)
             .hardwareMapName("pinpoint")
             .encoderResolution(
@@ -54,6 +54,7 @@ public class Constants {
             )
             .forwardEncoderDirection(GoBildaPinpointDriver.EncoderDirection.FORWARD)
             .strafeEncoderDirection(GoBildaPinpointDriver.EncoderDirection.FORWARD);
+
 
     public static PathConstraints pathConstraints = new PathConstraints(
             0.995,
