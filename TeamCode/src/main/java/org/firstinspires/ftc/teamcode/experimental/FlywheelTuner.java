@@ -30,7 +30,7 @@ public class FlywheelTuner extends OpMode {
     @Override
     public void init() {
         robot = new Robot(hardwareMap, telemetry);
-        shooterMotor = hardwareMap.get(DcMotorEx.class, "shooterMotor");
+        shooterMotor = hardwareMap.get(DcMotorEx.class, "shooterMotorFront");
         shooterMotor.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
         shooterMotor.setDirection(DcMotorEx.Direction.FORWARD);
         shooterMotor.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);

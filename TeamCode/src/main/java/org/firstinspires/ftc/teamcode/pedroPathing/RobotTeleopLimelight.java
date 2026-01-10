@@ -73,7 +73,7 @@ public class RobotTeleopLimelight extends OpMode {
         transferMotor.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
         transferMotor.setDirection(DcMotorSimple.Direction.FORWARD);
 
-        shooterMotor = hardwareMap.get(DcMotorEx.class, "shooterMotor");
+        shooterMotor = hardwareMap.get(DcMotorEx.class, "shooterMotorFront");
         shooterMotor.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
         shooterMotor.setDirection(DcMotorSimple.Direction.FORWARD);
 

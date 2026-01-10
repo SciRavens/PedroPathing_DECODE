@@ -24,7 +24,7 @@ public class Shooter {
     private Telemetry telemetry;
 
     public Shooter(HardwareMap hardwareMap, Telemetry telemetry) {
-        shooterMotor = hardwareMap.get(DcMotorEx.class, "shooterMotor");
+        shooterMotor = hardwareMap.get(DcMotorEx.class, "shooterMotorFront");
         shooterMotor.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
         shooterMotor.setDirection(DcMotorSimple.Direction.FORWARD);
         shooterMotor.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);

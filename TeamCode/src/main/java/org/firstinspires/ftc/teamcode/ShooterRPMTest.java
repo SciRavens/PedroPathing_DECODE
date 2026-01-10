@@ -24,7 +24,7 @@ public class ShooterRPMTest extends OpMode {
     @Override
     public void init() {
         robot = new Robot(hardwareMap, telemetry);
-        shooterMotor = hardwareMap.get(DcMotorEx.class, "shooterMotor");
+        shooterMotor = hardwareMap.get(DcMotorEx.class, "shooterMotorFront");
         shooterMotor.resetDeviceConfigurationForOpMode();
         shooterMotor.setDirection(DcMotorSimple.Direction.FORWARD);
         shooterMotor.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
