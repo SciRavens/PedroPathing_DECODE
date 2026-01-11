@@ -12,7 +12,7 @@ public class Gate {
 
     public Gate(HardwareMap hardwareMap, Telemetry telemetry) {
         gateServo = hardwareMap.get(Servo.class, "gateServo");
-        gateClose();
+//        gateClose();
         gateClosed = true;
     }
 

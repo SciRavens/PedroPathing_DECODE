@@ -22,9 +22,9 @@ public class TwoWheelShooterRPMTest extends OpMode {
         robot = new Robot(hardwareMap, telemetry);
         shooterMotorFront = hardwareMap.get(DcMotorEx.class, "shooterMotorFront");
         shooterMotorBack = hardwareMap.get(DcMotorEx.class, "shooterMotorBack");
-        shooterMotorFront.setDirection(DcMotorSimple.Direction.FORWARD);
+        shooterMotorFront.setDirection(DcMotorSimple.Direction.REVERSE);
         shooterMotorFront.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
-        shooterMotorBack.setDirection(DcMotorSimple.Direction.FORWARD);
+        shooterMotorBack.setDirection(DcMotorSimple.Direction.REVERSE);
         shooterMotorBack.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
         buttontimer = new Timer();
         buttontimer.resetTimer();
