@@ -12,8 +12,13 @@ import com.qualcomm.robotcore.hardware.Servo;
 @TeleOp(name = "Shooter RPM Test", group = "Examples")
 public class ShooterRPMTest extends OpMode {
     public int currentRPM = 500;
+    public double hoodPosition = 0.0;
+    public Servo hoodservo;
 
     public DcMotorEx shooterMotor;
+
+    public DcMotorEx shooterMotor2;
+
     public Servo shooterLight;
 
     public Robot robot;
@@ -25,15 +30,20 @@ public class ShooterRPMTest extends OpMode {
     public void init() {
         robot = new Robot(hardwareMap, telemetry);
         shooterMotor = hardwareMap.get(DcMotorEx.class, "shooterMotorFront");
+        shooterMotor2 = hardwareMap.get(DcMotorEx.class, "shooterMotorBack");
         shooterMotor.resetDeviceConfigurationForOpMode();
         shooterMotor.setDirection(DcMotorSimple.Direction.FORWARD);
         shooterMotor.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
-        shooterMotor.setVelocityPIDFCoefficients(
-                350 ,   // P
-                0,       // I
-                0,       // D
-                20   // F
-        );
+        shooterMotor2.setDirection(DcMotorSimple.Direction.REVERSE);
+        shooterMotor2.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+//        shooterMotor.setVelocityPIDFCoefficients(
+//                350.0 ,   // P
+//                0,       // I
+//                0,       // D
+//                20.0   // F
+//        );
+        hoodservo = hardwareMap.get(Servo.class, "shooterHoodServo");
+        hoodservo.setPosition(0.0);
         //shooterMotor.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
         buttontimer = new Timer();
         buttontimer.resetTimer();
@@ -49,10 +59,12 @@ public class ShooterRPMTest extends OpMode {
         if (gamepad2.dpad_up && buttontimer.getElapsedTime() > 500) {
             currentRPM += 25;
             shooterMotor.setVelocity(currentRPM);
+            shooterMotor2.setVelocity(currentRPM);
             buttontimer.resetTimer();
         } else if (gamepad2.dpad_down && buttontimer.getElapsedTime() > 500) {
             currentRPM -= 25;
             shooterMotor.setVelocity(currentRPM);
+            shooterMotor2.setVelocity(currentRPM);
             buttontimer.resetTimer();
         }
 
@@ -61,6 +73,7 @@ public class ShooterRPMTest extends OpMode {
             currentRPM = robot.shooter.shooterCloseRPM;
         } else if (gamepad2.a) {
             shooterMotor.setVelocity(0);
+            shooterMotor2.setVelocity(0);
         } else if (gamepad2.y) {
             shooterMotor.setVelocity(robot.shooter.shooterMidRPM);
             currentRPM = robot.shooter.shooterMidRPM;
@@ -81,11 +94,23 @@ public class ShooterRPMTest extends OpMode {
         } else {
             robot.intake.stopIntake();
         }
+        if (gamepad2.right_bumper && buttontimer.getElapsedTime() > 500){
+            hoodPosition += 0.01;
+            hoodservo.setPosition(hoodPosition);
+            buttontimer.resetTimer();
+        }
+        if (gamepad2.left_bumper && buttontimer.getElapsedTime() > 500){
+            hoodPosition -= 0.01;
+            hoodservo.setPosition(hoodPosition);
+            buttontimer.resetTimer();
+        }
 
         robot.shooter.shooterLightUpdate();
         telemetry.addData("Target RPM", currentRPM);
         telemetry.addData("Current Velocity", shooterMotor.getVelocity());
         telemetry.addData("Motor Direction: ", shooterMotor.getDirection());
+        telemetry.addData("Target Hood position: ", hoodPosition);
+        telemetry.addData("Current Hood position: ", hoodservo.getPosition());
         telemetry.update();
     }
 }
