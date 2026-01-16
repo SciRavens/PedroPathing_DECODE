@@ -19,71 +19,72 @@ public class Shooter {
 
     private int currentRPM = 0;
 
-    public DcMotorEx shooterMotor;
+    public DcMotorEx shooterMotorFront;
+    public DcMotorEx shooterMotorBack;
     public Servo shooterLight;
     private Telemetry telemetry;
 
     public Shooter(HardwareMap hardwareMap, Telemetry telemetry) {
-        shooterMotor = hardwareMap.get(DcMotorEx.class, "shooterMotorFront");
-        shooterMotor.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
-        shooterMotor.setDirection(DcMotorSimple.Direction.FORWARD);
-        shooterMotor.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
+        shooterMotorFront = hardwareMap.get(DcMotorEx.class, "shooterMotorFront");
+        shooterMotorFront.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+        shooterMotorFront.setDirection(DcMotorSimple.Direction.FORWARD);
+        shooterMotorBack = hardwareMap.get(DcMotorEx.class, "shooterMotorBack");
+        shooterMotorBack.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+        shooterMotorBack.setDirection(DcMotorSimple.Direction.REVERSE);
         shooterLight = hardwareMap.get(Servo.class, "shooterLight");
         this.telemetry = telemetry;
 
     }
 
+    public void setRPM(int rpm) {
+        shooterMotorFront.setVelocity(rpm); // converting RPM to ticks per second
+        shooterMotorBack.setVelocity(rpm); // converting RPM to ticks per second
+        currentRPM = rpm;
+    }
     public void startCloseShoot() {
-        currentRPM = shooterCloseRPM;
-        shooterMotor.setVelocity(shooterCloseRPM); // converting RPM to ticks per second
+        setRPM(shooterCloseRPM);
     }
 
     public void startAutoCloseShoot() {
-        currentRPM = autoClose;
-        shooterMotor.setVelocity(autoClose); // converting RPM to ticks per second
+        setRPM(autoClose);
     }
 
     public void startAutoMidShoot() {
-        currentRPM = autonMidRPM;
-        shooterMotor.setVelocity(autonMidRPM); // converting RPM to ticks per second
+        setRPM(autonMidRPM);
     }
 
     public void startAutonFarShoot() {
-        currentRPM = autonShooterFarRPM;
-        shooterMotor.setVelocity(autonShooterFarRPM);
+        setRPM(autonShooterFarRPM);
     }
 
     public void startFarShoot() {
-        currentRPM = shooterFarRPM;
-        shooterMotor.setVelocity(shooterFarRPM); // converting RPM to ticks per second
+        setRPM(shooterFarRPM);
     }
 
     public void startMidShoot() {
-        currentRPM = shooterMidRPM;
-        shooterMotor.setVelocity(shooterMidRPM); // converting RPM to ticks per second
+        setRPM(shooterMidRPM);
     }
 
     public void startHumanIntake() {
-        currentRPM = shooterHumanRPM;
-        shooterMotor.setVelocity(shooterHumanRPM); // converting RPM to ticks per second
+        setRPM(shooterHumanRPM);
     }
 
     public double getCurrentRPM() {
-       return shooterMotor.getVelocity();
+       return shooterMotorFront.getVelocity();
     }
 
     public void startTargetShooterSpeed(int newRPM) {
         telemetry.addData("Start Shoot Called", "Yes");
         if (currentRPM != newRPM) {
 //            if (newRPM >= 1325)  {
-//                shooterMotor.setVelocityPIDFCoefficients(
+//                shooterMotorFront.setVelocityPIDFCoefficients(
 //                        350.0 ,   // P
 //                        0,       // I
 //                        0,       // D
 //                        20.0   // F
 //                );
 //            } else {
-//                shooterMotor.setVelocityPIDFCoefficients(
+//                shooterMotorFront.setVelocityPIDFCoefficients(
 //                        150 ,   // P
 //                        0,       // I
 //                        0,       // D
@@ -91,43 +92,29 @@ public class Shooter {
 //                );
 //            }
 
-            shooterMotor.setVelocity(newRPM);
-            currentRPM = newRPM;
+            setRPM(newRPM);
         }
         telemetry.addData("New Velocity: ", newRPM);
         telemetry.addData("Current Velocity: ", currentRPM);
     }
 
     public void stopShoot() {
-//        shooterMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE); // converting RPM to ticks per second
-        currentRPM = shooterOffRPM;
-        shooterMotor.setVelocity(shooterOffRPM); // converting RPM to ticks per second
+//        shooterMotorFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE); // converting RPM to ticks per second
+        setRPM(shooterOffRPM);
         shooterLight.setPosition(0);
     }
 
     public boolean reachedSpeed() {
-        return Math.abs(shooterMotor.getVelocity() - currentRPM) <= 40;
+        return Math.abs(getCurrentRPM() - currentRPM) <= 40;
     }
     public boolean reachMidSpeed () {
-        if (shooterMotor.getVelocity() >= shooterMidRPM) {
-            return true;
-        } else {
-            return false;
-        }
+        return reachedSpeed();
     }
     public boolean reachAutoMidSpeed () {
-        if (shooterMotor.getVelocity() >= autonMidRPM) {
-            return true;
-        } else {
-            return false;
-        }
+        return reachedSpeed();
     }
     public boolean reachCloseSpeed () {
-        if (shooterMotor.getVelocity() >= shooterCloseRPM) {
-            return true;
-        } else {
-            return false;
-        }
+        return reachedSpeed();
     }
 
     public void shooterLightUpdate() {
@@ -141,13 +128,11 @@ public class Shooter {
         }
     }
 
-
-
     public void startReverseShoot() {
-        shooterMotor.setVelocity(-shooterCloseRPM);
+        setRPM(-shooterCloseRPM);
     }
 
     public void stopFlyWheel() {
-        shooterMotor.setVelocity(0);
+        stopShoot();
     }
 }
