@@ -34,12 +34,12 @@ public class Vision {
     private double lastTurretPower = 0.0;
     private static final double INTEGRAL_LIMIT = 0.3; // Prevent integral windup
     private static final double TURRET_MANUAL_POWER = 0.45;
-    private static final double TURRET_KP = -0.05;  //0.045  Proportional - reduced for less aggression
+    private static final double TURRET_KP = -0.03;  //0.045  Proportional - reduced for less aggression
     private static final double TURRET_KI = 0;  //0.002 Integral - for steady-state accuracy
     private static final double TURRET_KD = 0;  //0.015 Derivative - dampens oscillation
     private static final double TURRET_DEADZONE = 0.3; // Tighter alignment threshold
     private static final double TURRET_MAX_POWER = 0.7; // Increased max for fast response
-    private static final double TURRET_MIN_POWER = 0.15; // Minimum power to overcome friction
+    private static final double TURRET_MIN_POWER = 0.3; // Minimum power to overcome friction
 
     // Velocity limiting - prevents servo from quitting on fast turns
     private static final double TURRET_MAX_ACCELERATION = 1.5; // Max power change per loop

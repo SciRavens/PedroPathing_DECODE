@@ -50,6 +50,7 @@ public class NewRedCloseAuto extends OpMode {
 
     @Override
     public void init() {
+        robot = new Robot(hardwareMap, telemetry);
         panelsTelemetry = PanelsTelemetry.INSTANCE.getTelemetry();
 
         follower = Constants.createFollower(hardwareMap);

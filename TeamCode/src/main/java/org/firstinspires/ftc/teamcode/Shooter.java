@@ -24,11 +24,11 @@ public class Shooter {
     private Telemetry telemetry;
 
     public Shooter(HardwareMap hardwareMap, Telemetry telemetry) {
-//        shooterMotor = hardwareMap.get(DcMotorEx.class, "shooterMotorFront");
-//        shooterMotor.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
-//        shooterMotor.setDirection(DcMotorSimple.Direction.FORWARD);
-//        shooterMotor.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
-//        shooterLight = hardwareMap.get(Servo.class, "shooterLight");
+        shooterMotor = hardwareMap.get(DcMotorEx.class, "shooterMotorFront");
+        shooterMotor.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+        shooterMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+        shooterMotor.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
+        shooterLight = hardwareMap.get(Servo.class, "shooterLight");
         this.telemetry = telemetry;
 
     }
@@ -75,7 +75,7 @@ public class Shooter {
     public void startTargetShooterSpeed(int newRPM) {
         telemetry.addData("Start Shoot Called", "Yes");
         if (currentRPM != newRPM) {
-            if (newRPM >= 1325)  {
+//            if (newRPM >= 1325)  {
 //                shooterMotor.setVelocityPIDFCoefficients(
 //                        350.0 ,   // P
 //                        0,       // I
@@ -85,11 +85,11 @@ public class Shooter {
 //            } else {
 //                shooterMotor.setVelocityPIDFCoefficients(
 //                        150 ,   // P
-//                        0,       //
+//                        0,       // I
 //                        0,       // D
 //                        21.3   // F
 //                );
-            }
+//            }
 
             shooterMotor.setVelocity(newRPM);
             currentRPM = newRPM;
