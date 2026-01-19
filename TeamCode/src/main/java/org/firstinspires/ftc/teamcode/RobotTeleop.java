@@ -32,7 +32,6 @@ public class RobotTeleop extends OpMode {
 
 
     private Vision vision;
-    private TurretTracker turretTracker;
     private static final double DEAD_ZONE = 0.1;
     private static final double TURRET_DEADZONE = 0.3; // Tighter alignment threshold
 
@@ -75,7 +74,7 @@ public class RobotTeleop extends OpMode {
             currentAlliance = "RED";
         }
 //        turretTracker = new TurretTracker(robot);
-        vision = new Vision(hardwareMap, robot, telemetry);
+        vision = new Vision(hardwareMap, robot, follower, telemetry);
         telemetry.addData("Saved Position X: ", SavePosition.getSavedPosition().getX());
         telemetry.addData("Saved Position Y: ", SavePosition.getSavedPosition().getY());
         telemetry.addData("Saved Position Heading (deg): ", Math.toDegrees(SavePosition.getSavedPosition().getHeading()));
@@ -191,15 +190,15 @@ public class RobotTeleop extends OpMode {
         }
 
 
-
-        // Turret control (fixed: check gamepad2 on both dpad sides)
-        if (gamepad2.dpad_right && !gamepad2.dpad_left) {
-            robot.turret.goRight(); // rotate right
-        } else if (gamepad2.dpad_left && !gamepad2.dpad_right) {
-            robot.turret.goLeft(); // rotate left
-        } else {
-            robot.turret.stopTurret();
-        }
+//
+//        // Turret control (fixed: check gamepad2 on both dpad sides)
+//        if (gamepad2.dpad_right && !gamepad2.dpad_left) {
+//            robot.turret.goRight(); // rotate right
+//        } else if (gamepad2.dpad_left && !gamepad2.dpad_right) {
+//            robot.turret.goLeft(); // rotate left
+//        } else {
+//            robot.turret.stopTurret();
+//        }
 
         SavePosition.saveCurrentPosition(currentPose);
         robot.shooter.shooterLightUpdate();

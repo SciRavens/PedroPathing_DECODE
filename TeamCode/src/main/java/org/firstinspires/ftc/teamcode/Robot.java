@@ -29,11 +29,10 @@ public class Robot {
     public Telemetry telemetry;
     public Robot (HardwareMap hardwareMap, Telemetry telemetry) {
         this.hardwareMap = hardwareMap;
-        intake = new Intake(hardwareMap);
-        shooter = new Shooter(hardwareMap, telemetry);
-        turret = new Turret(hardwareMap);
-        gate = new Gate(hardwareMap, telemetry);
-
         this.telemetry = telemetry;
+        intake = new Intake(hardwareMap, telemetry);
+        shooter = new Shooter(hardwareMap, telemetry);
+        turret = new Turret(hardwareMap, telemetry);
+        gate = new Gate(hardwareMap, telemetry);
     }
 }
