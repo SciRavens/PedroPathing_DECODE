@@ -10,6 +10,9 @@ import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.PathChain;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+
+import org.firstinspires.ftc.teamcode.SavePosition;
+import org.firstinspires.ftc.teamcode.Vision;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.Robot;
 import com.pedropathing.util.Timer;
@@ -63,8 +66,13 @@ public class NewRedCloseAuto extends OpMode {
 
 //        pathState = 0;
 
-        panelsTelemetry.debug("Status", "Initialized");
-        panelsTelemetry.update(telemetry);
+        vision = new Vision(hardwareMap, robot, follower, telemetry);
+        telemetry.addData("Saved Position X: ", SavePosition.getSavedPosition().getX());
+        telemetry.addData("Saved Position Y: ", SavePosition.getSavedPosition().getY());
+        telemetry.addData("Saved Position Heading (deg): ", Math.toDegrees(SavePosition.getSavedPosition().getHeading()));
+        telemetry.addData("Current Alliance: ", currentAlliance);
+        telemetry.addLine("RobotTeleop Initialized (CRServo turret)");
+        telemetry.update();
     }
     @Override
     public void start() {
@@ -78,6 +86,7 @@ public class NewRedCloseAuto extends OpMode {
     @Override
     public void loop() {
         follower.update();
+
         pathState = autonomousPathUpdate();
 
         panelsTelemetry.debug("Path State", pathState);

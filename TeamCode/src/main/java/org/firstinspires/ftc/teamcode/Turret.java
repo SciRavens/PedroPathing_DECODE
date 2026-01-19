@@ -39,7 +39,7 @@ public class Turret {
 
         // 2. Direction: Standard FTC convention is Positive = Counter-Clockwise (Left)
         // If your turret moves Right when given positive power, change to REVERSE.
-        turretMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+        turretMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
         // 3. Reset Encoder: Assume the starting position is "0 Degrees" (Center)
         // NOTE: The robot MUST be physically centered before initializing!

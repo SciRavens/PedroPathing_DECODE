@@ -18,15 +18,15 @@ public class Vision {
 
     // --- TUNING VALUES ---
     // Start with these. If it oscillates, lower KP. If it's sluggish, increase KP.
-    private static final double TURRET_KP = 0.0; //0.045;
-    private static final double TURRET_KD = 0.0; // 0.0035;
+    private static final double TURRET_KP = 0.045; //0.045;
+    private static final double TURRET_KD = 0.0035; // 0.0035;
 
     // Minimum power to overcome friction (Kickstart)
-    private static final double TURRET_K_STATIC = 0.0;// 0.15;
+    private static final double TURRET_K_STATIC = 0;// 0.15;
 
     // Chassis Feedforward: Counters robot rotation.
     // Set to 0.0 initially. Increase to ~0.01 - 0.05 to make turret stay still when robot spins.
-    private static final double TURRET_HEADING_FF = 0.0004;
+    private static final double TURRET_HEADING_FF = 0;
 
     // --- CENTERING CONSTANTS ---
     private static final double CENTER_KP = 0.035;
@@ -35,7 +35,7 @@ public class Vision {
     // --- SAFETY LIMITS ---
     private static final double MAX_LEFT_LIMIT = 180.0;
     private static final double MAX_RIGHT_LIMIT = -180.0;
-    private static final double TURRET_MAX_POWER = 1.0;
+    private static final double TURRET_MAX_POWER = 0.3;
     private static final double TURRET_DEADZONE = 0.5;
 
     // State Variables
@@ -106,10 +106,10 @@ public class Vision {
                             }
                         }
                         // Fallback to any tag if specific ID not found
-                        if (!tagFound) {
-                            currentError = fiducials.get(0).getTargetXDegrees();
-                            tagFound = true;
-                        }
+//                        if (!tagFound) {
+//                            currentError = fiducials.get(0).getTargetXDegrees();
+//                            tagFound = true;
+//                        }
                     }
 
                     if (tagFound) {
@@ -168,7 +168,7 @@ public class Vision {
         }
 
         turret.setTurretPower(outputPower);
-
+        telemetry.addData("Vision/Err", "%.2f", lastError);
         telemetry.addData("Vision/State", isCentering ? "CENTERING" : "TRACKING");
         telemetry.addData("Vision/Power", "%.2f", outputPower);
         telemetry.addData("Vision/Angle", "%.1f", currentTurretAngle);
