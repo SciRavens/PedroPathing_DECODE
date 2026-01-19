@@ -23,10 +23,12 @@ public class NewRedCloseAuto extends OpMode {
 
     private TelemetryManager panelsTelemetry;
     private Timer pathTimer, opmodeTimer;
+    private Vision vision;
     private Robot robot;
     public Follower follower;
     private int pathState;
     private Paths paths;
+    private String currentAlliance = "RED";
 
     // ---------------- POSES ----------------
 
