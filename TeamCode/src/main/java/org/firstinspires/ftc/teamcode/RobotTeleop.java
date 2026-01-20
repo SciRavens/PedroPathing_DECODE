@@ -45,6 +45,7 @@ public class RobotTeleop extends OpMode {
     private String currentAlliance = "RED";
 
     private boolean currentlyShooting = false;
+    private boolean smartShooting = false;
 
 
     @Override
@@ -111,6 +112,7 @@ public class RobotTeleop extends OpMode {
     private boolean is_DistanceShot() {
         return gamepad2.b;
     }
+    private boolean is_SmartShooting() {return gamepad2.y;}
 
     private boolean is_ReverseIntaking() {return gamepad2.right_bumper;}
 
@@ -155,11 +157,34 @@ public class RobotTeleop extends OpMode {
         if (is_DistanceShot()) {
             flywheelOn = true;
         }
+        if (is_SmartShooting() && !smartShooting) {
+            smartShooting = true;
+            rapidTimer.resetTimer();
+        }
         if (is_FlywheelOff()) {
             flywheelOn = false;
+            smartShooting = false;
         }
 
-        if (flywheelOn) {
+        if (smartShooting) {
+
+            int targetRPM = getTargetShooterRPM(getDistanceFromGoal());
+            robot.shooter.startTargetShooterSpeed(targetRPM);
+
+            if (robot.shooter.reachedSpeed()) {
+                gate.gateOpen();
+                robot.intake.startIntakeOnly();
+
+                if (rapidTimer.getElapsedTime() >= 2000) {
+                    robot.intake.stopIntake();
+                    gate.gateClose();
+                    robot.shooter.setPassiveSpeed();
+                    smartShooting = false;
+                }
+            }
+
+        } else if (flywheelOn) {
+
             int targetRPM = getTargetShooterRPM(getDistanceFromGoal());
             robot.shooter.startTargetShooterSpeed(targetRPM);
 
@@ -168,25 +193,27 @@ public class RobotTeleop extends OpMode {
         }
 
 
-        if (is_Intaking()) {
-            robot.intake.startIntakeOnly();
-        }  else if (is_ReverseIntaking()) {
-            robot.intake.startReverseIntake();
-        } else {
-            robot.intake.stopIntake();
+        if (!smartShooting) {
+            if (is_Intaking()) {
+                robot.intake.startIntakeOnly();
+            } else if (is_ReverseIntaking()) {
+                robot.intake.startReverseIntake();
+            } else {
+                robot.intake.stopIntake();
+            }
         }
 
 
-        if (is_OpeningGate() && gate.gateClosed && gateTimer.getElapsedTime() > 300) {
-            gate.gateOpen();
-            gateTimer.resetTimer();
-            telemetry.addData("Gate Input", "Opening");
-        }
+        if (!smartShooting) {
+            if (is_OpeningGate() && gate.gateClosed && gateTimer.getElapsedTime() > 300) {
+                gate.gateOpen();
+                gateTimer.resetTimer();
+            }
 
-        if (is_ClosingGate() && !gate.gateClosed && gateTimer.getElapsedTime() > 300) {
-            gate.gateClose();
-            gateTimer.resetTimer();
-            telemetry.addData("Gate Input", "Closing");
+            if (is_ClosingGate() && !gate.gateClosed && gateTimer.getElapsedTime() > 300) {
+                gate.gateClose();
+                gateTimer.resetTimer();
+            }
         }
 
 
