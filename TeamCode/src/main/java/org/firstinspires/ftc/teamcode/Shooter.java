@@ -16,7 +16,6 @@ public class Shooter {
     public final int shooterHumanRPM = -1200;
     public final int shooterOffRPM = 0;
     public final int autoClose = 800;
-    public int passiveSpeed = 500;
 
     private int currentRPM = 0;
 
@@ -42,8 +41,8 @@ public class Shooter {
         shooterMotorBack.setVelocity(rpm); // converting RPM to ticks per second
         currentRPM = rpm;
     }
-    public void setPassiveSpeed() {
-        setRPM(passiveSpeed);
+    public void startCloseShoot() {
+        setRPM(shooterCloseRPM);
     }
 
     public void startAutoCloseShoot() {

@@ -24,8 +24,8 @@ public class Vision {
     // 1. PHYSICAL CONSTANTS (YOU MUST MEASURE THESE!)
     // =========================================================
     // Units: Inches and Degrees
-    private static final double CAMERA_HEIGHT_INCHES = 13.5;      // Height of Limelight lens from floor
-    private static final double TARGET_HEIGHT_INCHES = 29.0;      // Height of AprilTag center from floor
+    private static final double CAMERA_HEIGHT_INCHES = 10.0;      // Height of Limelight lens from floor
+    private static final double TARGET_HEIGHT_INCHES = 28.0;      // Height of AprilTag center from floor
     private static final double CAMERA_MOUNT_ANGLE_DEG = 10.0;    // Angle of camera up from horizontal
 
     // =========================================================
