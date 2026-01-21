@@ -15,7 +15,7 @@ public class Shooter {
     public final int shooterMidRPM = 1215;
     public final int shooterHumanRPM = -1200;
     public final int shooterOffRPM = 0;
-    public final int autoClose = 800;
+    public final int autoClose = 1050;
 
     private int currentRPM = 0;
 
