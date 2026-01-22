@@ -17,9 +17,9 @@ import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.Robot;
 import com.pedropathing.util.Timer;
 
-@Autonomous(name = "New Red Close Auto", group = "Autonomous")
+@Autonomous(name = "New Blue Close Auto", group = "Autonomous")
 @Configurable
-public class NewRedCloseAuto extends OpMode {
+public class NewBlueCloseAuto extends OpMode {
 
     private TelemetryManager panelsTelemetry;
     private Timer pathTimer, opmodeTimer;
@@ -28,14 +28,14 @@ public class NewRedCloseAuto extends OpMode {
     public Follower follower;
     private int pathState;
     private Paths paths;
-    private String currentAlliance = "RED";
+    private String currentAlliance = "BLUE";
 
     // ---------------- POSES ----------------
 
-    private final Pose startPose = new Pose(111, 136.5, Math.toRadians(90));
-    private final Pose scoringPose = new Pose(96, 96, Math.toRadians(90));
-    private final Pose scoringPose2 = new Pose(87.5, 83, Math.toRadians(0));
-    private final Pose scoringPose3 = new Pose(86, 73, Math.toRadians(0));
+    private final Pose startPose = new Pose(33.5, 137, Math.toRadians(90));
+    private final Pose scoringPose = new Pose(48, 96, Math.toRadians(90));
+    private final Pose scoringPose2 = new Pose(14.5, 84.5, Math.toRadians(0)); // stopped here
+    private final Pose scoringPose3 = new Pose(61.5, 71, Math.toRadians(0));
 
     private final Pose intakePose1 = new Pose(132, 59.5, Math.toRadians(0));
     private final Pose intakePose1Control1 = new Pose(100, 51);
@@ -120,7 +120,7 @@ public class NewRedCloseAuto extends OpMode {
 
             shootPreload = follower.pathBuilder()
                     .addPath(new BezierLine(startPose, scoringPose))
-                    .setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(90))
+                    .setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(0))
                     .build();
 
             intakeStack1 = follower.pathBuilder()
