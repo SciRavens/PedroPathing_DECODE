@@ -125,7 +125,7 @@ public class RedFar12 extends OpMode {
                 }
                 break;
             case 3:
-                if(!follower.isBusy() || pathTimer.getElapsedTime() > 2000)  {
+                if(!follower.isBusy() || pathTimer.getElapsedTime() > 1000)  {
                     follower.followPath(shootStack1, true);
                     setPathState(4);
                 }
