@@ -27,10 +27,10 @@ public class Shooter {
     public Shooter(HardwareMap hardwareMap, Telemetry telemetry) {
         shooterMotorFront = hardwareMap.get(DcMotorEx.class, "shooterMotorFront");
         shooterMotorFront.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
-        shooterMotorFront.setDirection(DcMotorSimple.Direction.FORWARD);
+        shooterMotorFront.setDirection(DcMotorSimple.Direction.REVERSE);
         shooterMotorBack = hardwareMap.get(DcMotorEx.class, "shooterMotorBack");
         shooterMotorBack.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
-        shooterMotorBack.setDirection(DcMotorSimple.Direction.REVERSE);
+        shooterMotorBack.setDirection(DcMotorSimple.Direction.FORWARD);
         shooterLight = hardwareMap.get(Servo.class, "shooterLight");
         this.telemetry = telemetry;
 

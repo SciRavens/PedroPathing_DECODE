@@ -34,24 +34,24 @@ public class NewBlueCloseAuto extends OpMode {
 
     private final Pose startPose = new Pose(33.5, 137, Math.toRadians(90));
     private final Pose scoringPose = new Pose(48, 96, Math.toRadians(90));
-    private final Pose scoringPose2 = new Pose(14.5, 84.5, Math.toRadians(0)); // stopped here
-    private final Pose scoringPose3 = new Pose(61.5, 71, Math.toRadians(0));
+    private final Pose scoringPose2 = new Pose(60, 84, Math.toRadians(0)); // stopped here
+    private final Pose scoringPose3 = new Pose(63, 71.5, Math.toRadians(180));
 
-    private final Pose intakePose1 = new Pose(132, 59.5, Math.toRadians(0));
-    private final Pose intakePose1Control1 = new Pose(100, 51);
-    private final Pose intakePose1Control2 = new Pose(80, 60);
+    private final Pose intakePose1 = new Pose(13, 59.5, Math.toRadians(180));
+    private final Pose intakePose1Control1 = new Pose(45.5, 47.5);
+    private final Pose intakePose1Control2 = new Pose(56, 64.5);
 
-    private final Pose openGatePose = new Pose(131, 73, Math.toRadians(0));
-    private final Pose openGateControlPoint = new Pose(98, 58);
-    private final Pose shootControlPoint = new Pose(88, 61);
+    private final Pose openGatePose = new Pose(15.5, 71, Math.toRadians(180));
+    private final Pose openGateControlPoint = new Pose(31.5, 65);
+    private final Pose shootControlPoint = new Pose(41.5, 67);
 
-    private final Pose intakePose2 = new Pose(131, 83, Math.toRadians(0));
-    private final Pose intakePose2Control1 = new Pose(95, 75);
-    private final Pose intakePose2Control2 = new Pose(91, 86);
+    private final Pose intakePose2 = new Pose(16, 85.5, Math.toRadians(0));
+    private final Pose intakePose2Control1 = new Pose(52.5, 86);
+    private final Pose intakePose2Control2 = new Pose(35.5, 84);
 
-    private final Pose intakePose3 = new Pose(128, 35.5, Math.toRadians(0));
-    private final Pose intakePose3Control1 = new Pose(103, 32);
-    private final Pose intakePose3Control2 = new Pose(81, 35);
+    private final Pose intakePose3 = new Pose(13, 35, Math.toRadians(0));
+    private final Pose intakePose3Control1 = new Pose(42, 28);
+    private final Pose intakePose3Control2 = new Pose(68, 38);
 
     // ---------------- INIT ----------------
 
@@ -120,7 +120,7 @@ public class NewBlueCloseAuto extends OpMode {
 
             shootPreload = follower.pathBuilder()
                     .addPath(new BezierLine(startPose, scoringPose))
-                    .setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(0))
+                    .setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(90))
                     .build();
 
             intakeStack1 = follower.pathBuilder()
@@ -130,7 +130,7 @@ public class NewBlueCloseAuto extends OpMode {
                             intakePose1Control2,
                             intakePose1
                     ))
-                    .setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(0))
+                    .setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(180))
                     .build();
 
             openGate = follower.pathBuilder()
@@ -139,35 +139,34 @@ public class NewBlueCloseAuto extends OpMode {
                             openGateControlPoint,
                             openGatePose
                     ))
-                    .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
+                    .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
                     .build();
 
             scoreWithControl = follower.pathBuilder()
                     .addPath(new BezierCurve(
                             openGatePose,
                             shootControlPoint,
-                            scoringPose
+                            scoringPose2
                     ))
-                    .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(90))
+                    .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(90))
                     .build();
             scoreStack1 = follower.pathBuilder()
-                    .addPath(new BezierLine(openGatePose, scoringPose3))
-                    .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
+                    .addPath(new BezierCurve(
+                            openGatePose,
+                            shootControlPoint,
+                            scoringPose2
+                    ))
+                    .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
                     .build();
 
             intakeStack2 = follower.pathBuilder()
-                    .addPath(new BezierCurve(
-                            scoringPose,
-                            intakePose2Control1,
-                            intakePose2Control2,
-                            intakePose2
-                    ))
-                    .setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(0))
+                    .addPath(new BezierLine(scoringPose2, intakePose2))
+                    .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
                     .build();
 
             scoreStack2 = follower.pathBuilder()
                     .addPath(new BezierLine(intakePose2, scoringPose2))
-                    .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
+                    .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
                     .build();
 
             intakeStack3 = follower.pathBuilder()
@@ -177,12 +176,12 @@ public class NewBlueCloseAuto extends OpMode {
                             intakePose3Control2,
                             intakePose3
                     ))
-                    .setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(0))
+                    .setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(180))
                     .build();
 
             scoreStack3 = follower.pathBuilder()
                     .addPath(new BezierLine(intakePose3, scoringPose))
-                    .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(90))
+                    .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(90))
                     .build();
         }
     }
