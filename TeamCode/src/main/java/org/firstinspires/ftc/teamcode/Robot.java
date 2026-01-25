@@ -13,7 +13,7 @@ public class Robot {
     public static final int RED_GOAL_X = 144;
     public static final int RED_GOAL_Y = 144;
     public static final int BLUE_GOAL_X = 0;
-    public static final int BLUE_GOAL_Y = -144;
+    public static final int BLUE_GOAL_Y = 144;
     public static int current_goal_x = RED_GOAL_X;
     public static int current_goal_y = RED_GOAL_Y;
 

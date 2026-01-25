@@ -91,6 +91,7 @@ public class NewRedCloseAuto extends OpMode {
     public void loop() {
         vision.update();
         follower.update();
+        SavePosition.saveCurrentPosition(follower.getPose());
 
 
         pathState = autonomousPathUpdate();

@@ -8,8 +8,9 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 public class Shooter {
 
-    public final int shooterCloseRPM = 1060; //950
-    public final int shooterFarRPM = 1435;
+    public final int shooterCloseRPM = 1000; //950
+    public final int shooterFarRPM = 1515;
+    public final int shooterPassiveRPM = 500;
     public final int autonShooterFarRPM = 1370;
     public final int autonMidRPM = 1250;
     public final int shooterMidRPM = 1215;
@@ -64,6 +65,10 @@ public class Shooter {
 
     public void startHumanIntake() {
         setRPM(shooterHumanRPM);
+    }
+
+    public void startPassiveShoot() {
+        setRPM(shooterPassiveRPM);
     }
 
     public double getCurrentRPM() {

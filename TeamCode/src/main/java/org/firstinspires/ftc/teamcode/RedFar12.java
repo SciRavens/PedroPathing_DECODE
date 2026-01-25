@@ -90,6 +90,7 @@ public class RedFar12 extends OpMode {
         vision.update();
         follower.update();
         autonomousPathUpdate();
+        SavePosition.saveCurrentPosition(follower.getPose());
 
         telemetry.addData("path state", pathState);
         telemetry.addData("path timer", pathTimer.getElapsedTime());

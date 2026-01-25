@@ -17,7 +17,7 @@ public class Gate {
     }
 
     public void gateOpen () {
-        gateServo.setPosition(0);
+        gateServo.setPosition(0.025);
         gateClosed = false;
     }
 
