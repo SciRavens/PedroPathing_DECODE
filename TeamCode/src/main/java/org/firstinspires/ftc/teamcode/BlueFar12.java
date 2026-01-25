@@ -16,26 +16,26 @@ import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
 
 
-@Autonomous(name = "Red Far Auto", group = "Competition", preselectTeleOp="RobotTeleop")
-public class RedFar12 extends OpMode {
+@Autonomous(name = "Blue Far Auto", group = "Competition", preselectTeleOp="RobotTeleop")
+public class BlueFar12 extends OpMode {
     private Robot robot;
     private Follower follower;
     private Vision vision;
     private Timer pathTimer, opmodeTimer;
     private int pathState;
-    private Path goToFirstPattern, shootStack1, goToSecondPattern, shootStack2, goToThirdPattern, shootStack3, getFirstPattern, getSecondPattern, getThirdPattern, endingAuton;
-    private final Pose startPose = new Pose(88, 8, Math.toRadians(0));
-    private final Pose firstPattern = new Pose(132, 83.3, Math.toRadians(0));
-    private final Pose controlPoint5 = new Pose(84.44, 104);
-    private final Pose controlPoint6 = new Pose(53, 79.47);
-    private final Pose secondPattern = new Pose(132, 59.3, Math.toRadians(0));
-    private final Pose controlPoint3 = new Pose(84.4, 67.06);
-    private final Pose controlPoint4 = new Pose(52.79, 59.88);
-    private final Pose thirdPattern = new Pose(132, 36, Math.toRadians(0));
-    private final Pose controlPoint1 = new Pose(84.44, 43.06);
-    private final Pose controlPoint2 = new Pose(62.67,34);
-    private final Pose shootingPose = new Pose(88, 12, Math.toRadians(0));
-    private final Pose finalPose = new Pose(120, 10, Math.toRadians(0));
+    private Path goToFirstPattern, shootStack1, goToSecondPattern, shootStack2, goToThirdPattern, shootStack3, endingAuton;
+    private final Pose startPose = new Pose(56, 8, Math.toRadians(0));
+    private final Pose firstPattern = new Pose(9.65, 83.3, Math.toRadians(0));
+    private final Pose controlPoint5 = new Pose(59.56, 104);
+    private final Pose controlPoint6 = new Pose(91, 79.47);
+    private final Pose secondPattern = new Pose(5, 59.3, Math.toRadians(0));
+    private final Pose controlPoint3 = new Pose(59.6, 67.06);
+    private final Pose controlPoint4 = new Pose(91.21, 59.88);
+    private final Pose thirdPattern = new Pose(46, 36, Math.toRadians(0));
+    private final Pose controlPoint1 = new Pose(59.56, 43.06);
+    private final Pose controlPoint2 = new Pose(81.33,34);
+    private final Pose shootingPose = new Pose(46, 8, Math.toRadians(0));
+    private final Pose finalPose = new Pose(24, 10, Math.toRadians(0));
 
 
 
@@ -107,7 +107,7 @@ public class RedFar12 extends OpMode {
                 setPathState(1);
                 break;
             case 1:
-                if (robot.shooter.reachedSpeed()) {
+                if (robot.shooter.reachedSpeed() || pathTimer.getElapsedTime() > 3000) {
                     robot.gate.gateOpen();
                     robot.intake.startIntakeOnly();
                     setPathState(2);
@@ -116,85 +116,77 @@ public class RedFar12 extends OpMode {
             case 2:
                 if (pathTimer.getElapsedTime() > 1500){ //decrease if necessary
                     robot.gate.gateClose();
+                    robot.intake.stopIntake();
                     follower.followPath(goToThirdPattern, true);
                     setPathState(3);
                 }
                 break;
             case 3:
-                if(!follower.isBusy())  {
-                    robot.intake.stopIntake();
+                if(!follower.isBusy() || pathTimer.getElapsedTime() > 2000)  {
                     follower.followPath(shootStack1, true);
                     setPathState(4);
                 }
                 break;
             case 4:
-                if(!follower.isBusy()) {
+                if(!follower.isBusy() || pathTimer.getElapsedTime() > 1000) {
                     robot.gate.gateOpen();
                     setPathState(5);
                 }
                 break;
             case 5:
-                if (robot.shooter.reachedSpeed()) {
+                if (robot.shooter.reachedSpeed() || pathTimer.getElapsedTime() > 3000) {
                     robot.intake.startIntakeOnly();
                     setPathState(6);
                 }
                 break;
             case 6:
-                if (pathTimer.getElapsedTime() > 2500){
+                if (pathTimer.getElapsedTime() > 1500){
                     robot.gate.gateClose();
+                    robot.intake.stopIntake();
                     follower.followPath(goToSecondPattern, true);
                     setPathState(7);
                 }
                 break;
             case 7:
-                if(!follower.isBusy() && pathTimer.getElapsedTime() > 1000)  {
-                    robot.intake.stopIntake();
+                if(!follower.isBusy() || pathTimer.getElapsedTime() > 2500)  {
                     follower.followPath(shootStack2, true);
                     setPathState(8);
                 }
                 break;
             case 8:
-                if(!follower.isBusy()) {
+                if(!follower.isBusy() || pathTimer.getElapsedTime() > 3000) {
                     robot.gate.gateOpen();
                     setPathState(9);
                 }
             case 9:
-                if (robot.shooter.reachedSpeed() && pathTimer.getElapsedTime() > 2000) {
+                if (robot.shooter.reachedSpeed()|| pathTimer.getElapsedTime() > 3000) {
                     robot.intake.startIntakeOnly();
                     setPathState(10);
                 }
                 break;
             case 10:
-                if (pathTimer.getElapsedTime() > 3000){
+                if (pathTimer.getElapsedTime() > 1500){
                     robot.gate.gateClose();
+                    robot.intake.stopIntake();
                     follower.followPath(goToFirstPattern, true);
                     setPathState(11);
                 }
                 break;
             case 11:
-                if(!follower.isBusy())  {
-                    robot.intake.stopIntake();
+                if(!follower.isBusy() || pathTimer.getElapsedTime() > 3000)  {
                     follower.followPath(shootStack3, true);
                     setPathState(12);
                 }
                 break;
             case 12:
-                if(!follower.isBusy()) {
+                if(!follower.isBusy() || pathTimer.getElapsedTime() > 4000) {
                     robot.gate.gateOpen();
                     setPathState(13);
                 }
                 break;
             case 13:
-                if (robot.shooter.reachedSpeed()) {
+                if (robot.shooter.reachedSpeed() || pathTimer.getElapsedTime() > 3000) {
                     robot.intake.startIntakeOnly();
-                    setPathState(14);
-                }
-                break;
-            case 14:
-                if (pathTimer.getElapsedTime() > 3000) {
-                    robot.intake.stopIntake();
-                    robot.gate.gateClose();
-                    follower.followPath(endingAuton, true);
                     setPathState(-1);
                 }
                 break;
