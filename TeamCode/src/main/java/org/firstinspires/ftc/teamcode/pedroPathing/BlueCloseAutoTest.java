@@ -19,7 +19,7 @@ import com.pedropathing.util.Timer;
 
 @Autonomous(name = "New Blue Close Auto", group = "Autonomous", preselectTeleOp = "RobotTeleop")
 @Configurable
-public class NewBlueCloseAuto extends OpMode {
+public class BlueCloseAutoTest extends OpMode {
 
     private TelemetryManager panelsTelemetry;
     private Timer pathTimer, opmodeTimer;
