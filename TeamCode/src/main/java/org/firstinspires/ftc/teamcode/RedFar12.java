@@ -15,8 +15,7 @@ import com.qualcomm.robotcore.hardware.CRServo;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
 
-
-@Autonomous(name = "Red Far Auto", group = "Competition", preselectTeleOp="RobotTeleop")
+@Autonomous(name = "Red Far Auto", preselectTeleOp="RobotTeleop")
 public class RedFar12 extends OpMode {
     private Robot robot;
     private Follower follower;
@@ -27,13 +26,13 @@ public class RedFar12 extends OpMode {
     private final Pose startPose = new Pose(88, 8, Math.toRadians(0));
     private final Pose firstPattern = new Pose(132, 83.3, Math.toRadians(0));
     private final Pose controlPoint5 = new Pose(84.44, 104);
-    private final Pose controlPoint6 = new Pose(53, 79.47);
+    private final Pose controlPoint6 = new Pose(136, 79.47);
     private final Pose secondPattern = new Pose(132, 59.3, Math.toRadians(0));
     private final Pose controlPoint3 = new Pose(84.4, 67.06);
-    private final Pose controlPoint4 = new Pose(52.79, 59.88);
+    private final Pose controlPoint4 = new Pose(136, 59.88);
     private final Pose thirdPattern = new Pose(132, 36, Math.toRadians(0));
     private final Pose controlPoint1 = new Pose(84.44, 43.06);
-    private final Pose controlPoint2 = new Pose(62.67,34);
+    private final Pose controlPoint2 = new Pose(136,34);
     private final Pose shootingPose = new Pose(88, 12, Math.toRadians(0));
     private final Pose finalPose = new Pose(120, 10, Math.toRadians(0));
 

@@ -11,11 +11,11 @@ public class Shooter {
     public final int shooterCloseRPM = 1060; //950
     public final int shooterFarRPM = 1435;
     public final int autonShooterFarRPM = 1370;
-    public final int autonMidRPM = 1050;
+    public final int autonMidRPM = 1250;
     public final int shooterMidRPM = 1215;
     public final int shooterHumanRPM = -1200;
     public final int shooterOffRPM = 0;
-    public final int autoClose = 1050;
+    public final int autoClose = 1025;
 
     private int currentRPM = 0;
 

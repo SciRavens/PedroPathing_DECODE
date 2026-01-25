@@ -37,7 +37,7 @@ public class NewRedCloseAuto extends OpMode {
     private final Pose scoringPose2 = new Pose(87.5, 83, Math.toRadians(0));
     private final Pose scoringPose3 = new Pose(86, 73, Math.toRadians(0));
 
-    private final Pose intakePose1 = new Pose(132, 59.5, Math.toRadians(0));
+    private final Pose intakePose1 = new Pose(135, 59.5, Math.toRadians(0));
     private final Pose intakePose1Control1 = new Pose(100, 51);
     private final Pose intakePose1Control2 = new Pose(80, 60);
 
@@ -81,7 +81,7 @@ public class NewRedCloseAuto extends OpMode {
     @Override
     public void start() {
         opmodeTimer.resetTimer();
-        follower.setMaxPower(0.75);
+        follower.setMaxPower(1.0);
         pathState = 0;
     }
 
@@ -159,10 +159,10 @@ public class NewRedCloseAuto extends OpMode {
                     .addPath(new BezierCurve(
                             scoringPose,
                             intakePose2Control1,
-                            intakePose2Control2,
+//                            intakePose2Control2,
                             intakePose2
                     ))
-                    .setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(0))
+                    .setTangentHeadingInterpolation()
                     .build();
 
             scoreStack2 = follower.pathBuilder()
@@ -215,6 +215,7 @@ public class NewRedCloseAuto extends OpMode {
 
             case 3:
                 if (!follower.isBusy()) {
+                    robot.shooter.startAutoMidShoot();
                     robot.intake.stopIntake();
                     follower.followPath(paths.openGate);
                     setPathState(4);
@@ -241,7 +242,7 @@ public class NewRedCloseAuto extends OpMode {
                     robot.gate.gateClose();
 //                    robot.intake.stopIntake();
                     follower.followPath(paths.intakeStack2);
-                    follower.setMaxPower(0.75);
+                    follower.setMaxPower(1.0);
                     setPathState(7);
                 }
                 break;
@@ -254,7 +255,7 @@ public class NewRedCloseAuto extends OpMode {
                 break;
 
             case 8:
-                if (!follower.isBusy() || pathTimer.getElapsedTime() > 1500) {
+                if (!follower.isBusy() && pathTimer.getElapsedTime() > 4000) {
                     robot.intake.startIntakeOnly();
                     robot.gate.gateOpen();
                     setPathState(9);
@@ -263,8 +264,9 @@ public class NewRedCloseAuto extends OpMode {
 
             case 9:
                 if (!follower.isBusy() || pathTimer.getElapsedTime() > 5000) {
-                    follower.setMaxPower(0.75);
+                    follower.setMaxPower(1.0);
                     robot.gate.gateClose();
+                    robot.shooter.startAutoCloseShoot();
 //                    robot.intake.stopIntake();
                     follower.followPath(paths.intakeStack3);
                     setPathState(10);
@@ -274,6 +276,7 @@ public class NewRedCloseAuto extends OpMode {
             case 10:
                 if (!follower.isBusy() || pathTimer.getElapsedTime() > 5000) {
                     robot.gate.gateClose();
+                    follower.setMaxPower(0.75);
                     follower.followPath(paths.scoreStack3);
                     setPathState(11);
                 }
