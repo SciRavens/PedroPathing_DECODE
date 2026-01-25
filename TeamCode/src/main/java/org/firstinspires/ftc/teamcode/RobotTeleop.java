@@ -119,15 +119,10 @@ public class RobotTeleop extends OpMode {
     private boolean is_ShootingMiddle() {return gamepad2.triangle;}
     private boolean is_ShootingFar() {return gamepad2.square;}
 
-    private boolean is_SmartShooting() {return gamepad2.dpad_up;}
-    private boolean is_FlywheelOff() {
-        return gamepad2.a;
-    }
 
-//    private boolean is_DistanceShot() {
-//        return gamepad2.b;
-//    }
-//    private boolean is_SmartShooting() {return gamepad2.y;}
+    private boolean is_FlywheelOff() {return gamepad2.a;}
+    private boolean is_DistanceShot() {return gamepad2.b;}
+    private boolean is_SmartShooting() {return gamepad2.y;}
 
     private boolean is_ReverseIntaking() {return gamepad2.right_bumper;}
 
@@ -170,24 +165,23 @@ public class RobotTeleop extends OpMode {
             vision.update();
         }
 
-//        if (is_DistanceShot()) {
-//            flywheelOn = true;
-//        }
-//        if (is_SmartShooting() && !smartShooting) {
-//            smartShooting = true;
-//            rapidTimer.resetTimer();
-//        }
+        if (is_DistanceShot()) {
+            flywheelOn = true;
+        }
+        if (is_SmartShooting() && !smartShooting) {
+            smartShooting = true;
+            rapidTimer.resetTimer();
+        }
         if (is_FlywheelOff()) {
-            robot.shooter.startPassiveShoot();
             flywheelOn = false;
             smartShooting = false;
-        } else if (is_ShootingClose()) {
-            robot.shooter.startCloseShoot();
-        } else if (is_ShootingMiddle()) {
-            robot.shooter.startMidRedShoot();
-        } else if (is_ShootingFar()) {
-            robot.shooter.startFarShoot();
-        } else if (smartShooting) {
+        }
+
+        if (smartShooting) {
+
+            int targetRPM = getTargetShooterRPM(getDistanceFromGoal());
+            robot.shooter.startTargetShooterSpeed(targetRPM);
+
             if (robot.shooter.reachedSpeed()) {
                 gate.gateOpen();
                 robot.intake.startIntakeOnly();
@@ -195,10 +189,18 @@ public class RobotTeleop extends OpMode {
                 if (rapidTimer.getElapsedTime() >= 2000) {
                     robot.intake.stopIntake();
                     gate.gateClose();
-                    robot.shooter.stopShoot();
+                    robot.shooter.startPassiveShoot();
                     smartShooting = false;
                 }
             }
+
+        } else if (flywheelOn) {
+
+            int targetRPM = getTargetShooterRPM(getDistanceFromGoal());
+            robot.shooter.startTargetShooterSpeed(targetRPM);
+
+        } else {
+            robot.shooter.stopShoot();
         }
 
 
@@ -227,20 +229,20 @@ public class RobotTeleop extends OpMode {
         }
 
 
-//
-//        // Turret control (fixed: check gamepad2 on both dpad sides)
-//        if (gamepad2.dpad_right && !gamepad2.dpad_left) {
-//            robot.turret.goRight(); // rotate right
-//        } else if (gamepad2.dpad_left && !gamepad2.dpad_right) {
-//            robot.turret.goLeft(); // rotate left
-//        } else {
-//            robot.turret.stopTurret();
-//        }
+
+        // Turret control (fixed: check gamepad2 on both dpad sides)
+        if (gamepad2.dpad_right && !gamepad2.dpad_left) {
+            robot.turret.setTurretPower(-0.01); // rotate right
+        } else if (gamepad2.dpad_left && !gamepad2.dpad_right) {
+            robot.turret.setTurretPower(0.01); // rotate left
+        } else {
+            robot.turret.setTurretPower(0);
+        }
 
         SavePosition.saveCurrentPosition(currentPose);
         robot.shooter.shooterLightUpdate();
         telemetry.addData("Current Alliance: ", currentAlliance);
-        //telemetry.addData("Target RPM: ", getTargetShooterRPM(getDistanceFromGoal()));
+        telemetry.addData("Target RPM: ", getTargetShooterRPM(getDistanceFromGoal()));
         telemetry.addData("Current RPM: ", robot.shooter.getCurrentRPM());
         telemetry.addData("Distance From Goal: ", getDistanceFromGoal());
         telemetry.addData("Drive X", xInput);
