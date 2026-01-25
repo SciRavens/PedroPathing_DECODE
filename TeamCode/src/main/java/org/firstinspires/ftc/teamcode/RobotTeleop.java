@@ -121,10 +121,10 @@ public class RobotTeleop extends OpMode {
 
     public int getTargetShooterRPM(double distance) {
         // y=-0.0000915882x^{4}+0.0393786x^{3}-6.18693x^{2}+426.45244x-9804.42961
-        double rpm = -0.0000915882 * Math.pow(distance, 4)
-                + 0.0393786 * Math.pow(distance, 3)
-                - 6.18693 * Math.pow(distance, 2)
-                + 426.45244 * distance - 9804.42961;
+        double rpm = -0.00000689201 * Math.pow(distance, 4)
+                + 0.00288448 * Math.pow(distance, 3)
+                - 0.422368 * Math.pow(distance, 2)
+                + 29.95317 * distance - 292.88591;
         return (int) rpm;
     }
 

@@ -8,21 +8,28 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.pedropathing.follower.Follower;
+
+import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
 @TeleOp(name = "Shooter RPM Test", group = "Examples")
 public class ShooterRPMTest extends OpMode {
     public int currentRPM = 500;
+    public Robot robot;
+    private Vision vision;
     public double hoodPosition = 0.0;
 //    public Servo hoodservo;
-
-    public Robot robot;
     private Timer buttontimer;
+    private Follower follower;
 
 
 
     @Override
     public void init() {
+        follower = Constants.createFollower(hardwareMap);
         robot = new Robot(hardwareMap, telemetry);
+        vision = new Vision(hardwareMap, robot, follower, telemetry);
+
 //        hoodservo = hardwareMap.get(Servo.class, "shooterHoodServo");
 //        hoodservo.setPosition(0.0);
         //shooterMotor.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
@@ -37,6 +44,7 @@ public class ShooterRPMTest extends OpMode {
 
     @Override
     public void loop() {
+
         if (gamepad2.dpad_up && buttontimer.getElapsedTime() > 500) {
             currentRPM += 25;
             robot.shooter.setRPM(currentRPM);
@@ -80,10 +88,12 @@ public class ShooterRPMTest extends OpMode {
         robot.shooter.shooterLightUpdate();
         telemetry.addData("Target RPM: ", currentRPM);
         telemetry.addData("Current Velocity Front: ", robot.shooter.shooterMotorFront.getVelocity());
-        telemetry.addData("Current Velocity Back : ", robot.shooter.shooterMotorBack.getVelocity());
+//        telemetry.addData("Current Velocity Back : ", robot.shooter.shooterMotorBack.getVelocity());
 //        telemetry.addData("Target Hood position: ", hoodPosition);
 //        telemetry.addData("Current Hood position: ", hoodservo.getPosition());
         telemetry.update();
+//        follower.update();
+        vision.update();
     }
 }
 

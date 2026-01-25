@@ -28,9 +28,6 @@ public class Shooter {
         shooterMotorFront = hardwareMap.get(DcMotorEx.class, "shooterMotorFront");
         shooterMotorFront.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
         shooterMotorFront.setDirection(DcMotorSimple.Direction.REVERSE);
-        shooterMotorBack = hardwareMap.get(DcMotorEx.class, "shooterMotorBack");
-        shooterMotorBack.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
-        shooterMotorBack.setDirection(DcMotorSimple.Direction.FORWARD);
         shooterLight = hardwareMap.get(Servo.class, "shooterLight");
         this.telemetry = telemetry;
 
@@ -38,7 +35,7 @@ public class Shooter {
 
     public void setRPM(int rpm) {
         shooterMotorFront.setVelocity(rpm); // converting RPM to ticks per second
-        shooterMotorBack.setVelocity(rpm); // converting RPM to ticks per second
+//        shooterMotorBack.setVelocity(rpm); // converting RPM to ticks per second
         currentRPM = rpm;
     }
     public void startCloseShoot() {
@@ -76,21 +73,22 @@ public class Shooter {
     public void startTargetShooterSpeed(int newRPM) {
         telemetry.addData("Start Shoot Called", "Yes");
         if (currentRPM != newRPM) {
-//            if (newRPM >= 1325)  {
-//                shooterMotorFront.setVelocityPIDFCoefficients(
-//                        350.0 ,   // P
-//                        0,       // I
-//                        0,       // D
-//                        20.0   // F
-//                );
-//            } else {
-//                shooterMotorFront.setVelocityPIDFCoefficients(
-//                        150 ,   // P
-//                        0,       // I
-//                        0,       // D
-//                        21.3   // F
-//                );
-//            }
+            if (newRPM >= 1325) {
+                shooterMotorFront.setVelocityPIDFCoefficients(
+                        300,   // P
+                        0,       // I
+                        0,       // D
+                        20.3   // F
+                );
+            }
+            else {
+                shooterMotorFront.setVelocityPIDFCoefficients(
+                        450 ,   // P
+                        0,       // I
+                        0,       // D
+                        18.7   // F
+                );
+            }
 
             setRPM(newRPM);
         }

@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.experimental;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 
 import org.firstinspires.ftc.teamcode.Robot;
@@ -15,7 +16,7 @@ public class FlywheelTuner extends OpMode {
     public Robot robot;
 
     double shooterCloseRPM = 975.0;
-    double shooterFarRPM = 1170;
+    double shooterFarRPM = 1525;
     double currTargetVelocity = shooterFarRPM;
     double F = 0.0;
     double P = 0.0;
@@ -32,7 +33,7 @@ public class FlywheelTuner extends OpMode {
         robot = new Robot(hardwareMap, telemetry);
         shooterMotor = hardwareMap.get(DcMotorEx.class, "shooterMotorFront");
         shooterMotor.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
-        shooterMotor.setDirection(DcMotorEx.Direction.FORWARD);
+        shooterMotor.setDirection(DcMotorEx.Direction.REVERSE);
         shooterMotor.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
         shooterMotor.setVelocity(currTargetVelocity);
         PIDFCoefficients pidfCoefficients = new PIDFCoefficients(P, 0.0, 0.0, F);
