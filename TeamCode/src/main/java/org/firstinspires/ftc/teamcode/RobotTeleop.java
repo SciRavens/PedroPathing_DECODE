@@ -46,6 +46,7 @@ public class RobotTeleop extends OpMode {
 
     private boolean currentlyShooting = false;
     private boolean smartShooting = false;
+    private boolean isSmartShootingActive = false;
 
 
     @Override
@@ -54,8 +55,15 @@ public class RobotTeleop extends OpMode {
         timer = new Timer();
         gateTimer = new Timer();
         rapidTimer = new Timer();
+        Pose savedPose = new Pose(startPose.getX(), startPose.getY(), startPose.getHeading());
+        telemetry.addData("Circle:", gamepad1.circle);
+        if (!gamepad1.circle && (SavePosition.getSavedPosition().getX() > 0 && SavePosition.getSavedPosition().getY() > 0)) {
+            savedPose = SavePosition.getSavedPosition().copy();
+            telemetry.addLine("Using Saved Position");
+        }
         follower = Constants.createFollower(hardwareMap);
-        follower.setStartingPose(startPose);
+        follower.setStartingPose(savedPose);
+
         follower.startTeleopDrive();
         robot = new Robot(hardwareMap, telemetry);
         gate = new Gate(hardwareMap, telemetry);
@@ -75,14 +83,6 @@ public class RobotTeleop extends OpMode {
             currentAlliance = "RED";
         }
 
-        if (SavePosition.getSavedPosition().getX() > 0 && SavePosition.getSavedPosition().getY() > 0) {
-            Pose savedPose = SavePosition.getSavedPosition();
-            follower.setStartingPose(savedPose);
-            telemetry.addLine("Using Saved Position");
-        } else if (gamepad1.circle) {
-            follower.setStartingPose(startPose);
-            telemetry.addLine("Not Using Saved Position (72, 72, 90 radians)");
-        }
 
 //        turretTracker = new TurretTracker(robot);
         vision = new Vision(hardwareMap, robot, follower, telemetry);
@@ -122,14 +122,13 @@ public class RobotTeleop extends OpMode {
 
     private boolean is_FlywheelOff() {return gamepad2.a;}
     private boolean is_DistanceShot() {return gamepad2.b;}
-    private boolean is_SmartShooting() {return gamepad2.y;}
+    private boolean is_SmartShooting() {return gamepad2.triangle;}
 
     private boolean is_ReverseIntaking() {return gamepad2.right_bumper;}
 
     public double getDistanceFromGoal() {
         return Math.sqrt(Math.pow(Robot.current_goal_x - currentPose.getX(), 2)
                 + Math.pow(Robot.current_goal_y - currentPose.getY(), 2));
-//        return Math.hypot(72 - currentPose.getX(), 72 - currentPose.getY());
     }
 
     public int getTargetShooterRPM(double distance) {
@@ -137,7 +136,7 @@ public class RobotTeleop extends OpMode {
         double rpm = -0.00000689201 * Math.pow(distance, 4)
                 + 0.00288448 * Math.pow(distance, 3)
                 - 0.422368 * Math.pow(distance, 2)
-                + 29.95317 * distance - 292.88591;
+                + 29.95317 * distance + 292.88591;
         return (int) rpm;
     }
 
@@ -181,16 +180,22 @@ public class RobotTeleop extends OpMode {
 
             int targetRPM = getTargetShooterRPM(getDistanceFromGoal());
             robot.shooter.startTargetShooterSpeed(targetRPM);
+            if (!isSmartShootingActive && robot.shooter.reachedSpeed()) {
+                isSmartShootingActive = true;
+                rapidTimer.resetTimer();
+            }
 
-            if (robot.shooter.reachedSpeed()) {
+            if (isSmartShootingActive) {
                 gate.gateOpen();
                 robot.intake.startIntakeOnly();
+                telemetry.addData("In Smart Shoot and waiting for shooting to complete..", "Yes");
 
                 if (rapidTimer.getElapsedTime() >= 2000) {
                     robot.intake.stopIntake();
                     gate.gateClose();
                     robot.shooter.startPassiveShoot();
                     smartShooting = false;
+                    isSmartShootingActive = false;
                 }
             }
 
@@ -232,11 +237,9 @@ public class RobotTeleop extends OpMode {
 
         // Turret control (fixed: check gamepad2 on both dpad sides)
         if (gamepad2.dpad_right && !gamepad2.dpad_left) {
-            robot.turret.setTurretPower(-0.01); // rotate right
+            robot.turret.setTurretPower(0.5); // rotate right
         } else if (gamepad2.dpad_left && !gamepad2.dpad_right) {
-            robot.turret.setTurretPower(0.01); // rotate left
-        } else {
-            robot.turret.setTurretPower(0);
+            robot.turret.setTurretPower(-0.5); // rotate left
         }
 
         SavePosition.saveCurrentPosition(currentPose);
