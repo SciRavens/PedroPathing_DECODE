@@ -13,10 +13,14 @@ public class Shooter {
     public final int shooterPassiveRPM = 500;
     public final int autonShooterFarRPM = 1370;
     public final int autonMidRPM = 1250;
-    public final int shooterMidRPM = 1215;
+    public final int autonMidRedRPM = 1250;
+    public final int autonMidBlueRPM = 1400;
+    public final int shooterMidRedRPM = 1215;
+    public final int shooterMidBlueRPM = 1400;
     public final int shooterHumanRPM = -1200;
     public final int shooterOffRPM = 0;
-    public final int autoClose = 1025;
+    public final int autoCloseRed = 1025;
+    public final int autoCloseBlue = 1075;
 
     private int currentRPM = 0;
 
@@ -43,12 +47,18 @@ public class Shooter {
         setRPM(shooterCloseRPM);
     }
 
-    public void startAutoCloseShoot() {
-        setRPM(autoClose);
+    public void startAutoCloseRedShoot() {
+        setRPM(autoCloseRed);
+    }
+    public void startAutoCloseBlueShoot() {
+        setRPM(autoCloseBlue);
     }
 
-    public void startAutoMidShoot() {
-        setRPM(autonMidRPM);
+    public void startAutoMidRedShoot() {
+        setRPM(autonMidRedRPM);
+    }
+    public void startAutoMidBlueShoot() {
+        setRPM(autonMidBlueRPM);
     }
 
     public void startAutonFarShoot() {
@@ -59,8 +69,8 @@ public class Shooter {
         setRPM(shooterFarRPM);
     }
 
-    public void startMidShoot() {
-        setRPM(shooterMidRPM);
+    public void startMidRedShoot() {
+        setRPM(shooterMidRedRPM);
     }
 
     public void startHumanIntake() {

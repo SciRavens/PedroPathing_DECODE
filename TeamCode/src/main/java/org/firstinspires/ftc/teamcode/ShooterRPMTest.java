@@ -61,8 +61,8 @@ public class ShooterRPMTest extends OpMode {
         } else if (gamepad2.a) {
             robot.shooter.stopShoot();
         } else if (gamepad2.y) {
-            robot.shooter.setRPM(robot.shooter.shooterMidRPM);
-            currentRPM = robot.shooter.shooterMidRPM;
+            robot.shooter.setRPM(robot.shooter.shooterMidRedRPM);
+            currentRPM = robot.shooter.shooterMidBlueRPM;
 
         } else if (gamepad2.x) {
             robot.shooter.setRPM(robot.shooter.shooterFarRPM);

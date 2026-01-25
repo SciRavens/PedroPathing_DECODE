@@ -17,7 +17,7 @@ import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.Robot;
 import com.pedropathing.util.Timer;
 
-@Autonomous(name = "New Red Close Auto", group = "Autonomous")
+@Autonomous(name = "New Red Close Auto", group = "Autonomous", preselectTeleOp = "RobotTeleop")
 @Configurable
 public class NewRedCloseAuto extends OpMode {
 
@@ -45,7 +45,7 @@ public class NewRedCloseAuto extends OpMode {
     private final Pose openGateControlPoint = new Pose(98, 58);
     private final Pose shootControlPoint = new Pose(88, 61);
 
-    private final Pose intakePose2 = new Pose(131, 83, Math.toRadians(0));
+    private final Pose intakePose2 = new Pose(131, 86, Math.toRadians(0));
     private final Pose intakePose2Control1 = new Pose(95, 75);
     private final Pose intakePose2Control2 = new Pose(91, 86);
 
@@ -160,7 +160,7 @@ public class NewRedCloseAuto extends OpMode {
                     .addPath(new BezierCurve(
                             scoringPose,
                             intakePose2Control1,
-//                            intakePose2Control2,
+                            intakePose2Control2,
                             intakePose2
                     ))
                     .setTangentHeadingInterpolation()
@@ -195,7 +195,7 @@ public class NewRedCloseAuto extends OpMode {
         switch (pathState) {
 
             case 0:
-                robot.shooter.startAutoCloseShoot();
+                robot.shooter.startAutoCloseRedShoot();
                 follower.followPath(paths.shootPreload);
                 robot.gate.gateOpen();
                 setPathState(1);
@@ -216,7 +216,7 @@ public class NewRedCloseAuto extends OpMode {
 
             case 3:
                 if (!follower.isBusy()) {
-                    robot.shooter.startAutoMidShoot();
+                    robot.shooter.startAutoMidRedShoot();
                     robot.intake.stopIntake();
                     follower.followPath(paths.openGate);
                     setPathState(4);
@@ -256,7 +256,7 @@ public class NewRedCloseAuto extends OpMode {
                 break;
 
             case 8:
-                if (!follower.isBusy() && pathTimer.getElapsedTime() > 4000) {
+                if (!follower.isBusy() || (pathTimer.getElapsedTime() > 4000 && robot.shooter.reachedSpeed())) {
                     robot.intake.startIntakeOnly();
                     robot.gate.gateOpen();
                     setPathState(9);
@@ -264,10 +264,10 @@ public class NewRedCloseAuto extends OpMode {
                 break;
 
             case 9:
-                if (!follower.isBusy() || pathTimer.getElapsedTime() > 5000) {
+                if (pathTimer.getElapsedTime() > 3000) {
                     follower.setMaxPower(1.0);
                     robot.gate.gateClose();
-                    robot.shooter.startAutoCloseShoot();
+                    robot.shooter.startAutoCloseRedShoot();
 //                    robot.intake.stopIntake();
                     follower.followPath(paths.intakeStack3);
                     setPathState(10);

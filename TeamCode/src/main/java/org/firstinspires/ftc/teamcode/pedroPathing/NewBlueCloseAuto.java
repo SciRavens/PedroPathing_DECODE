@@ -17,7 +17,7 @@ import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.Robot;
 import com.pedropathing.util.Timer;
 
-@Autonomous(name = "New Blue Close Auto", group = "Autonomous")
+@Autonomous(name = "New Blue Close Auto", group = "Autonomous", preselectTeleOp = "RobotTeleop")
 @Configurable
 public class NewBlueCloseAuto extends OpMode {
 
@@ -37,7 +37,7 @@ public class NewBlueCloseAuto extends OpMode {
     private final Pose scoringPose2 = new Pose(60, 84, Math.toRadians(0)); // stopped here
     private final Pose scoringPose3 = new Pose(63, 71.5, Math.toRadians(180));
 
-    private final Pose intakePose1 = new Pose(13, 59.5, Math.toRadians(180));
+    private final Pose intakePose1 = new Pose(9, 59.5, Math.toRadians(180));
     private final Pose intakePose1Control1 = new Pose(45.5, 47.5);
     private final Pose intakePose1Control2 = new Pose(56, 64.5);
 
@@ -45,11 +45,11 @@ public class NewBlueCloseAuto extends OpMode {
     private final Pose openGateControlPoint = new Pose(31.5, 65);
     private final Pose shootControlPoint = new Pose(41.5, 67);
 
-    private final Pose intakePose2 = new Pose(16, 85.5, Math.toRadians(0));
+    private final Pose intakePose2 = new Pose(13, 87.5, Math.toRadians(0));
     private final Pose intakePose2Control1 = new Pose(52.5, 86);
     private final Pose intakePose2Control2 = new Pose(35.5, 84);
 
-    private final Pose intakePose3 = new Pose(13, 35, Math.toRadians(0));
+    private final Pose intakePose3 = new Pose(9, 35, Math.toRadians(0));
     private final Pose intakePose3Control1 = new Pose(42, 28);
     private final Pose intakePose3Control2 = new Pose(68, 38);
 
@@ -73,15 +73,19 @@ public class NewBlueCloseAuto extends OpMode {
         vision = new Vision(hardwareMap, robot, follower, telemetry);
         telemetry.addData("Saved Position X: ", SavePosition.getSavedPosition().getX());
         telemetry.addData("Saved Position Y: ", SavePosition.getSavedPosition().getY());
+
+
         telemetry.addData("Saved Position Heading (deg): ", Math.toDegrees(SavePosition.getSavedPosition().getHeading()));
         telemetry.addData("Current Alliance: ", currentAlliance);
+        telemetry.addData("Vision/Pipeline1", Robot.current_pipeline_id);
+        telemetry.addData("Vision/TargetTag", Robot.current_tag_id);
         telemetry.addLine("RobotTeleop Initialized (CRServo turret)");
         telemetry.update();
     }
     @Override
     public void start() {
         opmodeTimer.resetTimer();
-        follower.setMaxPower(0.75);
+        follower.setMaxPower(1.0);
         pathState = 0;
     }
 
@@ -194,19 +198,21 @@ public class NewBlueCloseAuto extends OpMode {
         switch (pathState) {
 
             case 0:
-                robot.shooter.startAutoCloseShoot();
+                robot.shooter.startAutoCloseBlueShoot();
                 follower.followPath(paths.shootPreload);
                 robot.gate.gateOpen();
                 setPathState(1);
                 break;
             case 1:
-                if (!follower.isBusy()){
+                if (!follower.isBusy() && robot.shooter.reachedSpeed()){
+                    robot.shooter.startAutoMidBlueShoot();
                     robot.intake.startIntakeOnly();
                     setPathState(2);
                 }
                 break;
             case 2:
                 if (pathTimer.getElapsedTime() > 1500) {
+                    follower.setMaxPower(0.75);
                     robot.gate.gateClose();
                     follower.followPath(paths.intakeStack1);
                     setPathState(3);
@@ -215,6 +221,7 @@ public class NewBlueCloseAuto extends OpMode {
 
             case 3:
                 if (!follower.isBusy()) {
+                    follower.setMaxPower(0.75);
                     robot.intake.stopIntake();
                     follower.followPath(paths.openGate);
                     setPathState(4);
@@ -222,39 +229,41 @@ public class NewBlueCloseAuto extends OpMode {
                 break;
 
             case 4:
-                if (!follower.isBusy()) {
+                if (!follower.isBusy() || pathTimer.getElapsedTime()>1500) {
                     follower.followPath(paths.scoreStack1);
                     setPathState(5);
                 }
                 break;
 
             case 5:
-                if (!follower.isBusy()) {
+                if (!follower.isBusy() && robot.shooter.reachedSpeed()) {
+                    robot.shooter.startAutoCloseBlueShoot();
                     robot.intake.startIntakeOnly();
                     robot.gate.gateOpen();
+                    follower.setMaxPower(0.75);
                     setPathState(6);
                 }
                 break;
 
             case 6:
-                if (pathTimer.getElapsedTime() > 1500) {
+                if (pathTimer.getElapsedTime() > 2500) {
                     robot.gate.gateClose();
 //                    robot.intake.stopIntake();
                     follower.followPath(paths.intakeStack2);
-                    follower.setMaxPower(0.75);
                     setPathState(7);
                 }
                 break;
 
             case 7:
-                if (!follower.isBusy()) {
+                if (!follower.isBusy() || pathTimer.getElapsedTime() > 2000) {
+                    follower.setMaxPower(1.0);
                     follower.followPath(paths.scoreStack2);
                     setPathState(8);
                 }
                 break;
 
             case 8:
-                if (!follower.isBusy() || pathTimer.getElapsedTime() > 1500) {
+                if (!follower.isBusy() || pathTimer.getElapsedTime() > 1500 && robot.shooter.reachedSpeed()) {
                     robot.intake.startIntakeOnly();
                     robot.gate.gateOpen();
                     setPathState(9);
@@ -262,7 +271,7 @@ public class NewBlueCloseAuto extends OpMode {
                 break;
 
             case 9:
-                if (!follower.isBusy() || pathTimer.getElapsedTime() > 5000) {
+                if (pathTimer.getElapsedTime() > 1500) {
                     follower.setMaxPower(0.75);
                     robot.gate.gateClose();
 //                    robot.intake.stopIntake();
@@ -274,6 +283,7 @@ public class NewBlueCloseAuto extends OpMode {
             case 10:
                 if (!follower.isBusy() || pathTimer.getElapsedTime() > 5000) {
                     robot.gate.gateClose();
+                    follower.setMaxPower(1.0);
                     follower.followPath(paths.scoreStack3);
                     setPathState(11);
                 }

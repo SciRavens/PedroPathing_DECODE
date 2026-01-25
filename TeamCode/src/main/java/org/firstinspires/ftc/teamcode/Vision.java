@@ -59,6 +59,8 @@ public class Vision {
     public void toggleCentering() { this.isCentering = !this.isCentering; }
 
     public void update() {
+        telemetry.addData("Vision/Pipeline1", Robot.current_pipeline_id);
+        telemetry.addData("Vision/TargetTag", Robot.current_tag_id);
         // 1. GET CHASSIS VELOCITY (PedroPathing)
         // PedroPathing returns Radians/Sec. We convert to Degrees/Sec.
         double robotAngularVelRad = follower.getAngularVelocity();

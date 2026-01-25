@@ -184,7 +184,7 @@ public class RobotTeleop extends OpMode {
         } else if (is_ShootingClose()) {
             robot.shooter.startCloseShoot();
         } else if (is_ShootingMiddle()) {
-            robot.shooter.startMidShoot();
+            robot.shooter.startMidRedShoot();
         } else if (is_ShootingFar()) {
             robot.shooter.startFarShoot();
         } else if (smartShooting) {
