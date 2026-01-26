@@ -11,7 +11,7 @@ public class Shooter {
     public final int shooterCloseRPM = 1000; //950
     public final int shooterFarRPM = 1515;
     public final int shooterPassiveRPM = 500;
-    public final int autonShooterFarRPM = 1450;
+    public final int autonShooterFarRPM = 1470;
     public final int autonMidRPM = 1250;
     public final int autonMidRedRPM = 1250;
     public final int autonMidBlueRPM = 1400;
@@ -101,7 +101,7 @@ public class Shooter {
                         450 ,   // P
                         0,       // I
                         0,       // D
-                        18.7   // F
+                        18.2   // F
                 );
             }
 
@@ -118,7 +118,7 @@ public class Shooter {
     }
 
     public boolean reachedSpeed() {
-        return Math.abs(getCurrentRPM() - currentRPM) <= 40;
+        return getCurrentRPM() >= currentRPM;
     }
     public boolean reachMidSpeed () {
         return reachedSpeed();

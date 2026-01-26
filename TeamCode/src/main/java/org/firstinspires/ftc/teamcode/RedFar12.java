@@ -24,16 +24,16 @@ public class RedFar12 extends OpMode {
     private int pathState;
     private Path goToFirstPattern, shootStack1, goToSecondPattern, shootStack2, goToThirdPattern, shootStack3, getFirstPattern, getSecondPattern, getThirdPattern, endingAuton;
     private final Pose startPose = new Pose(88, 8, Math.toRadians(0));
-    private final Pose firstPattern = new Pose(134, 83.3, Math.toRadians(0));
+    private final Pose firstPattern = new Pose(135, 86, Math.toRadians(0));
     private final Pose controlPoint5 = new Pose(84.44, 104);
     private final Pose controlPoint6 = new Pose(130, 79.47);
-    private final Pose secondPattern = new Pose(142, 59.3, Math.toRadians(0));
+    private final Pose secondPattern = new Pose(140, 59.3, Math.toRadians(0));
     private final Pose controlPoint3 = new Pose(84.4, 67.06);
     private final Pose controlPoint4 = new Pose(132, 59.88);
-    private final Pose thirdPattern = new Pose(142, 36, Math.toRadians(0));
+    private final Pose thirdPattern = new Pose(140, 36, Math.toRadians(0));
     private final Pose controlPoint1 = new Pose(84.44, 43.06);
     private final Pose controlPoint2 = new Pose(136,34);
-    private final Pose shootingPose = new Pose(88, 12, Math.toRadians(0));
+    private final Pose shootingPose = new Pose(92, 10, Math.toRadians(0));
     private final Pose finalPose = new Pose(120, 10, Math.toRadians(0));
 
 
@@ -97,6 +97,8 @@ public class RedFar12 extends OpMode {
         telemetry.addData("x", follower.getPose().getX());
         telemetry.addData("y", follower.getPose().getY());
         telemetry.addData("heading", follower.getPose().getHeading());
+        telemetry.addData("Gate state", robot.gate.gateStatus());
+        telemetry.addData("Current RPM", robot.shooter.getCurrentRPM());
         telemetry.update();
     }
 
@@ -104,11 +106,11 @@ public class RedFar12 extends OpMode {
         switch (pathState) {
             case 0: // start shooter
                 robot.shooter.startAutonFarShoot();
+                robot.gate.gateOpen();
                 setPathState(1);
                 break;
             case 1:
                 if (robot.shooter.reachedSpeed()) { // open the gate and shoot the preload
-                    robot.gate.gateOpen();
                     robot.intake.startIntakeOnly();
                     setPathState(2);
                 }
@@ -121,15 +123,15 @@ public class RedFar12 extends OpMode {
                 }
                 break;
             case 3:
-                if(!follower.isBusy())  { // after getting first stack, stop intake and go to shoot
+                if(!follower.isBusy() || pathTimer.getElapsedTime() > 3000)  { // after getting first stack, stop intake and go to shoot
                     robot.intake.stopIntake();
                     follower.followPath(shootStack1, true);
+                    robot.gate.gateOpen();
                     setPathState(4);
                 }
                 break;
             case 4:
                 if(!follower.isBusy()) { //open the gate to shoot
-                    robot.gate.gateOpen();
                     setPathState(5);
                 }
                 break;
@@ -147,19 +149,19 @@ public class RedFar12 extends OpMode {
                 }
                 break;
             case 7:
-                if(!follower.isBusy())  { // go to shoot first stack
+                if(!follower.isBusy()|| pathTimer.getElapsedTime() > 3500)  { // go to shoot first stack
                     robot.intake.stopIntake();
                     follower.followPath(shootStack2, true);
+                    robot.gate.gateOpen();
                     setPathState(8);
                 }
                 break;
             case 8:
                 if(!follower.isBusy()) { // open the gate to shoot second stack
-                    robot.gate.gateOpen();
                     setPathState(9);
                 }
             case 9:
-                if (robot.shooter.reachedSpeed()) {// shoot second stack
+                if (robot.shooter.reachedSpeed() && pathTimer.getElapsedTime() > 1000) {// shoot second stack
                     robot.intake.startIntakeOnly();
                     setPathState(10);
                 }
@@ -172,26 +174,26 @@ public class RedFar12 extends OpMode {
                 }
                 break;
             case 11:
-                if(!follower.isBusy())  { // after intaking third stack, go to shoot
+                if(!follower.isBusy() ||  pathTimer.getElapsedTime() > 4000)  { // after intaking third stack, go to shoot
                     robot.intake.stopIntake();
                     follower.followPath(shootStack3, true);
+                    robot.gate.gateOpen();
                     setPathState(12);
                 }
                 break;
             case 12:
                 if(!follower.isBusy()) { // open the gate to shoot
-                    robot.gate.gateOpen();
                     setPathState(13);
                 }
                 break;
             case 13:
-                if (robot.shooter.reachedSpeed()) {// shoot third stack
+                if (robot.shooter.reachedSpeed() && pathTimer.getElapsedTime() > 1000) {// shoot third stack
                     robot.intake.startIntakeOnly();
                     setPathState(14);
                 }
                 break;
             case 14:
-                if (pathTimer.getElapsedTime() > 3000) {// get away from tape to not lose ranking point
+                if (pathTimer.getElapsedTime() > 2000) {// get away from tape to not lose ranking point
                     robot.intake.stopIntake();
                     robot.gate.gateClose();
                     follower.followPath(endingAuton, true);

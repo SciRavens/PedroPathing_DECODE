@@ -98,96 +98,106 @@ public class BlueFar12 extends OpMode {
         telemetry.addData("x", follower.getPose().getX());
         telemetry.addData("y", follower.getPose().getY());
         telemetry.addData("heading", follower.getPose().getHeading());
+        telemetry.addData("Gate state", robot.gate.gateStatus());
+        telemetry.addData("Current RPM", robot.shooter.getCurrentRPM());
         telemetry.update();
     }
 
     public void autonomousPathUpdate() {
         switch (pathState) {
-            case 0:
+            case 0: // start shooter
                 robot.shooter.startAutonFarShoot();
                 setPathState(1);
                 break;
             case 1:
-                if (robot.shooter.reachedSpeed() || pathTimer.getElapsedTime() > 3000) {
+                if (robot.shooter.reachedSpeed()) { // open the gate and shoot the preload
                     robot.gate.gateOpen();
                     robot.intake.startIntakeOnly();
                     setPathState(2);
                 }
                 break;
             case 2:
-                if (pathTimer.getElapsedTime() > 1500){ //decrease if necessary
+                if (pathTimer.getElapsedTime() > 1500){ // after finishing the shoot, close gate and get first stack
                     robot.gate.gateClose();
-                    robot.intake.stopIntake();
                     follower.followPath(goToThirdPattern, true);
                     setPathState(3);
                 }
                 break;
             case 3:
-                if(!follower.isBusy())  {
+                if(!follower.isBusy())  { // after getting first stack, stop intake and go to shoot
+                    robot.intake.stopIntake();
                     follower.followPath(shootStack1, true);
                     setPathState(4);
                 }
                 break;
             case 4:
-                if(!follower.isBusy()) {
+                if(!follower.isBusy()) { //open the gate to shoot
                     robot.gate.gateOpen();
                     setPathState(5);
                 }
                 break;
             case 5:
-                if (robot.shooter.reachedSpeed() || pathTimer.getElapsedTime() > 3000) {
+                if (robot.shooter.reachedSpeed()) { //shoot first stack
                     robot.intake.startIntakeOnly();
                     setPathState(6);
                 }
                 break;
             case 6:
-                if (pathTimer.getElapsedTime() > 1500){
+                if (pathTimer.getElapsedTime() > 2500){ // get second stack
                     robot.gate.gateClose();
-                    robot.intake.stopIntake();
                     follower.followPath(goToSecondPattern, true);
                     setPathState(7);
                 }
                 break;
             case 7:
-                if(!follower.isBusy())  {
+                if(!follower.isBusy())  { // go to shoot first stack
+                    robot.intake.stopIntake();
                     follower.followPath(shootStack2, true);
                     setPathState(8);
                 }
                 break;
             case 8:
-                if(!follower.isBusy()) {
+                if(!follower.isBusy()) { // open the gate to shoot second stack
                     robot.gate.gateOpen();
                     setPathState(9);
                 }
             case 9:
-                if (robot.shooter.reachedSpeed()|| pathTimer.getElapsedTime() > 3000) {
+                if (robot.shooter.reachedSpeed()) {// shoot second stack
                     robot.intake.startIntakeOnly();
                     setPathState(10);
                 }
                 break;
             case 10:
-                if (pathTimer.getElapsedTime() > 1500){
+                if (pathTimer.getElapsedTime() > 3000){ // after shooting second stack, get third stack
                     robot.gate.gateClose();
-                    robot.intake.stopIntake();
                     follower.followPath(goToFirstPattern, true);
                     setPathState(11);
                 }
                 break;
             case 11:
-                if(!follower.isBusy())  {
+                if(!follower.isBusy())  { // after intaking third stack, go to shoot
+                    robot.intake.stopIntake();
                     follower.followPath(shootStack3, true);
                     setPathState(12);
                 }
                 break;
             case 12:
-                if(!follower.isBusy()) {
+                if(!follower.isBusy()) { // open the gate to shoot
                     robot.gate.gateOpen();
                     setPathState(13);
                 }
                 break;
             case 13:
-                if (robot.shooter.reachedSpeed() || pathTimer.getElapsedTime() > 3000) {
+                if (robot.shooter.reachedSpeed()) {// shoot third stack
                     robot.intake.startIntakeOnly();
+                    setPathState(14);
+                }
+                break;
+            case 14:
+                if (pathTimer.getElapsedTime() > 3000) {// get away from tape to not lose ranking point
+                    robot.intake.stopIntake();
+                    robot.gate.gateClose();
+                    follower.followPath(endingAuton, true);
                     setPathState(-1);
                 }
                 break;
