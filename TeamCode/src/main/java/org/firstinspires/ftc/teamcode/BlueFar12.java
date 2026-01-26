@@ -24,18 +24,18 @@ public class BlueFar12 extends OpMode {
     private Timer pathTimer, opmodeTimer;
     private int pathState;
     private Path goToFirstPattern, shootStack1, goToSecondPattern, shootStack2, goToThirdPattern, shootStack3, endingAuton;
-    private final Pose startPose = new Pose(56, 8, Math.toRadians(0));
-    private final Pose firstPattern = new Pose(9.65, 83.3, Math.toRadians(0));
+    private final Pose startPose = new Pose(56, 8, Math.toRadians(180));
+    private final Pose firstPattern = new Pose(9.65, 83.3, Math.toRadians(180));
     private final Pose controlPoint5 = new Pose(59.56, 104);
-    private final Pose controlPoint6 = new Pose(91, 79.47);
-    private final Pose secondPattern = new Pose(5, 59.3, Math.toRadians(0));
+    private final Pose controlPoint6 = new Pose(8, 79.47);
+    private final Pose secondPattern = new Pose(5, 59.3, Math.toRadians(180));
     private final Pose controlPoint3 = new Pose(59.6, 67.06);
-    private final Pose controlPoint4 = new Pose(91.21, 59.88);
-    private final Pose thirdPattern = new Pose(46, 36, Math.toRadians(0));
+    private final Pose controlPoint4 = new Pose(8, 59.88);
+    private final Pose thirdPattern = new Pose(5, 36, Math.toRadians(180));
     private final Pose controlPoint1 = new Pose(59.56, 43.06);
-    private final Pose controlPoint2 = new Pose(81.33,34);
-    private final Pose shootingPose = new Pose(46, 8, Math.toRadians(0));
-    private final Pose finalPose = new Pose(24, 10, Math.toRadians(0));
+    private final Pose controlPoint2 = new Pose(8,34);
+    private final Pose shootingPose = new Pose(46, 8, Math.toRadians(180));
+    private final Pose finalPose = new Pose(24, 10, Math.toRadians(180));
 
 
 
@@ -123,13 +123,13 @@ public class BlueFar12 extends OpMode {
                 }
                 break;
             case 3:
-                if(!follower.isBusy() || pathTimer.getElapsedTime() > 2000)  {
+                if(!follower.isBusy())  {
                     follower.followPath(shootStack1, true);
                     setPathState(4);
                 }
                 break;
             case 4:
-                if(!follower.isBusy() || pathTimer.getElapsedTime() > 1000) {
+                if(!follower.isBusy()) {
                     robot.gate.gateOpen();
                     setPathState(5);
                 }
@@ -149,13 +149,13 @@ public class BlueFar12 extends OpMode {
                 }
                 break;
             case 7:
-                if(!follower.isBusy() || pathTimer.getElapsedTime() > 2500)  {
+                if(!follower.isBusy())  {
                     follower.followPath(shootStack2, true);
                     setPathState(8);
                 }
                 break;
             case 8:
-                if(!follower.isBusy() || pathTimer.getElapsedTime() > 3000) {
+                if(!follower.isBusy()) {
                     robot.gate.gateOpen();
                     setPathState(9);
                 }
@@ -174,13 +174,13 @@ public class BlueFar12 extends OpMode {
                 }
                 break;
             case 11:
-                if(!follower.isBusy() || pathTimer.getElapsedTime() > 3000)  {
+                if(!follower.isBusy())  {
                     follower.followPath(shootStack3, true);
                     setPathState(12);
                 }
                 break;
             case 12:
-                if(!follower.isBusy() || pathTimer.getElapsedTime() > 4000) {
+                if(!follower.isBusy()) {
                     robot.gate.gateOpen();
                     setPathState(13);
                 }
