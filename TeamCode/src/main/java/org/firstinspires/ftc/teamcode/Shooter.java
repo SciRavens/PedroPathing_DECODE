@@ -101,7 +101,7 @@ public class Shooter {
                         450 ,   // P
                         0,       // I
                         0,       // D
-                        18.2   // F
+                        18.7   // F
                 );
             }
 
@@ -118,7 +118,7 @@ public class Shooter {
     }
 
     public boolean reachedSpeed() {
-        return getCurrentRPM() >= currentRPM;
+        return Math.abs(getCurrentRPM() - currentRPM) <= 20;
     }
     public boolean reachMidSpeed () {
         return reachedSpeed();
