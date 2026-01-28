@@ -137,7 +137,7 @@ public class BlueCloseAutoTest extends OpMode {
                             new BezierLine(
                                     new Pose(47.619, 95.448),
 
-                                    new Pose(47.445, 59.441)
+                                    new Pose(47.445, 64.441)
                             )
                     ).setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(180))
 
@@ -145,9 +145,9 @@ public class BlueCloseAutoTest extends OpMode {
 
             intakeStack1 = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(47.445, 59.441),
+                                    new Pose(47.445, 64.441),
 
-                                    new Pose(7.829, 60.077)
+                                    new Pose(8.829, 64.077)
                             )
                     ).setTangentHeadingInterpolation()
 
@@ -155,7 +155,7 @@ public class BlueCloseAutoTest extends OpMode {
 
             openGate = follower.pathBuilder().addPath(
                             new BezierCurve(
-                                    new Pose(7.829, 60.077),
+                                    new Pose(8.829, 64.077),
                                     new Pose(27.737, 67.025),
                                     new Pose(14.836, 69.084)
                             )
@@ -169,7 +169,7 @@ public class BlueCloseAutoTest extends OpMode {
                                     new Pose(48.860, 71.067),
                                     new Pose(48.060, 95.746)
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
+                    ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(90))
 
                     .build();
 
@@ -177,7 +177,7 @@ public class BlueCloseAutoTest extends OpMode {
                             new BezierLine(
                                     new Pose(48.060, 95.746),
 
-                                    new Pose(46.967, 84.197)
+                                    new Pose(46.967, 89.197)
                             )
                     ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
 
@@ -185,9 +185,9 @@ public class BlueCloseAutoTest extends OpMode {
 
             intakeStack2 = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(46.967, 84.197),
+                                    new Pose(46.967, 89.197),
 
-                                    new Pose(15.344, 84.224)
+                                    new Pose(18.344, 89.224)
                             )
                     ).setTangentHeadingInterpolation()
 
@@ -195,11 +195,11 @@ public class BlueCloseAutoTest extends OpMode {
 
             scoreStack2 = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(15.344, 84.224),
+                                    new Pose(18.344, 89.224),
 
                                     new Pose(47.569, 95.452)
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
+                    ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(90))
 
                     .build();
 
@@ -207,7 +207,7 @@ public class BlueCloseAutoTest extends OpMode {
                             new BezierLine(
                                     new Pose(47.569, 95.452),
 
-                                    new Pose(46.204, 35.338)
+                                    new Pose(46.204, 40.338)
                             )
                     ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
 
@@ -215,9 +215,9 @@ public class BlueCloseAutoTest extends OpMode {
 
             intakeStack3 = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(46.204, 35.338),
+                                    new Pose(46.204, 40.338),
 
-                                    new Pose(9.037, 35.890)
+                                    new Pose(13.037, 40.890)
                             )
                     ).setTangentHeadingInterpolation()
 
@@ -225,11 +225,11 @@ public class BlueCloseAutoTest extends OpMode {
 
             scoreStack3 = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(9.037, 35.890),
+                                    new Pose(13.037, 40.890),
 
                                     new Pose(47.177, 96.542)
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
+                    ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(90))
 
                     .build();
         }
@@ -249,17 +249,17 @@ public class BlueCloseAutoTest extends OpMode {
                 break;
             case 1:
                 if (!follower.isBusy() && robot.shooter.reachedSpeed()){
-                    robot.shooter.startAutoMidBlueShoot();
+//                    robot.shooter.startAutoCloseBlueShoot();
                     robot.intake.startIntakeOnly();
                     setPathState(2);
                 }
                 break;
             case 2:
                 if (pathTimer.getElapsedTime() > 1500) {
-                    follower.setMaxPower(0.75);
+                    robot.shooter.startAutoCloseBlueShoot();
+                    follower.setMaxPower(1.0);
                     robot.gate.gateClose();
                     follower.followPath(paths.initialStack1);
-                    follower.followPath(paths.intakeStack1);
                     setPathState(20);
                 }
                 break;
@@ -272,7 +272,7 @@ public class BlueCloseAutoTest extends OpMode {
 
             case 3:
                 if (!follower.isBusy()) {
-                    follower.setMaxPower(0.75);
+                    follower.setMaxPower(1.0);
                     robot.intake.stopIntake();
                     follower.followPath(paths.openGate);
                     setPathState(4);
@@ -288,10 +288,10 @@ public class BlueCloseAutoTest extends OpMode {
 
             case 5:
                 if (!follower.isBusy() && robot.shooter.reachedSpeed()) {
-                    robot.shooter.startAutoCloseBlueShoot();
+//                    robot.shooter.startAutoCloseBlueShoot();
                     robot.intake.startIntakeOnly();
                     robot.gate.gateOpen();
-                    follower.setMaxPower(0.75);
+                    follower.setMaxPower(1.0);
                     setPathState(6);
                 }
                 break;
@@ -330,7 +330,7 @@ public class BlueCloseAutoTest extends OpMode {
 
             case 9:
                 if (pathTimer.getElapsedTime() > 1500) {
-                    follower.setMaxPower(0.75);
+                    follower.setMaxPower(1.0);
                     robot.gate.gateClose();
 //                    robot.intake.stopIntake();
                     follower.followPath(paths.initialStack3);
