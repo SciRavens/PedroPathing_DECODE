@@ -34,7 +34,7 @@ public class RobotTeleop extends OpMode {
     private static final double DEAD_ZONE = 0.1;
     private static final double TURRET_DEADZONE = 0.3; // Tighter alignment threshold
 
-    private final Pose startPose = new Pose(72, 72, Math.toRadians(90));
+    private final Pose startPose = new Pose(60, 12, Math.toRadians(90));
 
     private Pose currentPose = new Pose(0,0,0);
 
@@ -179,7 +179,7 @@ public class RobotTeleop extends OpMode {
             } else {
                 robot.intake.stopFeeding();
             }
-            if (rapidTimerOn && rapidTimer.getElapsedTime() >= 2000) {
+            if (rapidTimerOn && rapidTimer.getElapsedTime() >= 4000) {
                 robot.intake.stopFeeding();
                 robot.shooter.stopShoot();
                 gate.gateClose();

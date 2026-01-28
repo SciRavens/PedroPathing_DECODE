@@ -48,11 +48,13 @@ public class Vision {
     // - Positive value = aim MORE TO THE LEFT of where tag appears
     // - Negative value = aim MORE TO THE RIGHT of where tag appears
     // - Start with 0, then adjust based on where shots land at the far position
-    private static final double AIM_OFFSET_DEGREES = 0.0; // TUNE THIS VALUE
+    // RED
+    //private static final double AIM_OFFSET_DEGREES = -05.0; // TUNE THIS VALUE
+    private static final double AIM_OFFSET_DEGREES = -15.0; // TUNE THIS VALUE
 
     // Distance threshold for applying offset (in FEET)
     // Offset is only applied when tag is farther than this distance
-    private static final double FAR_ZONE_THRESHOLD_FEET = 10.0;
+    private static final double FAR_ZONE_THRESHOLD_FEET = 8.0;
 
     // Optional: Scale the offset based on how far off-center the tag is (viewing angle)
     // When tag is centered (0 degrees), no offset is applied

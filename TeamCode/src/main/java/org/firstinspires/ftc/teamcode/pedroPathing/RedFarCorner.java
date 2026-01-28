@@ -171,7 +171,7 @@ public class RedFarCorner extends OpMode {
                 } else {
                     robot.intake.stopIntake();
                 }
-                if (pathTimer.getElapsedTime() > 3000) {
+                if (pathTimer.getElapsedTime() > 4000) {
                     robot.gate.gateClose();
                     follower.followPath(paths.intakeThirdStack, true);
                     setPathState(2);
@@ -196,7 +196,7 @@ public class RedFarCorner extends OpMode {
                 } else {
                     robot.intake.stopIntake();
                 }
-                if (pathTimer.getElapsedTime() > 3000) {
+                if (pathTimer.getElapsedTime() > 4000) {
                     robot.gate.gateClose();
                     follower.setMaxPower(1);
                     follower.followPath(paths.intakeCornerStack);
@@ -233,7 +233,7 @@ public class RedFarCorner extends OpMode {
                 } else {
                     robot.intake.stopIntake();
                 }
-                if (pathTimer.getElapsedTime() > 3000) {
+                if (pathTimer.getElapsedTime() > 4000) {
                     robot.gate.gateClose();
                     follower.setMaxPower(1);
                     follower.followPath(paths.intakeCornerStack);
