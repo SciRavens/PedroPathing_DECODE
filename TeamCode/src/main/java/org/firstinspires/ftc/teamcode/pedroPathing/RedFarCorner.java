@@ -73,6 +73,7 @@ public class RedFarCorner extends OpMode {
         pathState = autonomousPathUpdate();
 
         panelsTelemetry.debug("Path State", pathState);
+        panelsTelemetry.debug("Timer: ", pathTimer.getElapsedTime());
         panelsTelemetry.debug("X", follower.getPose().getX());
         panelsTelemetry.debug("Y", follower.getPose().getY());
         panelsTelemetry.debug("Heading", follower.getPose().getHeading());
@@ -153,30 +154,36 @@ public class RedFarCorner extends OpMode {
                     .build();
         }
     }
+    private boolean autonShoot(Timer pathTimer, long timeoutMs) {
+        if (robot.gate.isGateClosed()) {
+            robot.shooter.startAutonFarShoot();
+            robot.gate.gateOpen();
+        }
+        if (robot.shooter.reachedSpeed()) {
+            robot.intake.startIntake();
+        } else {
+            robot.intake.stopIntake();
+        }
+        if (pathTimer.getElapsedTime() > timeoutMs) {
+            robot.gate.gateClose();
+            return true;
+        }
+        return false;
+    }
 
     // ---------------- STATE MACHINE ----------------
 
     public int autonomousPathUpdate() {
 
         switch (pathState) {
-
             case 0:
-                robot.shooter.startAutonFarShoot();
-                robot.gate.gateOpen();
-                setPathState(1);
-                break;
-            case 1:
-                if (robot.shooter.reachedSpeed()) {
-                    robot.intake.startIntake();
-                } else {
-                    robot.intake.stopIntake();
-                }
-                if (pathTimer.getElapsedTime() > 4000) {
-                    robot.gate.gateClose();
+                boolean completed = autonShoot(pathTimer, 4000);
+                if (completed) {
                     follower.followPath(paths.intakeThirdStack, true);
                     setPathState(2);
                 }
                 break;
+
             case 2:
                 if(!follower.isBusy() || pathTimer.getElapsedTime() > 2500)  {
                     robot.intake.stopIntake();
@@ -202,6 +209,7 @@ public class RedFarCorner extends OpMode {
                     follower.followPath(paths.intakeCornerStack);
                     setPathState(5);
                 }
+                break;
             case 5:
                 if (!follower.isBusy() || pathTimer.getElapsedTime() > 2000) {
                     follower.followPath(paths.backUpFromIntakingCornerStack);

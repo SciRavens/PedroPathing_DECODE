@@ -38,10 +38,35 @@ public class Shooter {
 
     }
 
-    public void setRPM(int rpm) {
-        shooterMotorFront.setVelocity(rpm); // converting RPM to ticks per second
-        currentRPM = rpm;
+    private int curVelocityCoefficient = 0;
+
+    // PID coefficients: [][P, I, D, F]
+    private static final double[][] VELOCITY_PID_COEFFICIENTS = {
+        // index 0: <= 1325
+        {250, 0, 0, 20.3},
+        // index 1: > 1325
+        {250, 0, 0, 20.3}
+    };
+
+    private int getCoefficientIndex(int rpm) {
+        return (rpm > 1325) ? 1 : 0;
     }
+
+    public void setRPM(int newRPM) {
+        int index = getCoefficientIndex(newRPM);
+        if (index != curVelocityCoefficient) {
+            shooterMotorFront.setVelocityPIDFCoefficients(
+                VELOCITY_PID_COEFFICIENTS[index][0],
+                VELOCITY_PID_COEFFICIENTS[index][1],
+                VELOCITY_PID_COEFFICIENTS[index][2],
+                VELOCITY_PID_COEFFICIENTS[index][3]
+            );
+            curVelocityCoefficient = index;
+        }
+        shooterMotorFront.setVelocity(newRPM); // converting RPM to ticks per second
+        currentRPM = newRPM;
+    }
+
     public void startAutoCloseRedShoot() {
         setRPM(autoCloseRed);
     }
@@ -76,26 +101,18 @@ public class Shooter {
     }
 
     public void startTargetShooterSpeed(int newRPM) {
-        if (currentRPM != newRPM) {
-            if (newRPM >= 1325) {
-                shooterMotorFront.setVelocityPIDFCoefficients(
-                        250,   // P
-                        0,       // I
-                        0,       // D
-                        20.3   // F
-                );
-            }
-            else {
-                shooterMotorFront.setVelocityPIDFCoefficients(
-                        250 ,   // P
-                        0,       // I
-                        0,       // D
-                        20.3   // F
-                );
-            }
-
-            setRPM(newRPM);
-        }
+        setRPM(newRPM);
+    }
+    private int getRpmbyDistance(double distance) {
+        // y=-0.00000689201x^{4}+0.00288448x^{3}-0.422368x^{2}+29.95317x+292.88591
+        double rpm = -0.00000689201 * Math.pow(distance, 4)
+                + 0.00288448 * Math.pow(distance, 3)
+                - 0.422368 * Math.pow(distance, 2)
+                + 29.95317 * distance + 292.88591;
+        return (int)rpm;
+    }
+    public void startShooterbyDistance(double distance) {
+        setRPM(getRpmbyDistance(distance);
     }
 
     public void stopShoot() {
