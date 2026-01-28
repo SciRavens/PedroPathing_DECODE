@@ -7,6 +7,8 @@ import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
+import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
+
 import java.util.List;
 
 public class Vision {
@@ -37,6 +39,26 @@ public class Vision {
     private static final double MAX_RIGHT_LIMIT = -180.0;
     private static final double TURRET_MAX_POWER = 0.3;
     private static final double TURRET_DEADZONE = 0.5;
+
+    // --- AIMING OFFSET COMPENSATION (FAR ZONE ONLY) ---
+    // When viewing the AprilTag at an angle from far away, the goal center may not align with tag center.
+    // This offset compensates for that difference, but ONLY when beyond the distance threshold.
+    //
+    // TUNING:
+    // - Positive value = aim MORE TO THE LEFT of where tag appears
+    // - Negative value = aim MORE TO THE RIGHT of where tag appears
+    // - Start with 0, then adjust based on where shots land at the far position
+    private static final double AIM_OFFSET_DEGREES = 0.0; // TUNE THIS VALUE
+
+    // Distance threshold for applying offset (in FEET)
+    // Offset is only applied when tag is farther than this distance
+    private static final double FAR_ZONE_THRESHOLD_FEET = 10.0;
+
+    // Optional: Scale the offset based on how far off-center the tag is (viewing angle)
+    // When tag is centered (0 degrees), no offset is applied
+    // When tag is at an angle, offset scales proportionally
+    // Set to 0.0 to use fixed offset, or ~0.1-0.3 for angle-proportional offset
+    private static final double AIM_OFFSET_SCALE_FACTOR = 0.0;
 
     // State Variables
     private double lastResultTimestamp = 0;
@@ -92,8 +114,9 @@ public class Vision {
                 if (currentTimestamp != lastResultTimestamp) {
                     hasNewData = true;
 
-                    // 1. EXTRACT ERROR
+                    // 1. EXTRACT ERROR AND DISTANCE
                     double currentError = 0.0;
+                    double distanceFeet = 0.0;
                     boolean tagFound = false;
                     List<LLResultTypes.FiducialResult> fiducials = result.getFiducialResults();
 
@@ -102,6 +125,14 @@ public class Vision {
                             if (fiducial.getFiducialId() == Robot.current_tag_id) {
                                 currentError = fiducial.getTargetXDegrees();
                                 tagFound = true;
+
+                                // Get distance from 3D pose (Z is forward distance in meters)
+                                Pose3D targetPose = fiducial.getTargetPoseCameraSpace();
+                                if (targetPose != null) {
+                                    // Z coordinate is the forward distance from camera to tag
+                                    double distanceMeters = Math.abs(targetPose.getPosition().z);
+                                    distanceFeet = distanceMeters * 3.28084; // Convert meters to feet
+                                }
                                 break;
                             }
                         }
@@ -116,6 +147,30 @@ public class Vision {
                         // 2. CALCULATE DT (Seconds)
                         double dt = (currentTimestamp - lastResultTimestamp) / 1000.0;
                         if (dt <= 0) dt = 0.001;
+
+                        // 2.5 APPLY AIMING OFFSET COMPENSATION (FAR ZONE ONLY)
+                        // Only applies when tag is beyond the distance threshold
+                        double aimOffset = 0.0;
+
+                        if (distanceFeet > FAR_ZONE_THRESHOLD_FEET) {
+                            // In far zone - apply offset compensation
+                            aimOffset = AIM_OFFSET_DEGREES;
+
+                            // Optional: Scale offset based on how far off-center the tag is
+                            // This makes the offset proportional to the viewing angle
+                            if (AIM_OFFSET_SCALE_FACTOR != 0.0) {
+                                // currentError is negative when tag is to the right, positive when left
+                                // This scales the base offset by the viewing angle
+                                aimOffset += currentError * AIM_OFFSET_SCALE_FACTOR;
+                            }
+
+                            // Apply the offset to the error
+                            currentError += aimOffset;
+                        }
+
+                        //telemetry.addData("Vision/Distance(ft)", "%.1f", distanceFeet);
+                        //telemetry.addData("Vision/InFarZone", distanceFeet > FAR_ZONE_THRESHOLD_FEET);
+                        //telemetry.addData("Vision/AimOffset", "%.2f", aimOffset);
 
                         // 3. PID CALCULATIONS
                         double derivative = (currentError - lastError) / dt;

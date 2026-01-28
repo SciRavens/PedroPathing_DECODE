@@ -50,12 +50,7 @@ public class RedFarCorner extends OpMode {
 
         paths = new Paths(follower);
 
-//        pathState = 0;
-
         vision = new Vision(hardwareMap, robot, follower, telemetry);
-        telemetry.addData("Saved Position X: ", SavePosition.getSavedPosition().getX());
-        telemetry.addData("Saved Position Y: ", SavePosition.getSavedPosition().getY());
-        telemetry.addData("Saved Position Heading (deg): ", Math.toDegrees(SavePosition.getSavedPosition().getHeading()));
         telemetry.addData("Current Alliance: ", currentAlliance);
         telemetry.update();
     }
@@ -167,116 +162,122 @@ public class RedFarCorner extends OpMode {
 
             case 0:
                 robot.shooter.startAutonFarShoot();
+                robot.gate.gateOpen();
                 setPathState(1);
                 break;
             case 1:
                 if (robot.shooter.reachedSpeed()) {
-                    robot.gate.gateOpen();
                     robot.intake.startIntake();
+                } else {
+                    robot.intake.stopIntake();
+                }
+                if (pathTimer.getElapsedTime() > 3000) {
+                    robot.gate.gateClose();
+                    follower.followPath(paths.intakeThirdStack, true);
                     setPathState(2);
                 }
                 break;
             case 2:
-                if (pathTimer.getElapsedTime() > 1000){
-                    robot.gate.gateClose();
-                    follower.followPath(paths.intakeThirdStack, true);
+                if(!follower.isBusy() || pathTimer.getElapsedTime() > 2500)  {
+                    robot.intake.stopIntake();
+                    follower.followPath(paths.shootThirdStack, true);
                     setPathState(3);
                 }
                 break;
             case 3:
-                if(!follower.isBusy() || pathTimer.getElapsedTime() > 2500)  {
-                    robot.intake.stopIntake();
-                    follower.followPath(paths.shootThirdStack, true);
+                if (!follower.isBusy() || pathTimer.getElapsedTime() > 2250) {
+                    robot.gate.gateOpen();
                     setPathState(4);
                 }
                 break;
             case 4:
-                if (!follower.isBusy() || pathTimer.getElapsedTime() > 2250) {
-                    robot.gate.gateOpen();
+                if (robot.shooter.reachedSpeed()) {
                     robot.intake.startIntake();
+                } else {
+                    robot.intake.stopIntake();
+                }
+                if (pathTimer.getElapsedTime() > 3000) {
+                    robot.gate.gateClose();
+                    follower.setMaxPower(1);
+                    follower.followPath(paths.intakeCornerStack);
                     setPathState(5);
                 }
-                break;
             case 5:
-                if (pathTimer.getElapsedTime() > 1000) {
-                    follower.setMaxPower(1);
-                    robot.gate.gateClose();
-                    follower.followPath(paths.intakeCornerStack);
+                if (!follower.isBusy() || pathTimer.getElapsedTime() > 2000) {
+                    follower.followPath(paths.backUpFromIntakingCornerStack);
                     setPathState(6);
                 }
                 break;
             case 6:
-                if (!follower.isBusy() || pathTimer.getElapsedTime() > 2000) {
-                    follower.followPath(paths.backUpFromIntakingCornerStack);
+                if (!follower.isBusy() || pathTimer.getElapsedTime() > 250) {
+                    follower.followPath(paths.goBackIntoCornerToIntake);
                     setPathState(7);
                 }
                 break;
             case 7:
                 if (!follower.isBusy() || pathTimer.getElapsedTime() > 250) {
-                    follower.followPath(paths.goBackIntoCornerToIntake);
+                    robot.intake.stopIntake();
+                    follower.followPath(paths.shootingPos);
                     setPathState(8);
                 }
                 break;
             case 8:
-                if (!follower.isBusy() || pathTimer.getElapsedTime() > 250) {
-                    robot.intake.stopIntake();
-                    follower.followPath(paths.shootingPos);
+                if (!follower.isBusy() || pathTimer.getElapsedTime() > 500) {
+                    robot.gate.gateOpen();
                     setPathState(9);
                 }
                 break;
             case 9:
-                if (!follower.isBusy() && robot.shooter.reachedSpeed()) {
-                    robot.gate.gateOpen();
+                if (robot.shooter.reachedSpeed()) {
                     robot.intake.startIntake();
+                } else {
+                    robot.intake.stopIntake();
+                }
+                if (pathTimer.getElapsedTime() > 3000) {
+                    robot.gate.gateClose();
+                    follower.setMaxPower(1);
+                    follower.followPath(paths.intakeCornerStack);
                     setPathState(10);
                 }
                 break;
             case 10:
-                if (pathTimer.getElapsedTime() > 1000) {
-                    follower.setMaxPower(1);
-                    robot.gate.gateClose();
-                    follower.followPath(paths.intakeCornerStack);
+                if (!follower.isBusy() || pathTimer.getElapsedTime() > 2000) {
+                    follower.followPath(paths.backUpFromIntakingCornerStack);
                     setPathState(11);
                 }
                 break;
             case 11:
-                if (!follower.isBusy() || pathTimer.getElapsedTime() > 2000) {
-                    follower.followPath(paths.backUpFromIntakingCornerStack);
-                    setPathState(12);
-                }
-                break;
-            case 12:
                 if (!follower.isBusy() || pathTimer.getElapsedTime() > 250) {
                     follower.followPath(paths.goBackIntoCornerToIntake);
                     setPathState(12);
                 }
                 break;
-            case 13:
+            case 12:
                 if (!follower.isBusy() || pathTimer.getElapsedTime() > 500) {
                     robot.intake.stopIntake();
                     follower.followPath(paths.shootingPos);
+                    setPathState(13);
+                }
+                break;
+            case 13:
+                if (!follower.isBusy() && robot.shooter.reachedSpeed()) {
+                    robot.gate.gateOpen();
                     setPathState(14);
                 }
                 break;
             case 14:
-                if (!follower.isBusy() && robot.shooter.reachedSpeed()) {
-                    robot.gate.gateOpen();
+                if (robot.shooter.reachedSpeed()) {
                     robot.intake.startIntake();
-                    setPathState(15);
+                } else {
+                    robot.intake.stopIntake();
                 }
-                break;
-            case 15:
-                if (pathTimer.getElapsedTime() > 1000) {
-                    follower.setMaxPower(1);
+                if (pathTimer.getElapsedTime() > 3000) {
                     robot.gate.gateClose();
+                    follower.setMaxPower(1);
                     follower.followPath(paths.intakeCornerStack);
                     setPathState(-1);
                 }
                 break;
-
-
-
-
             default:
                 break;
         }
