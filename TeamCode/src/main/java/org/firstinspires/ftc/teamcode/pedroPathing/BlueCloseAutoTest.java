@@ -252,7 +252,7 @@ public class BlueCloseAutoTest extends OpMode {
             case 1:
                 if (!follower.isBusy() && robot.shooter.reachedSpeed()){
 //                    robot.shooter.startAutoCloseBlueShoot();
-                    robot.intake.feedBalls();
+                    robot.intake.startIntake();
                     setPathState(2);
                 }
                 break;
