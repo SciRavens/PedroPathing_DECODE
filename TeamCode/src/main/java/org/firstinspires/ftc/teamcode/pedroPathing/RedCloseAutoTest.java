@@ -250,7 +250,7 @@ public class RedCloseAutoTest extends OpMode {
             case 1:
                 if (!follower.isBusy() && robot.shooter.reachedSpeed()){
                     robot.shooter.startAutoMidBlueShoot();
-                    robot.intake.startIntakeOnly();
+                    robot.intake.feedBalls();
                     setPathState(2);
                 }
                 break;
@@ -282,7 +282,7 @@ public class RedCloseAutoTest extends OpMode {
             case 5:
                 if (!follower.isBusy() && robot.shooter.reachedSpeed()) {
                     robot.shooter.startAutoCloseBlueShoot();
-                    robot.intake.startIntakeOnly();
+                    robot.intake.feedBalls();
                     robot.gate.gateOpen();
                     follower.setMaxPower(0.75);
                     setPathState(6);
@@ -308,7 +308,7 @@ public class RedCloseAutoTest extends OpMode {
 
             case 8:
                 if ((!follower.isBusy() || pathTimer.getElapsedTime() > 3500) && robot.shooter.reachedSpeed()) {
-                    robot.intake.startIntakeOnly();
+                    robot.intake.feedBalls();
                     robot.gate.gateOpen();
                     setPathState(9);
                 }
@@ -334,7 +334,7 @@ public class RedCloseAutoTest extends OpMode {
                 break;
             case 11:
                 if (!follower.isBusy() || pathTimer.getElapsedTime() > 5000) {
-                    robot.intake.startIntakeOnly();
+                    robot.intake.feedBalls();
                     robot.gate.gateOpen();
                     setPathState(-1);
                 }

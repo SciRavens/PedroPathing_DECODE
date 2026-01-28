@@ -20,7 +20,7 @@ public class Shooter {
     public final int shooterHumanRPM = -1200;
     public final int shooterOffRPM = 0;
     public final int autoCloseRed = 1000;
-    public final int autoCloseBlue = 1050;
+    public final int autoCloseBlue = 1150;
 
     private int currentRPM = 0;
 
@@ -79,7 +79,7 @@ public class Shooter {
         if (currentRPM != newRPM) {
             if (newRPM >= 1325) {
                 shooterMotorFront.setVelocityPIDFCoefficients(
-                        300,   // P
+                        250,   // P
                         0,       // I
                         0,       // D
                         20.3   // F
@@ -87,10 +87,10 @@ public class Shooter {
             }
             else {
                 shooterMotorFront.setVelocityPIDFCoefficients(
-                        450 ,   // P
+                        250 ,   // P
                         0,       // I
                         0,       // D
-                        18.7   // F
+                        20.3   // F
                 );
             }
 

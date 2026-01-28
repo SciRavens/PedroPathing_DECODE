@@ -104,6 +104,8 @@ public class BlueCloseAutoTest extends OpMode {
         panelsTelemetry.debug("X", follower.getPose().getX());
         panelsTelemetry.debug("Y", follower.getPose().getY());
         panelsTelemetry.debug("Heading", follower.getPose().getHeading());
+        panelsTelemetry.debug("Shooter RPM", robot.shooter.getCurrentRPM());
+//        panelsTelemetry.debug("Shooter Target RPM", robot.shooter.);
         panelsTelemetry.update(telemetry);
     }
 
@@ -250,7 +252,7 @@ public class BlueCloseAutoTest extends OpMode {
             case 1:
                 if (!follower.isBusy() && robot.shooter.reachedSpeed()){
 //                    robot.shooter.startAutoCloseBlueShoot();
-                    robot.intake.startIntakeOnly();
+                    robot.intake.feedBalls();
                     setPathState(2);
                 }
                 break;
@@ -290,7 +292,7 @@ public class BlueCloseAutoTest extends OpMode {
 
             case 5:
                 if (!follower.isBusy() && robot.shooter.reachedSpeed() && pathTimer.getElapsedTime()>3000) {
-                    robot.intake.startIntakeOnly();
+                    robot.intake.feedBalls();
                     robot.gate.gateOpen();
                     follower.setMaxPower(1.0);
                     setPathState(6);
@@ -324,7 +326,7 @@ public class BlueCloseAutoTest extends OpMode {
 
             case 8:
                 if ((!follower.isBusy() && pathTimer.getElapsedTime() > 3000) && robot.shooter.reachedSpeed()) {
-                    robot.intake.startIntakeOnly();
+                    robot.intake.feedBalls();
                     robot.gate.gateOpen();
                     setPathState(9);
                 }
@@ -357,7 +359,7 @@ public class BlueCloseAutoTest extends OpMode {
                 break;
             case 11:
                 if (!follower.isBusy() || pathTimer.getElapsedTime() > 5000) {
-                    robot.intake.startIntakeOnly();
+                    robot.intake.feedBalls();
                     robot.gate.gateOpen();
                     setPathState(-1);
                 }
