@@ -129,7 +129,7 @@ public class BlueCloseAutoTest extends OpMode {
 
                                     new Pose(47.619, 95.448)
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(90))
+                    ).setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(135))
 
                     .build();
 
@@ -165,11 +165,11 @@ public class BlueCloseAutoTest extends OpMode {
 
             scoreStack1 = follower.pathBuilder().addPath(
                             new BezierCurve(
-                                    new Pose(14.836, 69.084),
+                                    new Pose(8.829, 64.077),
                                     new Pose(48.860, 71.067),
                                     new Pose(48.060, 95.746)
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(90))
+                    ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(135))
 
                     .build();
 
@@ -199,7 +199,7 @@ public class BlueCloseAutoTest extends OpMode {
 
                                     new Pose(47.569, 95.452)
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(90))
+                    ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(135))
 
                     .build();
 
@@ -229,7 +229,7 @@ public class BlueCloseAutoTest extends OpMode {
 
                                     new Pose(47.177, 96.542)
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(90))
+                    ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(135))
 
                     .build();
         }
@@ -266,7 +266,7 @@ public class BlueCloseAutoTest extends OpMode {
             case 20:
                 if (!follower.isBusy()){
                     follower.followPath(paths.intakeStack1);
-                    setPathState(3);
+                    setPathState(4);
                 }
                 break;
 
@@ -274,21 +274,22 @@ public class BlueCloseAutoTest extends OpMode {
                 if (!follower.isBusy()) {
                     follower.setMaxPower(1.0);
                     robot.intake.stopIntake();
-                    follower.followPath(paths.openGate);
+//                    follower.followPath(paths.openGate);
                     setPathState(4);
                 }
                 break;
 
             case 4:
-                if (!follower.isBusy() || pathTimer.getElapsedTime()>1500) {
+                if (!follower.isBusy() || pathTimer.getElapsedTime()>3000) {
+                    robot.intake.stopIntake();
                     follower.followPath(paths.scoreStack1);
+                    robot.shooter.startAutoCloseBlueShoot();
                     setPathState(5);
                 }
                 break;
 
             case 5:
-                if (!follower.isBusy() && robot.shooter.reachedSpeed()) {
-//                    robot.shooter.startAutoCloseBlueShoot();
+                if (!follower.isBusy() && robot.shooter.reachedSpeed() && pathTimer.getElapsedTime()>3000) {
                     robot.intake.startIntakeOnly();
                     robot.gate.gateOpen();
                     follower.setMaxPower(1.0);
@@ -316,12 +317,13 @@ public class BlueCloseAutoTest extends OpMode {
                 if (!follower.isBusy() || pathTimer.getElapsedTime() > 2000) {
                     follower.setMaxPower(1.0);
                     follower.followPath(paths.scoreStack2);
+                    robot.shooter.startAutoCloseBlueShoot();
                     setPathState(8);
                 }
                 break;
 
             case 8:
-                if ((!follower.isBusy() || pathTimer.getElapsedTime() > 3500) && robot.shooter.reachedSpeed()) {
+                if ((!follower.isBusy() && pathTimer.getElapsedTime() > 3000) && robot.shooter.reachedSpeed()) {
                     robot.intake.startIntakeOnly();
                     robot.gate.gateOpen();
                     setPathState(9);

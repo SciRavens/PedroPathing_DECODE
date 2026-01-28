@@ -129,7 +129,7 @@ public class RedCloseAutoTest extends OpMode {
 
                                     new Pose(95.813, 95.719)
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(90))
+                    ).setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(45))
 
                     .build();
 
@@ -169,7 +169,7 @@ public class RedCloseAutoTest extends OpMode {
                                     new Pose(101.000, 74.445),
                                     new Pose(95.615, 95.779)
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
+                    ).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(45))
 
                     .build();
 
@@ -199,7 +199,7 @@ public class RedCloseAutoTest extends OpMode {
 
                                     new Pose(95.793, 95.602)
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
+                    ).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(45))
 
                     .build();
 
@@ -229,7 +229,7 @@ public class RedCloseAutoTest extends OpMode {
 
                                     new Pose(95.515, 95.672)
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
+                    ).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(45))
 
                     .build();
         }
@@ -258,13 +258,6 @@ public class RedCloseAutoTest extends OpMode {
                 if (pathTimer.getElapsedTime() > 1500) {
                     follower.setMaxPower(0.75);
                     robot.gate.gateClose();
-                    follower.followPath(paths.initialStack1);
-                    follower.followPath(paths.intakeStack1);
-                    setPathState(20);
-                }
-                break;
-            case 20:
-                if (!follower.isBusy()){
                     follower.followPath(paths.intakeStack1);
                     setPathState(3);
                 }
@@ -300,13 +293,6 @@ public class RedCloseAutoTest extends OpMode {
                 if (pathTimer.getElapsedTime() > 2500) {
                     robot.gate.gateClose();
 //                    robot.intake.stopIntake();
-                    follower.followPath(paths.initialStack2);
-                    setPathState(60);
-                }
-                break;
-
-            case 60:
-                if (!follower.isBusy()){
                     follower.followPath(paths.intakeStack2);
                     setPathState(7);
                 }
@@ -333,13 +319,6 @@ public class RedCloseAutoTest extends OpMode {
                     follower.setMaxPower(0.75);
                     robot.gate.gateClose();
 //                    robot.intake.stopIntake();
-                    follower.followPath(paths.initialStack3);
-                    setPathState(90);
-                }
-                break;
-
-            case 90:
-                if (!follower.isBusy()){
                     follower.followPath(paths.intakeStack3);
                     setPathState(10);
                 }
