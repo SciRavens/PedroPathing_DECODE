@@ -3,7 +3,6 @@ package org.firstinspires.ftc.teamcode.experimental;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 
 import org.firstinspires.ftc.teamcode.Robot;
@@ -66,7 +65,7 @@ public class FlywheelTuner extends OpMode {
         }
 
         if (gamepad1.right_trigger > 0.1) {
-            robot.intake.startIntakeOnly();
+            robot.intake.startIntake();
         } else if (gamepad1.right_bumper) {
             robot.intake.startReverseIntake();
         } else {

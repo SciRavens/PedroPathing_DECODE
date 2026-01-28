@@ -7,7 +7,6 @@ import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.BezierCurve;
 import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
-import com.pedropathing.paths.Path;
 import com.pedropathing.paths.PathChain;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
@@ -173,7 +172,7 @@ public class RedFarCorner extends OpMode {
             case 1:
                 if (robot.shooter.reachedSpeed()) {
                     robot.gate.gateOpen();
-                    robot.intake.startIntakeOnly();
+                    robot.intake.startIntake();
                     setPathState(2);
                 }
                 break;
@@ -194,7 +193,7 @@ public class RedFarCorner extends OpMode {
             case 4:
                 if (!follower.isBusy() || pathTimer.getElapsedTime() > 2250) {
                     robot.gate.gateOpen();
-                    robot.intake.startIntakeOnly();
+                    robot.intake.startIntake();
                     setPathState(5);
                 }
                 break;
@@ -228,7 +227,7 @@ public class RedFarCorner extends OpMode {
             case 9:
                 if (!follower.isBusy() && robot.shooter.reachedSpeed()) {
                     robot.gate.gateOpen();
-                    robot.intake.startIntakeOnly();
+                    robot.intake.startIntake();
                     setPathState(10);
                 }
                 break;
@@ -262,7 +261,7 @@ public class RedFarCorner extends OpMode {
             case 14:
                 if (!follower.isBusy() && robot.shooter.reachedSpeed()) {
                     robot.gate.gateOpen();
-                    robot.intake.startIntakeOnly();
+                    robot.intake.startIntake();
                     setPathState(15);
                 }
                 break;

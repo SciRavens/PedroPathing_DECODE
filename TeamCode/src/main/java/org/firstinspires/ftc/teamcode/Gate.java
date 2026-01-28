@@ -17,16 +17,21 @@ public class Gate {
     }
 
     public void gateOpen () {
-        gateServo.setPosition(0.025);
-        gateClosed = false;
+        if (gateClosed) {
+            gateServo.setPosition(0.025);
+            gateClosed = false;
+        }
     }
 
     public void gateClose() {
-        gateServo.setPosition(0.18);
-        gateClosed = true;
+        if (!gateClosed) {
+            gateServo.setPosition(0.18);
+            gateClosed = true;
+        }
     }
 
-    public boolean gateStatus() {
+    public boolean isGateClosed() {
         return gateClosed;
     }
+    public boolean isGateOpen() { return !gateClosed;}
 }

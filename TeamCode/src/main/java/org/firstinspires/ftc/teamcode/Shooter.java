@@ -40,13 +40,8 @@ public class Shooter {
 
     public void setRPM(int rpm) {
         shooterMotorFront.setVelocity(rpm); // converting RPM to ticks per second
-//        shooterMotorBack.setVelocity(rpm); // converting RPM to ticks per second
         currentRPM = rpm;
     }
-    public void startCloseShoot() {
-        setRPM(shooterCloseRPM);
-    }
-
     public void startAutoCloseRedShoot() {
         setRPM(autoCloseRed);
     }
@@ -64,11 +59,6 @@ public class Shooter {
     public void startAutonFarShoot() {
         setRPM(autonShooterFarRPM);
     }
-
-    public void startFarShoot() {
-        setRPM(shooterFarRPM);
-    }
-
     public void startMidRedShoot() {
         setRPM(shooterMidRedRPM);
     }
@@ -86,7 +76,6 @@ public class Shooter {
     }
 
     public void startTargetShooterSpeed(int newRPM) {
-        telemetry.addData("Start Shoot Called", "Yes");
         if (currentRPM != newRPM) {
             if (newRPM >= 1325) {
                 shooterMotorFront.setVelocityPIDFCoefficients(
@@ -107,12 +96,9 @@ public class Shooter {
 
             setRPM(newRPM);
         }
-        telemetry.addData("New Velocity: ", newRPM);
-        telemetry.addData("Current Velocity: ", currentRPM);
     }
 
     public void stopShoot() {
-//        shooterMotorFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE); // converting RPM to ticks per second
         setRPM(shooterOffRPM);
         shooterLight.setPosition(0);
     }
@@ -120,32 +106,17 @@ public class Shooter {
     public boolean reachedSpeed() {
         return Math.abs(getCurrentRPM() - currentRPM) <= 20;
     }
-    public boolean reachMidSpeed () {
-        return reachedSpeed();
-    }
-    public boolean reachAutoMidSpeed () {
-        return reachedSpeed();
-    }
-    public boolean reachCloseSpeed () {
-        return reachedSpeed();
-    }
 
     public void shooterLightUpdate() {
-        if(currentRPM == 0){
-            return;
-        }
-        if (reachedSpeed()) {
-            shooterLight.setPosition(0.5); //sets color to green
-        } else {
-            shooterLight.setPosition(0.3); //sets color to red
+        if(currentRPM > 0) {
+            if (reachedSpeed()) {
+                shooterLight.setPosition(0.5); //sets color to green
+            } else {
+                shooterLight.setPosition(0.3); //sets color to red
+            }
         }
     }
-
     public void startReverseShoot() {
         setRPM(-shooterCloseRPM);
-    }
-
-    public void stopFlyWheel() {
-        stopShoot();
     }
 }

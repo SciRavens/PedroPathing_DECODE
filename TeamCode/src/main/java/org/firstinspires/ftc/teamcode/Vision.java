@@ -59,8 +59,6 @@ public class Vision {
     public void toggleCentering() { this.isCentering = !this.isCentering; }
 
     public void update() {
-        telemetry.addData("Vision/Pipeline1", Robot.current_pipeline_id);
-        telemetry.addData("Vision/TargetTag", Robot.current_tag_id);
         // 1. GET CHASSIS VELOCITY (PedroPathing)
         // PedroPathing returns Radians/Sec. We convert to Degrees/Sec.
         double robotAngularVelRad = follower.getAngularVelocity();
@@ -136,8 +134,7 @@ public class Vision {
                         // Update History
                         lastError = currentError;
                         lastResultTimestamp = currentTimestamp;
-
-                        telemetry.addData("Vision/Err", "%.2f", currentError);
+                        //telemetry.addData("Vision/Err", "%.2f", currentError);
                     }
                 }
             }
@@ -154,11 +151,9 @@ public class Vision {
         // ----------------------------------------
         if (currentTurretAngle >= MAX_LEFT_LIMIT && outputPower > 0) {
             outputPower = 0;
-            telemetry.addData("Vision/Limit", "LEFT MAX");
         }
         else if (currentTurretAngle <= MAX_RIGHT_LIMIT && outputPower < 0) {
             outputPower = 0;
-            telemetry.addData("Vision/Limit", "RIGHT MAX");
         }
 
         // Output Clamp
@@ -170,9 +165,12 @@ public class Vision {
         }
 
         turret.setTurretPower(outputPower);
-        telemetry.addData("Vision/Err", "%.2f", lastError);
-        telemetry.addData("Vision/State", isCentering ? "CENTERING" : "TRACKING");
-        telemetry.addData("Vision/Power", "%.2f", outputPower);
-        telemetry.addData("Vision/Angle", "%.1f", currentTurretAngle);
+        telemetry.addData("Vision State:", isCentering ? "CENTERING" : "TRACKING");
+        telemetry.addLine()
+                .addData("Pipeline: ", Robot.current_pipeline_id)
+                .addData("Tag: ", Robot.current_tag_id);
+//        telemetry.addData("Vision/Err", "%.2f", lastError);
+//        telemetry.addData("Vision/Power", "%.2f", outputPower);
+//        telemetry.addData("Vision/Angle", "%.1f", currentTurretAngle);
     }
 }

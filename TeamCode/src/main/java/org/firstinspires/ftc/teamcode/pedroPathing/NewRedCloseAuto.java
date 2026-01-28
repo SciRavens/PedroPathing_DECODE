@@ -13,7 +13,6 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import org.firstinspires.ftc.teamcode.SavePosition;
 import org.firstinspires.ftc.teamcode.Vision;
-import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.Robot;
 import com.pedropathing.util.Timer;
 
@@ -202,7 +201,7 @@ public class NewRedCloseAuto extends OpMode {
                 break;
             case 1:
                 if (!follower.isBusy()){
-                    robot.intake.startIntakeOnly();
+                    robot.intake.startIntake();
                     setPathState(2);
                 }
                 break;
@@ -232,7 +231,7 @@ public class NewRedCloseAuto extends OpMode {
 
             case 5:
                 if (!follower.isBusy()) {
-                    robot.intake.startIntakeOnly();
+                    robot.intake.startIntake();
                     robot.gate.gateOpen();
                     setPathState(6);
                 }
@@ -257,7 +256,7 @@ public class NewRedCloseAuto extends OpMode {
 
             case 8:
                 if (!follower.isBusy() || (pathTimer.getElapsedTime() > 4000 && robot.shooter.reachedSpeed())) {
-                    robot.intake.startIntakeOnly();
+                    robot.intake.startIntake();
                     robot.gate.gateOpen();
                     setPathState(9);
                 }
@@ -284,7 +283,7 @@ public class NewRedCloseAuto extends OpMode {
                 break;
             case 11:
                 if (!follower.isBusy() || pathTimer.getElapsedTime() > 5000) {
-                    robot.intake.startIntakeOnly();
+                    robot.intake.startIntake();
                     robot.gate.gateOpen();
                     setPathState(-1);
                 }

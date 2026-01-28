@@ -6,11 +6,8 @@ import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.Path;
 import com.pedropathing.util.Timer;
-import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import  com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import org.firstinspires.ftc.teamcode.Vision;
-import com.qualcomm.robotcore.hardware.CRServo;
 
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
@@ -97,7 +94,7 @@ public class RedFar12 extends OpMode {
         telemetry.addData("x", follower.getPose().getX());
         telemetry.addData("y", follower.getPose().getY());
         telemetry.addData("heading", follower.getPose().getHeading());
-        telemetry.addData("Gate state", robot.gate.gateStatus());
+        telemetry.addData("Gate state", robot.gate.isGateClosed());
         telemetry.addData("Current RPM", robot.shooter.getCurrentRPM());
         telemetry.update();
     }
@@ -111,7 +108,7 @@ public class RedFar12 extends OpMode {
                 break;
             case 1:
                 if (robot.shooter.reachedSpeed()) { // open the gate and shoot the preload
-                    robot.intake.startIntakeOnly();
+                    robot.intake.startIntake();
                     setPathState(2);
                 }
                 break;
@@ -137,7 +134,7 @@ public class RedFar12 extends OpMode {
                 break;
             case 5:
                 if (robot.shooter.reachedSpeed()) { //shoot first stack
-                    robot.intake.startIntakeOnly();
+                    robot.intake.startIntake();
                     setPathState(6);
                 }
                 break;
@@ -162,7 +159,7 @@ public class RedFar12 extends OpMode {
                 }
             case 9:
                 if (robot.shooter.reachedSpeed() && pathTimer.getElapsedTime() > 1000) {// shoot second stack
-                    robot.intake.startIntakeOnly();
+                    robot.intake.startIntake();
                     setPathState(10);
                 }
                 break;
@@ -188,7 +185,7 @@ public class RedFar12 extends OpMode {
                 break;
             case 13:
                 if (robot.shooter.reachedSpeed() && pathTimer.getElapsedTime() > 1000) {// shoot third stack
-                    robot.intake.startIntakeOnly();
+                    robot.intake.startIntake();
                     setPathState(14);
                 }
                 break;
