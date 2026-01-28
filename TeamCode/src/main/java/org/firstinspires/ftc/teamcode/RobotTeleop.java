@@ -34,7 +34,7 @@ public class RobotTeleop extends OpMode {
     private static final double DEAD_ZONE = 0.1;
     private static final double TURRET_DEADZONE = 0.3; // Tighter alignment threshold
 
-    private final Pose startPose = new Pose(60, 12, Math.toRadians(90));
+    private final Pose startPose = new Pose(72, 72, Math.toRadians(90));
 
     private Pose currentPose = new Pose(0,0,0);
 
@@ -130,11 +130,11 @@ public class RobotTeleop extends OpMode {
     }
 
     public int getTargetShooterRPM(double distance) {
-        // y=-0.00000689201x^{4}+0.00288448x^{3}-0.422368x^{2}+29.95317x+292.88591
-        double rpm = -0.00000689201 * Math.pow(distance, 4)
-                + 0.00288448 * Math.pow(distance, 3)
-                - 0.422368 * Math.pow(distance, 2)
-                + 29.95317 * distance + 292.88591;
+//        y=0.0000223365x^{4}-0.0107465x^{3}+1.87252x^{2}-134.7279x+4470.38504
+        double rpm = 0.0000223365 * Math.pow(distance, 4)
+                - 0.0107465 * Math.pow(distance, 3)
+                + 1.87252 * Math.pow(distance, 2)
+                - 134.7279 * distance + 4470.38504;
         return (int) rpm;
     }
 
