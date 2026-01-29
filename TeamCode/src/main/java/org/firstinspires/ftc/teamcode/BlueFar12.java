@@ -27,12 +27,12 @@ public class BlueFar12 extends OpMode {
     private final Pose startPose = new Pose(56, 8, Math.toRadians(180));
     private final Pose firstPattern = new Pose(47.3, 83.6, Math.toRadians(180));
     private final Pose getFirstPattern = new Pose(14, 83.6, Math.toRadians(180));
-    private final Pose secondPattern = new Pose(48,57,Math.toRadians(180));
-    private final Pose getSecondPattern = new Pose(0.5, 57, Math.toRadians(180));
+    private final Pose secondPattern = new Pose(48,58,Math.toRadians(180));
+    private final Pose getSecondPattern = new Pose(0.5, 58, Math.toRadians(180));
     private final Pose thirdPattern = new Pose(48, 36, Math.toRadians(180));
     private final Pose getThirdPattern = new Pose(0.5, 36, Math.toRadians(180));
-    private final Pose shootingPose = new Pose(55, 12, Math.toRadians(0));
-    private final Pose finalPose = new Pose(24, 10, Math.toRadians(0));
+    private final Pose shootingPose = new Pose(55, 12, Math.toRadians(180));
+    private final Pose finalPose = new Pose(24, 10, Math.toRadians(180));
 
 
 
@@ -149,7 +149,7 @@ public class BlueFar12 extends OpMode {
                 }
                 break;
             case 3:
-                if(pathWait(2000)) {
+                if(pathWait(2500)) {
                     //robot.gate.gateOpen();
                     setPathState(4);
                 }
@@ -178,7 +178,7 @@ public class BlueFar12 extends OpMode {
                 }
                 break;
             case 7:
-                if(pathWait(2500)) {
+                if(pathWait(3000)) {
                     //robot.gate.gateOpen();
                     setPathState(12);
                 }

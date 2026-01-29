@@ -50,7 +50,7 @@ public class Vision {
     // - Start with 0, then adjust based on where shots land at the far position
     // RED
     //private static final double AIM_OFFSET_DEGREES = -05.0; // TUNE THIS VALUE
-    private static final double AIM_OFFSET_DEGREES = -15.0; // TUNE THIS VALUE
+    private static final double AIM_OFFSET_DEGREES = -0.0; // TUNE THIS VALUE
 
     // Distance threshold for applying offset (in FEET)
     // Offset is only applied when tag is farther than this distance

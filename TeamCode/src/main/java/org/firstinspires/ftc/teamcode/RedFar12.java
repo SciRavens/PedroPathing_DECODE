@@ -27,8 +27,8 @@ public class RedFar12 extends OpMode {
     private final Pose startPose = new Pose(88, 8, Math.toRadians(0));
     private final Pose firstPattern = new Pose(96.7, 83.6, Math.toRadians(0));
     private final Pose getFirstPattern = new Pose(130, 83.6, Math.toRadians(0));
-    private final Pose secondPattern = new Pose(96,57,Math.toRadians(0));
-    private final Pose getSecondPattern = new Pose(143.5, 57, Math.toRadians(0));
+    private final Pose secondPattern = new Pose(96,58,Math.toRadians(0));
+    private final Pose getSecondPattern = new Pose(143.5, 58, Math.toRadians(0));
     private final Pose thirdPattern = new Pose(96, 36, Math.toRadians(0));
     private final Pose getThirdPattern = new Pose(143.5, 36, Math.toRadians(0));
     private final Pose shootingPose = new Pose(89, 12, Math.toRadians(0));
@@ -120,7 +120,7 @@ public class RedFar12 extends OpMode {
         boolean completed = false;
 
         switch (pathState) {
-            case 0: // start shooter
+            case 0: // start shooter, then go for third pattern
                 completed = robot.autonShoot(follower, 3000);
                 if (completed) {
                     follower.followPath(goToThirdPattern, true);
@@ -136,7 +136,7 @@ public class RedFar12 extends OpMode {
 //                }
 //                break;
             case 1:
-                if (pathWait(25000)){ // get first stack
+                if (pathWait(25000)){ // get third pattern
                     follower.followPath(intakeThirdPattern, true);
                     setPathState(2);
                 }
@@ -156,7 +156,7 @@ public class RedFar12 extends OpMode {
                 break;
             case 4:
                 completed = robot.autonShoot(follower, 4000);
-                if (completed) {
+                if (completed) { //shoot first stack, then go to second stack
                     robot.gate.gateClose();
                     follower.setMaxPower(1.0);
                     follower.followPath(goToSecondPattern);
@@ -185,7 +185,7 @@ public class RedFar12 extends OpMode {
                 break;
             case 8:
                 completed = robot.autonShoot(follower, 4000);
-                if (completed) {
+                if (completed) { //shoot second stack
                     robot.gate.gateClose();
                     follower.setMaxPower(1.0);
                     follower.followPath(goToFirstPattern);
