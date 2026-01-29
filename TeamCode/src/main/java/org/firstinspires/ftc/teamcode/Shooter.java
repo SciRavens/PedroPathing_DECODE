@@ -29,7 +29,9 @@ public class Shooter {
     public Servo shooterLight;
     private Telemetry telemetry;
 
-    private double speedThreshold = 20;
+    private double speedThreshold = 20; // Max variance allowed for initial shoot
+    private double closeShotVariance = 20; // Additional variance allowed for the second and third shoot for close shot.
+    private double longShotVariance = 0; // Additional variance allowed for the second and third shoot for long shot.
 
     public Shooter(HardwareMap hardwareMap, Telemetry telemetry) {
         shooterMotorFront = hardwareMap.get(DcMotorEx.class, "shooterMotorFront");
@@ -102,12 +104,19 @@ public class Shooter {
        return shooterMotorFront.getVelocity();
     }
 
+//    public int getRpmbyDistance(double distance) {
+//        //        y=0.0000223365x^{4}-0.0107465x^{3}+1.87252x^{2}-134.7279x+4470.38504
+//        double rpm = 0.0000223365 * Math.pow(distance, 4)
+//                - 0.0107465 * Math.pow(distance, 3)
+//                + 1.87252 * Math.pow(distance, 2)
+//                - 134.7279 * distance + 4470.38504;
+//        return (int) rpm;
+//    }
+
     public int getRpmbyDistance(double distance) {
-        //        y=0.0000223365x^{4}-0.0107465x^{3}+1.87252x^{2}-134.7279x+4470.38504
-        double rpm = 0.0000223365 * Math.pow(distance, 4)
-                - 0.0107465 * Math.pow(distance, 3)
-                + 1.87252 * Math.pow(distance, 2)
-                - 134.7279 * distance + 4470.38504;
+        // Horner's method: Reduces 10 multiplications & 4 pow calls to just 4 multiplications
+        // y = 4470.38504 - 134.7279x + 1.87252x^2 - 0.0107465x^3 + 0.0000223365x^4
+        double rpm = 4470.38504 + distance * (-134.7279 + distance * (1.87252 + distance * (-0.0107465 + distance * 0.0000223365)));
         return (int) rpm;
     }
     public void startShooterbyDistance(double distance) {
@@ -123,15 +132,15 @@ public class Shooter {
         return Math.abs(getCurrentRPM() - currentRPM) <= speedThreshold;
     }
 
-    public boolean isSafeToContinueShooting() {
-        double dynThreshold = speedThreshold;
-        if (currentRPM == 0) return false;
-        if (currentRPM < 1200) {
-            dynThreshold = speedThreshold + 20;
+    public boolean isSafeToContinueShooting(double distance) {
+        double dynThreshold = speedThreshold; // Default
+        if (distance < 960) { // 8ft
+            dynThreshold = speedThreshold + closeShotVariance; // Add additional variance allowed for close shot
+        } else {
+            dynThreshold = speedThreshold + longShotVariance; // additional variance allowed for long shot
         }
         return Math.abs(getCurrentRPM() - currentRPM) <= dynThreshold;
     }
-
     public void shooterLightUpdate() {
         if(currentRPM > 0) {
             if (reachedSpeed()) {

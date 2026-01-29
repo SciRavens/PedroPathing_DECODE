@@ -82,7 +82,7 @@ public class Robot {
         shooter.startShooterbyDistance(distance);
 
         if (is_autonShootTimerOn) {
-            if (shooter.isSafeToContinueShooting()) {
+            if (shooter.isSafeToContinueShooting(distance)) {
                 intake.feedBalls();
             } else {
                 intake.stopFeeding();

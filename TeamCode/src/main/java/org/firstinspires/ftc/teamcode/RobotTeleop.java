@@ -129,6 +129,8 @@ public class RobotTeleop extends OpMode {
             boolean completed = robot.autonShoot(follower, 4000);
             if (completed) {
                 smartShooting = false;
+                //robot.shooter.stopShoot();
+                robot.shooter.startPassiveShoot(); // Keep the flywheel running at lower speed
             }
         }
 
