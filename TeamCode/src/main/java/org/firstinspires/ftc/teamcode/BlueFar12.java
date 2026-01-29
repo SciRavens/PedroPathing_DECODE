@@ -115,16 +115,15 @@ public class BlueFar12 extends OpMode {
                 break;
             case 1:
                 if (robot.shooter.reachedSpeed()) { // open the gate and shoot the preload
-                    robot.intake.startIntakeOnly();
-                    setPathState(2);
+                    robot.intake.startIntake();
                 }
                 break;
             case 2:
-                if (pathTimer.getElapsedTime() > 1500){ // after finishing the shoot, close gate and go to first stack
+                //if (pathTimer.getElapsedTime() > 1500){ // after finishing the shoot, close gate and go to first stack
                     robot.gate.gateClose();
                     follower.followPath(goToThirdPattern, true);
                     setPathState(3);
-                }
+                //}
                 break;
             case 3:
                 if (!follower.isBusy() || pathTimer.getElapsedTime() > 3000){ // get first stack
@@ -140,14 +139,14 @@ public class BlueFar12 extends OpMode {
                 }
                 break;
             case 41:
-                if(pathTimer.getElapsedTime() > 1500) {
+                if(!follower.isBusy() || pathTimer.getElapsedTime() > 1500) {
                     robot.gate.gateOpen();
                     setPathState(5);
                 }
                 break;
             case 5:
-                if (!follower.isBusy() && robot.shooter.reachedSpeed()) { //shoot first stack
-                    robot.intake.startIntakeOnly();
+                if (robot.shooter.reachedSpeed()) { //shoot first stack
+                    robot.intake.startIntake();
                     setPathState(6);
                 }
                 break;
@@ -172,14 +171,14 @@ public class BlueFar12 extends OpMode {
                 }
                 break;
             case 81:
-                if(pathTimer.getElapsedTime() > 1750) {
+                if(!follower.isBusy() || pathTimer.getElapsedTime() > 1750) {
                     robot.gate.gateOpen();
                     setPathState(9);
                 }
                 break;
             case 9:
-                if (!follower.isBusy() && robot.shooter.reachedSpeed()) {// shoot second stack
-                    robot.intake.startIntakeOnly();
+                if (robot.shooter.reachedSpeed()) {// shoot second stack
+                    robot.intake.startIntake();
                     setPathState(10);
                 }
                 break;
@@ -204,14 +203,14 @@ public class BlueFar12 extends OpMode {
                 }
                 break;
             case 121:
-                if(pathTimer.getElapsedTime() > 2000) {
+                if(!follower.isBusy() || pathTimer.getElapsedTime() > 2000) {
                     robot.gate.gateOpen();
                     setPathState(13);
                 }
                 break;
             case 13:
-                if (!follower.isBusy() && robot.shooter.reachedSpeed()) {// shoot third stack
-                    robot.intake.startIntakeOnly();
+                if (robot.shooter.reachedSpeed()) {// shoot third stack
+                    robot.intake.startIntake();
                     setPathState(14);
                 }
                 break;

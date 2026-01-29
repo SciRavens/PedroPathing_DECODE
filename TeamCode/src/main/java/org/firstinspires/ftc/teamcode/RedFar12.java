@@ -104,7 +104,7 @@ public class RedFar12 extends OpMode {
         telemetry.addData("x", follower.getPose().getX());
         telemetry.addData("y", follower.getPose().getY());
         telemetry.addData("heading", follower.getPose().getHeading());
-        telemetry.addData("Gate state", robot.gate.gateStatus());
+        telemetry.addData("Gate state", robot.gate.isGateClosed());
         telemetry.addData("Current RPM", robot.shooter.getCurrentRPM());
         telemetry.update();
     }
@@ -118,7 +118,7 @@ public class RedFar12 extends OpMode {
                 break;
             case 1:
                 if (robot.shooter.reachedSpeed()) { // open the gate and shoot the preload
-                    robot.intake.startIntakeOnly();
+                    robot.intake.startIntake();
                     setPathState(2);
                 }
                 break;
@@ -150,7 +150,7 @@ public class RedFar12 extends OpMode {
                 break;
             case 5:
                 if (!follower.isBusy() && robot.shooter.reachedSpeed()) { //shoot first stack
-                    robot.intake.startIntakeOnly();
+                    robot.intake.startIntake();
                     setPathState(6);
                 }
                 break;
@@ -182,7 +182,7 @@ public class RedFar12 extends OpMode {
                 break;
             case 9:
                 if (!follower.isBusy() && robot.shooter.reachedSpeed()) {// shoot second stack
-                    robot.intake.startIntakeOnly();
+                    robot.intake.startIntake();
                     setPathState(10);
                 }
                 break;
@@ -214,7 +214,7 @@ public class RedFar12 extends OpMode {
                 break;
             case 13:
                 if (!follower.isBusy() && robot.shooter.reachedSpeed()) {// shoot third stack
-                    robot.intake.startIntakeOnly();
+                    robot.intake.startIntake();
                     setPathState(14);
                 }
                 break;
