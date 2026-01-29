@@ -39,6 +39,7 @@ public class BlueFarCorner extends OpMode {
 
     @Override
     public void init() {
+        Robot.currentAlliance = "BLUE";
         robot = new Robot(hardwareMap, telemetry);
         panelsTelemetry = PanelsTelemetry.INSTANCE.getTelemetry();
 

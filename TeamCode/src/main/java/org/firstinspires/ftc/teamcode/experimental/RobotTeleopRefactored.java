@@ -75,7 +75,7 @@ public class RobotTeleopRefactored extends OpMode {
             // Use the subsystem's update method, passing both the raw error and visibility
             turretPower = turretController.updateAutoAim(tx, trackingTag);
 
-            telemetry.addData("Turret Mode", "AUTO (Tag " + Robot.current_tag_id + ")");
+            telemetry.addData("Turret Mode", "AUTO (Tag " + robot.current_tag_id + ")");
 
             if (turretController.isAimed()) {
                 telemetry.addData("Turret Status", "🎯 LOCKED ON TARGET");

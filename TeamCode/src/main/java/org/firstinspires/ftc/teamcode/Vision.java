@@ -48,9 +48,9 @@ public class Vision {
     // - Positive value = aim MORE TO THE LEFT of where tag appears
     // - Negative value = aim MORE TO THE RIGHT of where tag appears
     // - Start with 0, then adjust based on where shots land at the far position
-    // RED
-    //private static final double AIM_OFFSET_DEGREES = -05.0; // TUNE THIS VALUE
-    private static final double AIM_OFFSET_DEGREES = -0.0; // TUNE THIS VALUE
+    private static final double BLUE_AIM_OFFSET_DEGREES = -0.0;
+    private static final double RED_AIM_OFFSET_DEGREES = -5.0;
+    private double current_aim_offset = 0;
 
     // Distance threshold for applying offset (in FEET)
     // Offset is only applied when tag is farther than this distance
@@ -69,9 +69,13 @@ public class Vision {
 
     public Vision(HardwareMap hardwareMap, Robot robot, Follower follower, Telemetry telemetry) {
         this.limelight = hardwareMap.get(Limelight3A.class, "limelight");
-        this.limelight.pipelineSwitch(Robot.current_pipeline_id);
+        this.limelight.pipelineSwitch(robot.current_pipeline_id);
         this.limelight.start();
-
+        if (Robot.currentAlliance.equals("BLUE")) {
+            current_aim_offset = BLUE_AIM_OFFSET_DEGREES;
+        } else {
+            current_aim_offset = RED_AIM_OFFSET_DEGREES;
+        }
         this.follower = follower;
         this.turret = robot.turret;
         this.robot = robot;
@@ -124,7 +128,7 @@ public class Vision {
 
                     if (fiducials != null && !fiducials.isEmpty()) {
                         for (LLResultTypes.FiducialResult fiducial : fiducials) {
-                            if (fiducial.getFiducialId() == Robot.current_tag_id) {
+                            if (fiducial.getFiducialId() == robot.current_tag_id) {
                                 currentError = fiducial.getTargetXDegrees();
                                 tagFound = true;
 
@@ -156,7 +160,7 @@ public class Vision {
 
                         if (distanceFeet > FAR_ZONE_THRESHOLD_FEET) {
                             // In far zone - apply offset compensation
-                            aimOffset = AIM_OFFSET_DEGREES;
+                            aimOffset = current_aim_offset;
 
                             // Optional: Scale offset based on how far off-center the tag is
                             // This makes the offset proportional to the viewing angle
@@ -224,8 +228,8 @@ public class Vision {
         turret.setTurretPower(outputPower);
         telemetry.addData("Vision State:", isCentering ? "CENTERING" : "TRACKING");
         telemetry.addLine()
-                .addData("Pipeline: ", Robot.current_pipeline_id)
-                .addData("Tag: ", Robot.current_tag_id);
+                .addData("Pipeline: ", robot.current_pipeline_id)
+                .addData("Tag: ", robot.current_tag_id);
 //        telemetry.addData("Vision/Err", "%.2f", lastError);
 //        telemetry.addData("Vision/Power", "%.2f", outputPower);
 //        telemetry.addData("Vision/Angle", "%.1f", currentTurretAngle);

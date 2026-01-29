@@ -56,6 +56,7 @@ public class NewBlueCloseAuto extends OpMode {
 
     @Override
     public void init() {
+        Robot.currentAlliance = "BLUE";
         robot = new Robot(hardwareMap, telemetry);
         panelsTelemetry = PanelsTelemetry.INSTANCE.getTelemetry();
 
@@ -76,8 +77,8 @@ public class NewBlueCloseAuto extends OpMode {
 
         telemetry.addData("Saved Position Heading (deg): ", Math.toDegrees(SavePosition.getSavedPosition().getHeading()));
         telemetry.addData("Current Alliance: ", currentAlliance);
-        telemetry.addData("Vision/Pipeline1", Robot.current_pipeline_id);
-        telemetry.addData("Vision/TargetTag", Robot.current_tag_id);
+        telemetry.addData("Vision/Pipeline1", robot.current_pipeline_id);
+        telemetry.addData("Vision/TargetTag", robot.current_tag_id);
         telemetry.addLine("RobotTeleop Initialized (CRServo turret)");
         telemetry.update();
     }

@@ -39,6 +39,7 @@ public class RedFarCorner extends OpMode {
 
     @Override
     public void init() {
+        Robot.currentAlliance = "RED";
         robot = new Robot(hardwareMap, telemetry);
         panelsTelemetry = PanelsTelemetry.INSTANCE.getTelemetry();
 

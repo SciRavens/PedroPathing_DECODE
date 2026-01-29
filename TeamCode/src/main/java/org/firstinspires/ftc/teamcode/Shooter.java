@@ -29,6 +29,8 @@ public class Shooter {
     public Servo shooterLight;
     private Telemetry telemetry;
 
+    private double speedThreshold = 20;
+
     public Shooter(HardwareMap hardwareMap, Telemetry telemetry) {
         shooterMotorFront = hardwareMap.get(DcMotorEx.class, "shooterMotorFront");
         shooterMotorFront.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
@@ -118,7 +120,16 @@ public class Shooter {
     }
 
     public boolean reachedSpeed() {
-        return Math.abs(getCurrentRPM() - currentRPM) <= 20;
+        return Math.abs(getCurrentRPM() - currentRPM) <= speedThreshold;
+    }
+
+    public boolean isSafeToContinueShooting() {
+        double dynThreshold = speedThreshold;
+        if (currentRPM == 0) return false;
+        if (currentRPM < 1200) {
+            dynThreshold = speedThreshold + 20;
+        }
+        return Math.abs(getCurrentRPM() - currentRPM) <= dynThreshold;
     }
 
     public void shooterLightUpdate() {

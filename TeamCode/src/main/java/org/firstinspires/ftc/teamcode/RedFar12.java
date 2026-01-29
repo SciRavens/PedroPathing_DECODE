@@ -38,17 +38,19 @@ public class RedFar12 extends OpMode {
 
     @Override
     public void init() {
+        Robot.currentAlliance = "RED";
         // Timers
         pathTimer = new Timer();
         opmodeTimer = new Timer();
-
-        telemetry.addLine("RobotTeleop Initialized (CRServo turret)");
-        telemetry.update();
         robot = new Robot(hardwareMap,telemetry);
         follower = Constants.createFollower(hardwareMap);
-        buildPaths();
         follower.setStartingPose(startPose);
+        // Build paths
+        buildPaths();
         vision = new Vision(hardwareMap, robot, follower, telemetry);
+        telemetry.addData("Alliance: ", Robot.currentAlliance);
+        telemetry.addLine("Initialization Complete");
+        telemetry.update();
     }
 
     public void buildPaths() {
