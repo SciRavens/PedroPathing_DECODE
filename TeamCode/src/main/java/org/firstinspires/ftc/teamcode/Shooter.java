@@ -45,7 +45,7 @@ public class Shooter {
         // index 0: <= 1325
         {250, 0, 0, 20.3},
         // index 1: > 1325
-        {250, 0, 0, 20.3}
+        {400, 0, 0, 18.5}
     };
 
     private int getCoefficientIndex(int rpm) {
