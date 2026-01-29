@@ -1,4 +1,6 @@
 package org.firstinspires.ftc.teamcode;
+import com.pedropathing.follower.Follower;
+import com.pedropathing.util.Timer;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
@@ -17,6 +19,8 @@ public class Robot {
     public static int current_goal_x = RED_GOAL_X;
     public static int current_goal_y = RED_GOAL_Y;
 
+    private boolean is_autonShootTimerOn = false;
+    private Timer shootTimer;
 
 
 
@@ -34,5 +38,37 @@ public class Robot {
         shooter = new Shooter(hardwareMap, telemetry);
         turret = new Turret(hardwareMap, telemetry);
         gate = new Gate(hardwareMap, telemetry);
+        shootTimer = new Timer();
+    }
+
+
+    public double getDistanceFromGoal(Follower follower) {
+        double dx = Robot.current_goal_x - follower.getPose().getX();
+        double dy = Robot.current_goal_y - follower.getPose().getY();
+        return Math.sqrt(dx * dx + dy * dy);
+    }
+    public boolean autonShootByDistance(Follower follower, long timeoutMs, double distance) {
+        gate.gateOpen();
+        shooter.startShooterbyDistance(distance);
+        if (shooter.reachedSpeed()) {
+            if (!is_autonShootTimerOn) {
+               shootTimer.resetTimer();
+               is_autonShootTimerOn = true;
+            }
+            intake.startIntake();
+        } else {
+            intake.stopIntake();
+        }
+        if (is_autonShootTimerOn && shootTimer.getElapsedTime() > timeoutMs) {
+            intake.stopIntake();
+            gate.gateClose();
+            is_autonShootTimerOn = false;
+            return true;
+        }
+        return false;
+    }
+
+    public boolean autonShoot(Follower follower, long timeoutMs) {
+        return autonShootByDistance(follower, timeoutMs, getDistanceFromGoal(follower));
     }
 }

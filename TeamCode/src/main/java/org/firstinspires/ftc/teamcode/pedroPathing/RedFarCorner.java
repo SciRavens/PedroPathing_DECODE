@@ -154,94 +154,78 @@ public class RedFarCorner extends OpMode {
                     .build();
         }
     }
-    private boolean autonShoot(Timer pathTimer, long timeoutMs) {
-        if (robot.gate.isGateClosed()) {
-            robot.shooter.startAutonFarShoot();
-            robot.gate.gateOpen();
-        }
-        if (robot.shooter.reachedSpeed()) {
-            robot.intake.startIntake();
-        } else {
-            robot.intake.stopIntake();
-        }
-        if (pathTimer.getElapsedTime() > timeoutMs) {
-            robot.gate.gateClose();
+
+    private boolean pathWait(long timeoutMs) {
+        if(!follower.isBusy() || pathTimer.getElapsedTime() > timeoutMs)  {
             return true;
         }
         return false;
     }
 
-    // ---------------- STATE MACHINE ----------------
-
     public int autonomousPathUpdate() {
+        boolean completed = false;
 
         switch (pathState) {
             case 0:
-                boolean completed = autonShoot(pathTimer, 4000);
+                completed = robot.autonShoot(follower, 6000);
                 if (completed) {
                     follower.followPath(paths.intakeThirdStack, true);
+                    robot.intake.startIntake();
                     setPathState(2);
                 }
                 break;
 
             case 2:
-                if(!follower.isBusy() || pathTimer.getElapsedTime() > 2500)  {
+                if (pathWait(2500)) {
                     robot.intake.stopIntake();
                     follower.followPath(paths.shootThirdStack, true);
                     setPathState(3);
                 }
                 break;
             case 3:
-                if (!follower.isBusy() || pathTimer.getElapsedTime() > 2250) {
+                if (pathWait(2250)) {
                     robot.gate.gateOpen();
                     setPathState(4);
                 }
                 break;
             case 4:
-                if (robot.shooter.reachedSpeed()) {
-                    robot.intake.startIntake();
-                } else {
-                    robot.intake.stopIntake();
-                }
-                if (pathTimer.getElapsedTime() > 4000) {
+                completed = robot.autonShoot(follower, 4000);
+                if (completed) {
                     robot.gate.gateClose();
                     follower.setMaxPower(1);
                     follower.followPath(paths.intakeCornerStack);
+                    robot.intake.startIntake();
                     setPathState(5);
                 }
                 break;
             case 5:
-                if (!follower.isBusy() || pathTimer.getElapsedTime() > 2000) {
+                if (pathWait(2000)) {
                     follower.followPath(paths.backUpFromIntakingCornerStack);
                     setPathState(6);
                 }
                 break;
             case 6:
-                if (!follower.isBusy() || pathTimer.getElapsedTime() > 250) {
+                if (pathWait(250)) {
                     follower.followPath(paths.goBackIntoCornerToIntake);
                     setPathState(7);
                 }
                 break;
             case 7:
-                if (!follower.isBusy() || pathTimer.getElapsedTime() > 250) {
+                if (pathWait(250)) {
                     robot.intake.stopIntake();
                     follower.followPath(paths.shootingPos);
                     setPathState(8);
                 }
                 break;
             case 8:
-                if (!follower.isBusy() || pathTimer.getElapsedTime() > 500) {
+                if (pathWait(500)) {
                     robot.gate.gateOpen();
                     setPathState(9);
                 }
                 break;
             case 9:
-                if (robot.shooter.reachedSpeed()) {
-                    robot.intake.startIntake();
-                } else {
-                    robot.intake.stopIntake();
-                }
-                if (pathTimer.getElapsedTime() > 4000) {
+                completed = robot.autonShoot(follower, 4000);
+                if (completed) {
                     robot.gate.gateClose();
                     follower.setMaxPower(1);
                     follower.followPath(paths.intakeCornerStack);
@@ -249,37 +233,33 @@ public class RedFarCorner extends OpMode {
                 }
                 break;
             case 10:
-                if (!follower.isBusy() || pathTimer.getElapsedTime() > 2000) {
+                if (pathWait(2000)) {
                     follower.followPath(paths.backUpFromIntakingCornerStack);
                     setPathState(11);
                 }
                 break;
             case 11:
-                if (!follower.isBusy() || pathTimer.getElapsedTime() > 250) {
+                if (pathWait(250)) {
                     follower.followPath(paths.goBackIntoCornerToIntake);
                     setPathState(12);
                 }
                 break;
             case 12:
-                if (!follower.isBusy() || pathTimer.getElapsedTime() > 500) {
+                if (pathWait(500)) {
                     robot.intake.stopIntake();
                     follower.followPath(paths.shootingPos);
                     setPathState(13);
                 }
                 break;
             case 13:
-                if (!follower.isBusy() && robot.shooter.reachedSpeed()) {
+                if (pathWait(500)) {
                     robot.gate.gateOpen();
                     setPathState(14);
                 }
                 break;
             case 14:
-                if (robot.shooter.reachedSpeed()) {
-                    robot.intake.startIntake();
-                } else {
-                    robot.intake.stopIntake();
-                }
-                if (pathTimer.getElapsedTime() > 3000) {
+                completed = robot.autonShoot(follower, 3000);
+                if (completed) {
                     robot.gate.gateClose();
                     follower.setMaxPower(1);
                     follower.followPath(paths.intakeCornerStack);

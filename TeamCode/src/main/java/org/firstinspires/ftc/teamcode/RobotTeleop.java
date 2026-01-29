@@ -129,16 +129,6 @@ public class RobotTeleop extends OpMode {
                 + Math.pow(Robot.current_goal_y - currentPose.getY(), 2));
     }
 
-    public int getTargetShooterRPM(double distance) {
-//        y=0.0000223365x^{4}-0.0107465x^{3}+1.87252x^{2}-134.7279x+4470.38504
-        double rpm = 0.0000223365 * Math.pow(distance, 4)
-                - 0.0107465 * Math.pow(distance, 3)
-                + 1.87252 * Math.pow(distance, 2)
-                - 134.7279 * distance + 4470.38504;
-        return (int) rpm;
-    }
-
-
     @Override
     public void loop() {
         double xInput = Math.abs(gamepad1.left_stick_x) > DEAD_ZONE ? -gamepad1.left_stick_x : 0;
@@ -167,8 +157,7 @@ public class RobotTeleop extends OpMode {
         }
 
         if (smartShooting) {
-            int targetRPM = getTargetShooterRPM(getDistanceFromGoal());
-            robot.shooter.startTargetShooterSpeed(targetRPM);
+            robot.shooter.startShooterbyDistance(getDistanceFromGoal());
             gate.gateOpen();
             if (robot.shooter.reachedSpeed()) {
                 if (!rapidTimerOn) {
@@ -189,8 +178,7 @@ public class RobotTeleop extends OpMode {
         }
 
         if (is_FlyWheelOn()) {
-            int targetRPM = getTargetShooterRPM(getDistanceFromGoal());
-            robot.shooter.startTargetShooterSpeed(targetRPM);
+            robot.shooter.startShooterbyDistance(getDistanceFromGoal());
         } else if (is_FlywheelOff()) {
             robot.shooter.stopShoot();
         }
@@ -227,7 +215,7 @@ public class RobotTeleop extends OpMode {
             .addData("Y: ", currentPose.getY())
             .addData(" Heading: ", Math.toDegrees(follower.getPose().getHeading()));
         telemetry.addLine()
-                .addData("RPM Target: ", getTargetShooterRPM(getDistanceFromGoal()))
+                .addData("RPM Target: ", robot.shooter.getRpmbyDistance(getDistanceFromGoal()))
                 .addData("Actual: ", robot.shooter.getCurrentRPM());
         telemetry.addData("Goal Distance: ", getDistanceFromGoal());
 //        telemetry.addData("Drive X", xInput);
