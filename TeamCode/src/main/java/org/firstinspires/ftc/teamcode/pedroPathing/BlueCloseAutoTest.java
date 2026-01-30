@@ -110,6 +110,12 @@ public class BlueCloseAutoTest extends OpMode {
         panelsTelemetry.update(telemetry);
     }
 
+    private boolean pathWait(long timeoutMs) {
+        if(!follower.isBusy() || pathTimer.getElapsedTime() > timeoutMs)  {
+            return true;
+        }
+        return false;
+    }
     // ---------------- PATHS ----------------
 
     public static class Paths {
@@ -241,129 +247,103 @@ public class BlueCloseAutoTest extends OpMode {
     // ---------------- STATE MACHINE ----------------
 
     public int autonomousPathUpdate() {
-
+        boolean completed = false;
         switch (pathState) {
 
             case 0:
-                robot.shooter.startAutoCloseBlueShoot();
                 follower.followPath(paths.scorePreload);
-                robot.gate.gateOpen();
+                robot.shooter.startAutoCloseBlueShoot();
+
                 setPathState(1);
                 break;
             case 1:
-                if (!follower.isBusy() && robot.shooter.reachedSpeed()){
-//                    robot.shooter.startAutoCloseBlueShoot();
-                    robot.intake.startIntake();
-                    setPathState(2);
+                if (pathWait(2000)) {
+                    completed = robot.autonShoot(follower, 3000);
+                    if (completed) { // shoot preload
+                        robot.intake.startIntake();
+                        follower.followPath(paths.initialStack1);
+                        setPathState(2);
+                    }
                 }
+
                 break;
             case 2:
-                if (pathTimer.getElapsedTime() > 1500) {
-                    robot.shooter.startAutoCloseBlueShoot();
-                    follower.setMaxPower(1.0);
-                    robot.gate.gateClose();
-                    follower.followPath(paths.initialStack1);
-                    setPathState(20);
-                }
-                break;
-            case 20:
-                if (!follower.isBusy()){
+                if (pathWait(1500)){
+                    //robot.shooter.startAutoCloseBlueShoot();
                     follower.followPath(paths.intakeStack1);
                     setPathState(4);
                 }
                 break;
-
-            case 3:
-                if (!follower.isBusy()) {
-                    follower.setMaxPower(1.0);
-                    robot.intake.stopIntake();
-//                    follower.followPath(paths.openGate);
-                    setPathState(4);
-                }
-                break;
-
             case 4:
-                if (!follower.isBusy() || pathTimer.getElapsedTime()>3000) {
-                    robot.intake.stopIntake();
+                if (pathWait(3000)) {
                     follower.followPath(paths.scoreStack1);
-                    robot.shooter.startAutoCloseBlueShoot();
                     setPathState(5);
                 }
                 break;
 
             case 5:
-                if (!follower.isBusy() && robot.shooter.reachedSpeed() && pathTimer.getElapsedTime()>3000) {
-                    robot.intake.feedBalls();
-                    robot.gate.gateOpen();
-                    follower.setMaxPower(1.0);
-                    setPathState(6);
+                if (pathWait(2000)) {
+                    completed = robot.autonShoot(follower, 3000);
+                    if (completed) {
+                        follower.followPath(paths.initialStack2);
+                       // robot.shooter.startAutoCloseBlueShoot();
+                        robot.intake.startIntake();
+                        setPathState(6);
+                    }
                 }
+
                 break;
 
             case 6:
-                if (pathTimer.getElapsedTime() > 2500) {
-                    robot.gate.gateClose();
-//                    robot.intake.stopIntake();
-                    follower.followPath(paths.initialStack2);
-                    setPathState(60);
-                }
-                break;
-
-            case 60:
-                if (!follower.isBusy()){
+                if (pathWait(1500)){
                     follower.followPath(paths.intakeStack2);
                     setPathState(7);
                 }
                 break;
 
             case 7:
-                if (!follower.isBusy() || pathTimer.getElapsedTime() > 2000) {
-                    follower.setMaxPower(1.0);
+                if (pathWait(2000)) {
                     follower.followPath(paths.scoreStack2);
-                    robot.shooter.startAutoCloseBlueShoot();
                     setPathState(8);
                 }
                 break;
 
             case 8:
-                if ((!follower.isBusy() && pathTimer.getElapsedTime() > 3000) && robot.shooter.reachedSpeed()) {
-                    robot.intake.feedBalls();
-                    robot.gate.gateOpen();
-                    setPathState(9);
+                if (pathWait(2000)){
+                    completed = robot.autonShoot(follower, 3000);
+                    if (completed) {
+                        //robot.shooter.startAutoCloseBlueShoot();
+                        follower.followPath(paths.initialStack3);
+                        robot.intake.startIntake();
+                        setPathState(9);
+                    }
                 }
                 break;
+
 
             case 9:
-                if (pathTimer.getElapsedTime() > 1500) {
-                    follower.setMaxPower(1.0);
-                    robot.gate.gateClose();
-//                    robot.intake.stopIntake();
-                    follower.followPath(paths.initialStack3);
-                    setPathState(90);
-                }
-                break;
-
-            case 90:
-                if (!follower.isBusy()){
+                if (pathWait(2000)){
                     follower.followPath(paths.intakeStack3);
                     setPathState(10);
                 }
                 break;
 
             case 10:
-                if (!follower.isBusy() || pathTimer.getElapsedTime() > 5000) {
-                    robot.gate.gateClose();
-                    follower.setMaxPower(1.0);
+                if (pathWait(2000)) {
                     follower.followPath(paths.scoreStack3);
                     setPathState(11);
                 }
                 break;
             case 11:
-                if (!follower.isBusy() || pathTimer.getElapsedTime() > 5000) {
-                    robot.intake.feedBalls();
-                    robot.gate.gateOpen();
-                    setPathState(-1);
+                if (pathWait(2000)){
+                    completed = robot.autonShoot(follower, 4000);
+                    if (completed) { //shoot third stack
+                        //robot.shooter.startAutoCloseBlueShoot();
+                        follower.followPath(paths.initialStack2);
+                        setPathState(12);
+                    }
                 }
+
                 break;
 
             default:

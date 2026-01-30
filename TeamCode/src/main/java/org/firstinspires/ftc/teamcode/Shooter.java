@@ -134,7 +134,7 @@ public class Shooter {
 
     public boolean isSafeToContinueShooting(double distance) {
         double dynThreshold = speedThreshold; // Default
-        if (distance < 110) { // 8ft
+        if (distance < 130) { // 8ft
             dynThreshold = speedThreshold + closeShotVariance; // Add additional variance allowed for close shot
         } else {
             dynThreshold = speedThreshold + longShotVariance; // additional variance allowed for long shot
