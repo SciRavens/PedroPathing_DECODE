@@ -28,11 +28,11 @@ public class RedCloseAutoTest extends OpMode {
     public Follower follower;
     private int pathState;
     private Paths paths;
-    private String currentAlliance = "BLUE";
+    private String currentAlliance = "RED";
 
     // ---------------- POSES ----------------
 
-    private final Pose startPose = new Pose(33.5, 137, Math.toRadians(90));
+    private final Pose startPose = new Pose(111.706, 136.268, Math.toRadians(90));
     private final Pose scoringPose = new Pose(48, 96, Math.toRadians(90));
     private final Pose scoringPose2 = new Pose(60, 84, Math.toRadians(0)); // stopped here
     private final Pose scoringPose3 = new Pose(63, 71.5, Math.toRadians(180));
@@ -107,7 +107,12 @@ public class RedCloseAutoTest extends OpMode {
         panelsTelemetry.debug("Heading", follower.getPose().getHeading());
         panelsTelemetry.update(telemetry);
     }
-
+    private boolean pathWait(long timeoutMs) {
+        if(!follower.isBusy() || pathTimer.getElapsedTime() > timeoutMs)  {
+            return true;
+        }
+        return false;
+    }
     // ---------------- PATHS ----------------
 
     public static class Paths {
@@ -138,7 +143,7 @@ public class RedCloseAutoTest extends OpMode {
                             new BezierLine(
                                     new Pose(95.813, 95.719),
 
-                                    new Pose(96.030, 59.217)
+                                    new Pose(96.030, 66.217)
                             )
                     ).setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(0))
 
@@ -146,9 +151,9 @@ public class RedCloseAutoTest extends OpMode {
 
             intakeStack1 = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(96.030, 59.217),
+                                    new Pose(96.030, 66.217),
 
-                                    new Pose(134.184, 59.284)
+                                    new Pose(134.184, 66.284)
                             )
                     ).setTangentHeadingInterpolation()
 
@@ -166,7 +171,7 @@ public class RedCloseAutoTest extends OpMode {
 
             scoreStack1 = follower.pathBuilder().addPath(
                             new BezierCurve(
-                                    new Pose(128.538, 67.632),
+                                    new Pose(128.538, 66.284),
                                     new Pose(101.000, 74.445),
                                     new Pose(95.615, 95.779)
                             )
@@ -178,7 +183,7 @@ public class RedCloseAutoTest extends OpMode {
                             new BezierLine(
                                     new Pose(95.615, 95.779),
 
-                                    new Pose(95.756, 83.706)
+                                    new Pose(95.756, 90.706)
                             )
                     ).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
 
@@ -186,9 +191,9 @@ public class RedCloseAutoTest extends OpMode {
 
             intakeStack2 = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(95.756, 83.706),
+                                    new Pose(95.756, 90.706),
 
-                                    new Pose(130.355, 83.799)
+                                    new Pose(130.355, 90.799)
                             )
                     ).setTangentHeadingInterpolation()
 
@@ -196,7 +201,7 @@ public class RedCloseAutoTest extends OpMode {
 
             scoreStack2 = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(130.355, 83.799),
+                                    new Pose(130.355, 90.799),
 
                                     new Pose(95.793, 95.602)
                             )
@@ -208,7 +213,7 @@ public class RedCloseAutoTest extends OpMode {
                             new BezierLine(
                                     new Pose(95.793, 95.602),
 
-                                    new Pose(95.826, 35.301)
+                                    new Pose(95.826, 42.301)
                             )
                     ).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
 
@@ -216,9 +221,9 @@ public class RedCloseAutoTest extends OpMode {
 
             intakeStack3 = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(95.826, 35.301),
+                                    new Pose(95.826, 42.301),
 
-                                    new Pose(135.385, 35.258)
+                                    new Pose(135.385, 42.258)
                             )
                     ).setTangentHeadingInterpolation()
 
@@ -226,7 +231,7 @@ public class RedCloseAutoTest extends OpMode {
 
             scoreStack3 = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(135.385, 35.258),
+                                    new Pose(135.385, 42.258),
 
                                     new Pose(95.515, 95.672)
                             )
@@ -239,106 +244,103 @@ public class RedCloseAutoTest extends OpMode {
     // ---------------- STATE MACHINE ----------------
 
     public int autonomousPathUpdate() {
-
+        boolean completed = false;
         switch (pathState) {
 
             case 0:
-                robot.shooter.startAutoCloseBlueShoot();
                 follower.followPath(paths.scorePreload);
-                robot.gate.gateOpen();
+                robot.shooter.startAutoCloseBlueShoot();
+
                 setPathState(1);
                 break;
             case 1:
-                if (!follower.isBusy() && robot.shooter.reachedSpeed()){
-                    robot.shooter.startAutoMidBlueShoot();
-                    robot.intake.feedBalls();
-                    setPathState(2);
+                if (pathWait(2000)) {
+                    completed = robot.autonShoot(follower, 3000);
+                    if (completed) { // shoot preload
+                        robot.intake.startIntake();
+                        follower.followPath(paths.initialStack1);
+                        setPathState(2);
+                    }
                 }
+
                 break;
             case 2:
-                if (pathTimer.getElapsedTime() > 1500) {
-                    follower.setMaxPower(0.75);
-                    robot.gate.gateClose();
+                if (pathWait(500)){
+                    //robot.shooter.startAutoCloseBlueShoot();
                     follower.followPath(paths.intakeStack1);
-                    setPathState(3);
-                }
-                break;
-
-            case 3:
-                if (!follower.isBusy()) {
-                    follower.setMaxPower(0.75);
-                    robot.intake.stopIntake();
-                    follower.followPath(paths.openGate);
                     setPathState(4);
                 }
                 break;
-
             case 4:
-                if (!follower.isBusy() || pathTimer.getElapsedTime()>1500) {
+                if (pathWait(3000)) {
                     follower.followPath(paths.scoreStack1);
                     setPathState(5);
                 }
                 break;
 
             case 5:
-                if (!follower.isBusy() && robot.shooter.reachedSpeed()) {
-                    robot.shooter.startAutoCloseBlueShoot();
-                    robot.intake.feedBalls();
-                    robot.gate.gateOpen();
-                    follower.setMaxPower(0.75);
-                    setPathState(6);
+                if (pathWait(2000)) {
+                    completed = robot.autonShoot(follower, 4000);
+                    if (completed) {
+                        follower.followPath(paths.initialStack2);
+                        // robot.shooter.startAutoCloseBlueShoot();
+                        robot.intake.startIntake();
+                        setPathState(6);
+                    }
                 }
+
                 break;
 
             case 6:
-                if (pathTimer.getElapsedTime() > 2500) {
-                    robot.gate.gateClose();
-//                    robot.intake.stopIntake();
+                if (pathWait(500)){
                     follower.followPath(paths.intakeStack2);
                     setPathState(7);
                 }
                 break;
 
             case 7:
-                if (!follower.isBusy() || pathTimer.getElapsedTime() > 2000) {
-                    follower.setMaxPower(1.0);
+                if (pathWait(2000)) {
                     follower.followPath(paths.scoreStack2);
                     setPathState(8);
                 }
                 break;
 
             case 8:
-                if ((!follower.isBusy() || pathTimer.getElapsedTime() > 3500) && robot.shooter.reachedSpeed()) {
-                    robot.intake.feedBalls();
-                    robot.gate.gateOpen();
-                    setPathState(9);
+                if (pathWait(2000)){
+                    completed = robot.autonShoot(follower, 3000);
+                    if (completed) {
+                        //robot.shooter.startAutoCloseBlueShoot();
+                        follower.followPath(paths.initialStack3);
+                        robot.intake.startIntake();
+                        setPathState(9);
+                    }
                 }
                 break;
 
+
             case 9:
-                if (pathTimer.getElapsedTime() > 1500) {
-                    follower.setMaxPower(0.75);
-                    robot.gate.gateClose();
-//                    robot.intake.stopIntake();
+                if (pathWait(3000)){
                     follower.followPath(paths.intakeStack3);
                     setPathState(10);
                 }
                 break;
 
             case 10:
-                if (!follower.isBusy() || pathTimer.getElapsedTime() > 5000) {
-                    robot.gate.gateClose();
-                    follower.setMaxPower(1.0);
+                if (pathWait(3000)) {
                     follower.followPath(paths.scoreStack3);
-                    setPathState(11);
+                    setPathState(-1);
                 }
                 break;
             case 11:
-                if (!follower.isBusy() || pathTimer.getElapsedTime() > 5000) {
-                    robot.intake.feedBalls();
-                    robot.gate.gateOpen();
-                    setPathState(-1);
+                if (pathWait(2000)){
+                    completed = robot.autonShoot(follower, 4000);
+                    if (completed) { //shoot third stack
+                        //robot.shooter.startAutoCloseBlueShoot();
+                        follower.followPath(paths.initialStack2);
+                        setPathState(12);
+                    }
                 }
+
                 break;
 
             default:

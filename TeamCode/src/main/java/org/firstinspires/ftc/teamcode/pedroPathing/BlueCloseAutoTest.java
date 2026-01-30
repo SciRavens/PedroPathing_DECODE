@@ -37,7 +37,7 @@ public class BlueCloseAutoTest extends OpMode {
     private final Pose scoringPose2 = new Pose(60, 84, Math.toRadians(0)); // stopped here
     private final Pose scoringPose3 = new Pose(63, 71.5, Math.toRadians(180));
 
-    private final Pose intakePose1 = new Pose(9, 61.5, Math.toRadians(180));
+    private final Pose intakePose1 = new Pose(0, 61.5, Math.toRadians(180));
     private final Pose intakePose1Control1 = new Pose(45.5, 47.5);
     private final Pose intakePose1Control2 = new Pose(56, 64.5);
 
@@ -236,11 +236,12 @@ public class BlueCloseAutoTest extends OpMode {
                             new BezierLine(
                                     new Pose(13.037, 40.890),
 
-                                    new Pose(47.177, 96.542)
+                                    new Pose(20.836, 69.084)
                             )
                     ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(135))
 
                     .build();
+
         }
     }
 
@@ -268,7 +269,7 @@ public class BlueCloseAutoTest extends OpMode {
 
                 break;
             case 2:
-                if (pathWait(1500)){
+                if (pathWait(500)){
                     //robot.shooter.startAutoCloseBlueShoot();
                     follower.followPath(paths.intakeStack1);
                     setPathState(4);
@@ -295,7 +296,7 @@ public class BlueCloseAutoTest extends OpMode {
                 break;
 
             case 6:
-                if (pathWait(1500)){
+                if (pathWait(500)){
                     follower.followPath(paths.intakeStack2);
                     setPathState(7);
                 }
@@ -322,16 +323,16 @@ public class BlueCloseAutoTest extends OpMode {
 
 
             case 9:
-                if (pathWait(2000)){
+                if (pathWait(3000)){
                     follower.followPath(paths.intakeStack3);
                     setPathState(10);
                 }
                 break;
 
             case 10:
-                if (pathWait(2000)) {
+                if (pathWait(3000)) {
                     follower.followPath(paths.scoreStack3);
-                    setPathState(11);
+                    setPathState(-1);
                 }
                 break;
             case 11:
