@@ -9,17 +9,16 @@ import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.PathChain;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import org.firstinspires.ftc.teamcode.SavePosition;
 import org.firstinspires.ftc.teamcode.Vision;
 import org.firstinspires.ftc.teamcode.Robot;
 import com.pedropathing.util.Timer;
-@Disabled
-@Autonomous(name = "Red Far Corner", group = "Autonomous", preselectTeleOp = "RobotTeleop")
+
+@Autonomous(name = "Red Far Corner Only", group = "Autonomous", preselectTeleOp = "RobotTeleop")
 @Configurable
-public class RedFarCorner extends OpMode {
+public class RedFarCornerV2 extends OpMode {
 
     private TelemetryManager panelsTelemetry;
     private Timer pathTimer, opmodeTimer;
@@ -171,10 +170,8 @@ public class RedFarCorner extends OpMode {
             case 0:
                 completed = robot.autonShoot(follower, 5000);
                 if (completed) {
-                    robot.intake.startIntake();
                     follower.followPath(paths.intakeCornerStack, true);
-                    follower.followPath(paths.backUpFromIntakingCornerStack);
-                    follower.followPath(paths.goBackIntoCornerToIntake);
+                    robot.intake.startIntake();
                     setPathState(2);
                 }
                 break;
