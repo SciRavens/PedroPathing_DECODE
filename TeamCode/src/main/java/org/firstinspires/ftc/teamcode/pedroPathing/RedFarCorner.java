@@ -170,8 +170,10 @@ public class RedFarCorner extends OpMode {
             case 0:
                 completed = robot.autonShoot(follower, 5000);
                 if (completed) {
-                    follower.followPath(paths.intakeThirdStack, true);
                     robot.intake.startIntake();
+                    follower.followPath(paths.intakeCornerStack, true);
+                    follower.followPath(paths.backUpFromIntakingCornerStack);
+                    follower.followPath(paths.goBackIntoCornerToIntake);
                     setPathState(2);
                 }
                 break;
@@ -179,7 +181,7 @@ public class RedFarCorner extends OpMode {
             case 2:
                 if (pathWait(2500)) {
                     robot.intake.stopIntake();
-                    follower.followPath(paths.shootThirdStack, true);
+                    follower.followPath(paths.shootingPos, true);
                     setPathState(3);
                 }
                 break;
