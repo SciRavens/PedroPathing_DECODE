@@ -96,7 +96,7 @@ public class RedFar12 extends OpMode {
 
     @Override
     public void loop() {
-        vision.update();
+        vision.update(robot.getDistanceFromGoal(follower));
         follower.update();
         autonomousPathUpdate();
         SavePosition.saveCurrentPosition(follower.getPose());
@@ -123,7 +123,7 @@ public class RedFar12 extends OpMode {
 
         switch (pathState) {
             case 0: // start shooter, then go for third pattern
-                completed = robot.autonShoot(follower, 3000);
+                completed = robot.autonShoot(follower, 4000);
                 if (completed) {
                     follower.followPath(goToThirdPattern, true);
                     robot.intake.startIntake();

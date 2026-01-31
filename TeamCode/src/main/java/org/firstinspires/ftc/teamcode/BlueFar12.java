@@ -38,6 +38,7 @@ public class BlueFar12 extends OpMode {
 
     @Override
     public void init() {
+        Robot.currentAlliance = "BLUE";
         // Timers
         pathTimer = new Timer();
         opmodeTimer = new Timer();
@@ -94,7 +95,7 @@ public class BlueFar12 extends OpMode {
 
     @Override
     public void loop() {
-        vision.update();
+        vision.update(robot.getDistanceFromGoal(follower));
         follower.update();
         autonomousPathUpdate();
         SavePosition.saveCurrentPosition(follower.getPose());
@@ -121,7 +122,7 @@ public class BlueFar12 extends OpMode {
 
         switch (pathState) {
             case 0: // start shooter
-                completed = robot.autonShoot(follower, 3000);
+                completed = robot.autonShoot(follower, 4500);
                 if (completed) {
                     follower.followPath(goToThirdPattern, true);
                     robot.intake.startIntake();

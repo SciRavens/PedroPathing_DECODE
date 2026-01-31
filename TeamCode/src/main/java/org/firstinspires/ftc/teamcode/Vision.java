@@ -48,13 +48,13 @@ public class Vision {
     // - Positive value = aim MORE TO THE LEFT of where tag appears
     // - Negative value = aim MORE TO THE RIGHT of where tag appears
     // - Start with 0, then adjust based on where shots land at the far position
-    private static final double BLUE_AIM_OFFSET_DEGREES = -0.0;
-    private static final double RED_AIM_OFFSET_DEGREES = -5.0;
+    private static double BLUE_AIM_OFFSET_DEGREES = -5.0;
+    private static double RED_AIM_OFFSET_DEGREES = -15.0;
     private double current_aim_offset = 0;
 
     // Distance threshold for applying offset (in FEET)
     // Offset is only applied when tag is farther than this distance
-    private static final double FAR_ZONE_THRESHOLD_FEET = 8.0;
+    private static final double FAR_ZONE_THRESHOLD_INCHES = 96.0;
 
     // Optional: Scale the offset based on how far off-center the tag is (viewing angle)
     // When tag is centered (0 degrees), no offset is applied
@@ -82,11 +82,16 @@ public class Vision {
         this.telemetry = telemetry;
     }
 
+    public void setOffset(double offset) {
+        current_aim_offset = offset;
+        //this.update();
+    }
+
     public void startCentering() { this.isCentering = true; }
     public void startTracking() { this.isCentering = false; }
     public void toggleCentering() { this.isCentering = !this.isCentering; }
 
-    public void update() {
+    public void update(double distance) {
         // 1. GET CHASSIS VELOCITY (PedroPathing)
         // PedroPathing returns Radians/Sec. We convert to Degrees/Sec.
         double robotAngularVelRad = follower.getAngularVelocity();
@@ -158,7 +163,7 @@ public class Vision {
                         // Only applies when tag is beyond the distance threshold
                         double aimOffset = 0.0;
 
-                        if (distanceFeet > FAR_ZONE_THRESHOLD_FEET) {
+                        if (distance >= FAR_ZONE_THRESHOLD_INCHES) {
                             // In far zone - apply offset compensation
                             aimOffset = current_aim_offset;
 

@@ -14,11 +14,12 @@ public class Robot {
     public static final int RED_GOAL_Y = 144;
     public static final int BLUE_GOAL_X = 0;
     public static final int BLUE_GOAL_Y = 144;
-    public static String currentAlliance = "RED";
+    public static String currentAlliance = "BLUE";
     public int current_pipeline_id = PIPELINE_ID_RED;
     public int current_tag_id = RED_TARGET_TAG_ID;
     public int current_goal_x = RED_GOAL_X;
     public int current_goal_y = RED_GOAL_Y;
+    public Vision vision;
 
     private boolean is_autonShootTimerOn = false;
     private Timer shootTimer;

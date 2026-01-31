@@ -94,7 +94,7 @@ public class BlueCloseAutoTest extends OpMode {
 
     @Override
     public void loop() {
-        vision.update();
+        vision.update(robot.getDistanceFromGoal(follower));
         follower.update();
         SavePosition.saveCurrentPosition(follower.getPose());
 

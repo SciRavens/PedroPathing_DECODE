@@ -118,7 +118,7 @@ public class RobotTeleop extends OpMode {
         currentPose = follower.getPose();
         double distance  = robot.getDistanceFromGoal(follower);
         if (targetTracking_enabled) {
-            vision.update();
+            vision.update(robot.getDistanceFromGoal(follower));
         }
 
         if (is_SmartShooting()) {
