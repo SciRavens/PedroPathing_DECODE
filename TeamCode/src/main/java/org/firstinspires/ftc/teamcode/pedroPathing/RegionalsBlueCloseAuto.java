@@ -33,7 +33,7 @@ public class RegionalsBlueCloseAuto extends OpMode {
     // ---------------- POSES ----------------
     // Mirrored over x = 72: new_x = 144 - old_x
 
-    private final Pose startPose = new Pose(32.455, 136.428, Math.toRadians(90));
+    private final Pose startPose = new Pose(32.722, 136.589, Math.toRadians(90));
     private final Pose scoringPose = new Pose(96, 96, Math.toRadians(90));
     private final Pose scoringPose2 = new Pose(84, 84, Math.toRadians(180)); // stopped here
     private final Pose scoringPose3 = new Pose(81, 71.5, Math.toRadians(0));
@@ -125,62 +125,69 @@ public class RegionalsBlueCloseAuto extends OpMode {
         public PathChain intakeStack1;
         public PathChain scoreWithControl;
         public PathChain openGate;
-        public PathChain gateScore;
         public PathChain gateBack;
+        public PathChain gateScore;
 
         public Paths(Follower follower) {
-            // Mirrored coordinates: new_x = 144 - old_x
-            // Mirrored headings: 0° ↔ 180°, 45° ↔ 135°, 90° stays 90°
             scorePreload = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(32.455, 136.428),
-                                    new Pose(65, 80)
+                                    new Pose(32.722, 136.589),
+
+                                    new Pose(64.990, 77.900)
                             )
                     ).setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(135))
+
                     .build();
 
             intakeStack1 = follower.pathBuilder().addPath(
                             new BezierCurve(
-                                    new Pose(48.278, 96.398),
-                                    new Pose(43.761, 52.237),
-                                    new Pose(65.644, 58.819),
-                                    new Pose(1.201, 62.522)
+                                    new Pose(64.990, 77.900),
+                                    new Pose(63.940, 48.687),
+                                    new Pose(68.709, 63.893),
+                                    new Pose(0, 58.833)
                             )
                     ).setLinearHeadingInterpolation(Math.toRadians(135), Math.toRadians(180))
+
                     .build();
 
             scoreWithControl = follower.pathBuilder().addPath(
                             new BezierCurve(
-                                    new Pose(1.201, 59.522),
-                                    new Pose(48.691, 60.015),
-                                    new Pose(65, 80)
+                                    new Pose(0, 58.833),
+                                    new Pose(41.736, 62.467),
+                                    new Pose(64.963, 78.127)
                             )
                     ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(135))
+
                     .build();
 
             openGate = follower.pathBuilder().addPath(
                             new BezierCurve(
-                                    new Pose(48.331, 96.615),
-                                    new Pose(33.878, 38.130),
-                                    new Pose(6.361, 68.408)
+                                    new Pose(64.963, 78.127),
+                                    new Pose(17.069, 48.905),
+                                    new Pose(8.826, 65.324)
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(135), Math.toRadians(150))
+                    ).setLinearHeadingInterpolation(Math.toRadians(135), Math.toRadians(155))
+
                     .build();
+
             gateBack = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(6.361, 66.408),
-                                    new Pose(6.361, 62.408)
+                                    new Pose(8.826, 65.324),
+
+                                    new Pose(8.565, 54.890)
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(135), Math.toRadians(145))
+                    ).setLinearHeadingInterpolation(Math.toRadians(155), Math.toRadians(155))
+
                     .build();
 
             gateScore = follower.pathBuilder().addPath(
                             new BezierCurve(
-                                    new Pose(6.361, 62.408),
-                                    new Pose(33.744, 45.192),
-                                    new Pose(65, 80)
+                                    new Pose(8.565, 54.890),
+                                    new Pose(44.599, 55.064),
+                                    new Pose(64.900, 77.686)
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(145), Math.toRadians(135))
+                    ).setLinearHeadingInterpolation(Math.toRadians(155), Math.toRadians(155))
+
                     .build();
         }
     }
