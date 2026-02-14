@@ -172,7 +172,7 @@ public class RedCloseAutoTest extends OpMode {
             scoreStack1 = follower.pathBuilder().addPath(
                             new BezierCurve(
                                     new Pose(128.538, 63.284),
-                                    new Pose(101.000, 74.445),
+                                    new Pose(96.000, 74.445),
                                     new Pose(95.615, 95.779)
                             )
                     ).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(45))

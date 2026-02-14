@@ -175,7 +175,7 @@ public class BlueCloseAutoTest extends OpMode {
             scoreStack1 = follower.pathBuilder().addPath(
                             new BezierCurve(
                                     new Pose(8.829, 64.077),
-                                    new Pose(48.860, 71.067),
+                                    new Pose(53.860, 71.067),
                                     new Pose(48.060, 95.746)
                             )
                     ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(135))

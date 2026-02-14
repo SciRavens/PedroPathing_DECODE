@@ -9,17 +9,16 @@ import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.PathChain;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import org.firstinspires.ftc.teamcode.SavePosition;
 import org.firstinspires.ftc.teamcode.Vision;
 import org.firstinspires.ftc.teamcode.Robot;
 import com.pedropathing.util.Timer;
-@Disabled
-@Autonomous(name = "Blue Far Corner", group = "Autonomous", preselectTeleOp = "RobotTeleop")
+
+@Autonomous(name = "Blue Far Corner Only", group = "Autonomous", preselectTeleOp = "RobotTeleop")
 @Configurable
-public class BlueFarCorner extends OpMode {
+public class BlueFarCornerV2 extends OpMode {
 
     private TelemetryManager panelsTelemetry;
     private Timer pathTimer, opmodeTimer;
@@ -32,8 +31,8 @@ public class BlueFarCorner extends OpMode {
 
     // ---------------- POSES ----------------
 
-    private final Pose startPose = new Pose(63, 8, Math.toRadians(180));
-    private final Pose intakeThirdStackPos = new Pose(134, 83.3, Math.toRadians(0));
+    private final Pose startPose = new Pose(64, 8, Math.toRadians(180));
+    private final Pose intakeThirdStackPos = new Pose(10, 83.3, Math.toRadians(180));
 
 
     // ---------------- INIT ----------------
@@ -98,7 +97,7 @@ public class BlueFarCorner extends OpMode {
 
             intakeThirdStack = follower.pathBuilder().addPath(
                             new BezierCurve(
-                                    new Pose(63, 8),
+                                    new Pose(56.000, 8.000),
                                     new Pose(47.335, 41.823),
                                     new Pose(34.244, 34.388),
                                     new Pose(23.531, 36.297),
@@ -111,13 +110,13 @@ public class BlueFarCorner extends OpMode {
                             new BezierCurve(
                                     new Pose(12, 35.000),
                                     new Pose(49.933, 40.139),
-                                    new Pose(56.000, 8.000)
+                                    new Pose(56, 8.000)
                             )
                     ).setConstantHeadingInterpolation(Math.toRadians(180))
                     .build();
             intakeCornerStack = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(63, 8.000),
+                                    new Pose(56, 8.000),
                                     new Pose(8, 8.000)
                             )
                     ).setConstantHeadingInterpolation(Math.toRadians(180))
@@ -142,13 +141,13 @@ public class BlueFarCorner extends OpMode {
                             new BezierLine(
                                     new Pose(8, 8.000),
 
-                                    new Pose(63, 8.000)
+                                    new Pose(56.000, 8.000)
                             )
                     ).setConstantHeadingInterpolation(Math.toRadians(180))
                     .build();
             leave = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(63, 8.000),
+                                    new Pose(56, 8.000),
 
                                     new Pose(44, 8.000)
                             )
@@ -171,7 +170,7 @@ public class BlueFarCorner extends OpMode {
             case 0:
                 completed = robot.autonShoot(follower, 5000);
                 if (completed) {
-                    follower.followPath(paths.intakeThirdStack, true);
+                    follower.followPath(paths.intakeCornerStack, true);
                     robot.intake.startIntake();
                     setPathState(2);
                 }
@@ -180,7 +179,7 @@ public class BlueFarCorner extends OpMode {
             case 2:
                 if (pathWait(2500)) {
                     robot.intake.stopIntake();
-                    follower.followPath(paths.shootThirdStack, true);
+                    follower.followPath(paths.shootingPos, true);
                     setPathState(3);
                 }
                 break;
