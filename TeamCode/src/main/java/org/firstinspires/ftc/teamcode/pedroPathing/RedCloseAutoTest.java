@@ -143,7 +143,7 @@ public class RedCloseAutoTest extends OpMode {
                             new BezierLine(
                                     new Pose(95.813, 95.719),
 
-                                    new Pose(96.030, 66.217)
+                                    new Pose(96.030, 63.217)
                             )
                     ).setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(0))
 
@@ -151,9 +151,9 @@ public class RedCloseAutoTest extends OpMode {
 
             intakeStack1 = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(96.030, 66.217),
+                                    new Pose(96.030, 63.217),
 
-                                    new Pose(134.184, 66.284)
+                                    new Pose(134.184, 63.284)
                             )
                     ).setTangentHeadingInterpolation()
 
@@ -171,7 +171,7 @@ public class RedCloseAutoTest extends OpMode {
 
             scoreStack1 = follower.pathBuilder().addPath(
                             new BezierCurve(
-                                    new Pose(128.538, 66.284),
+                                    new Pose(128.538, 63.284),
                                     new Pose(101.000, 74.445),
                                     new Pose(95.615, 95.779)
                             )
@@ -183,7 +183,7 @@ public class RedCloseAutoTest extends OpMode {
                             new BezierLine(
                                     new Pose(95.615, 95.779),
 
-                                    new Pose(95.756, 90.706)
+                                    new Pose(95.756, 87.706)
                             )
                     ).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
 
@@ -191,9 +191,9 @@ public class RedCloseAutoTest extends OpMode {
 
             intakeStack2 = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(95.756, 90.706),
+                                    new Pose(95.756, 87.706),
 
-                                    new Pose(130.355, 90.799)
+                                    new Pose(130.355, 87.799)
                             )
                     ).setTangentHeadingInterpolation()
 
@@ -201,7 +201,7 @@ public class RedCloseAutoTest extends OpMode {
 
             scoreStack2 = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(130.355, 90.799),
+                                    new Pose(130.355, 87.799),
 
                                     new Pose(95.793, 95.602)
                             )
@@ -213,7 +213,7 @@ public class RedCloseAutoTest extends OpMode {
                             new BezierLine(
                                     new Pose(95.793, 95.602),
 
-                                    new Pose(95.826, 42.301)
+                                    new Pose(95.826, 39.301)
                             )
                     ).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
 
@@ -221,9 +221,9 @@ public class RedCloseAutoTest extends OpMode {
 
             intakeStack3 = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(95.826, 42.301),
+                                    new Pose(95.826, 39.301),
 
-                                    new Pose(135.385, 42.258)
+                                    new Pose(135.385, 39.258)
                             )
                     ).setTangentHeadingInterpolation()
 
@@ -231,7 +231,7 @@ public class RedCloseAutoTest extends OpMode {
 
             scoreStack3 = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(135.385, 42.258),
+                                    new Pose(135.385, 39.258),
 
                                     new Pose(95.515, 95.672)
                             )

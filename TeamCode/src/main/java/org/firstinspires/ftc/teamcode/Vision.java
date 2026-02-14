@@ -48,8 +48,8 @@ public class Vision {
     // - Positive value = aim MORE TO THE LEFT of where tag appears
     // - Negative value = aim MORE TO THE RIGHT of where tag appears
     // - Start with 0, then adjust based on where shots land at the far position
-    private static double BLUE_AIM_OFFSET_DEGREES = -5.0;
-    private static double RED_AIM_OFFSET_DEGREES = -15.0;
+    private static double BLUE_AIM_OFFSET_DEGREES = -5.0; //-5.0
+    private static double RED_AIM_OFFSET_DEGREES = 4.0; //4.0
     private double current_aim_offset = 0;
 
     // Distance threshold for applying offset (in FEET)
