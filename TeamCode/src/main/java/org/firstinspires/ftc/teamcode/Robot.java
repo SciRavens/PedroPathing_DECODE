@@ -104,7 +104,33 @@ public class Robot {
         }
         return false;
     }
+
+    public boolean autonRapidShootByDistance(Follower follower, long timeoutMs, double distance) {
+        gate.gateOpen();
+        shooter.startAutoCloseBlueShoot();
+
+        if (is_autonShootTimerOn) {
+            intake.feedBalls();
+        } else if (shooter.reachedSpeed()) {
+            shootTimer.resetTimer();
+            is_autonShootTimerOn = true;
+            intake.feedBalls();
+        } else {
+            intake.stopFeeding();
+        }
+
+        if (is_autonShootTimerOn && shootTimer.getElapsedTime() > timeoutMs) {
+            intake.stopFeeding();
+            gate.gateClose();
+            is_autonShootTimerOn = false;
+            return true;
+        }
+        return false;
+    }
     public boolean autonShoot(Follower follower, long timeoutMs) {
         return autonShootByDistance(follower, timeoutMs, getDistanceFromGoal(follower));
+    }
+    public boolean autonRapidShoot(Follower follower, long timeoutMs) {
+        return autonRapidShootByDistance(follower, timeoutMs, getDistanceFromGoal(follower));
     }
 }

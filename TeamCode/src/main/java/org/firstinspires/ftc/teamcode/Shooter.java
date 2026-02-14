@@ -22,7 +22,7 @@ public class Shooter {
     public final int autoCloseRed = 1000;
     public final int autoCloseBlue = 1150;
 
-    private int currentRPM = 0;
+    public int currentRPM = 0;
 
     public DcMotorEx shooterMotorFront;
     public DcMotorEx shooterMotorBack;
@@ -47,9 +47,9 @@ public class Shooter {
     // PID coefficients: [][P, I, D, F]
     private static final double[][] VELOCITY_PID_COEFFICIENTS = {
         // index 0: <= 1325
-        {250, 0, 0, 20.3},
+        {100, 0, 0, 21.1},
         // index 1: > 1325
-        {400, 0, 0, 18.5}
+        {100, 0, 0, 20.5}
     };
 
     private int getCoefficientIndex(int rpm) {
@@ -122,6 +122,7 @@ public class Shooter {
     public void startShooterbyDistance(double distance) {
         setRPM(getRpmbyDistance(distance));
     }
+    public void startRapidShooterByDistance(double distance){setRPM(getRpmbyDistance(distance));}
 
     public void stopShoot() {
         setRPM(shooterOffRPM);
