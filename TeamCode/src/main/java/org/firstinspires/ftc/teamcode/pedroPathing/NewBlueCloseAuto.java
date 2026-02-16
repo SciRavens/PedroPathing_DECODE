@@ -16,7 +16,8 @@ import org.firstinspires.ftc.teamcode.SavePosition;
 import org.firstinspires.ftc.teamcode.Vision;
 import org.firstinspires.ftc.teamcode.Robot;
 import com.pedropathing.util.Timer;
-@Disabled
+@Autonomous(name = "Blue Close Gate Auto", group = "Autonomous", preselectTeleOp = "RobotTeleop")
+@Configurable
 public class NewBlueCloseAuto extends OpMode {
 
     private TelemetryManager panelsTelemetry;
@@ -109,189 +110,198 @@ public class NewBlueCloseAuto extends OpMode {
     // ---------------- PATHS ----------------
 
     public class Paths {
-
-        public PathChain shootPreload;
-        public PathChain intakeStack1;
-        public PathChain openGate;
-        public PathChain scoreWithControl;
-        public PathChain intakeStack2;
-        public PathChain scoreStack2;
-        public PathChain intakeStack3;
-        public PathChain scoreStack3;
-        public PathChain scoreStack1;
+        public PathChain ScorePreload;
+        public PathChain IntakeStack1;
+        public PathChain OpenGate;
+        public PathChain ScoreStack1;
+        public PathChain IntakeStack2;
+        public PathChain ScoreStack2;
+        public PathChain IntakeStack3;
+        public PathChain ScoreStack3;
+        public PathChain FinishPath;
 
         public Paths(Follower follower) {
+            ScorePreload = follower.pathBuilder().addPath(
+                            new BezierLine(
+                                    new Pose(32.455, 136.428),
 
-            shootPreload = follower.pathBuilder()
-                    .addPath(new BezierLine(startPose, scoringPose))
-                    .setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(90))
+                                    new Pose(62.000, 82.000)
+                            )
+                    ).setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(135))
+
                     .build();
 
-            intakeStack1 = follower.pathBuilder()
-                    .addPath(new BezierCurve(
-                            scoringPose,
-                            intakePose1Control1,
-                            intakePose1Control2,
-                            intakePose1
-                    ))
-                    .setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(180))
+            IntakeStack1 = follower.pathBuilder().addPath(
+                            new BezierCurve(
+                                    new Pose(62.000, 82.000),
+                                    new Pose(58.400, 54.500),
+                                    new Pose(66.400, 60.000),
+                                    new Pose(0.500, 59.440)
+                            )
+                    ).setLinearHeadingInterpolation(Math.toRadians(135), Math.toRadians(180))
+
                     .build();
 
-            openGate = follower.pathBuilder()
-                    .addPath(new BezierCurve(
-                            intakePose1,
-                            openGateControlPoint,
-                            openGatePose
-                    ))
-                    .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
+            OpenGate = follower.pathBuilder().addPath(
+                            new BezierCurve(
+                                    new Pose(0.50, 59.440),
+                                    new Pose(32.339, 56.611),
+                                    new Pose(27.426, 63.260),
+                                    new Pose(9.518, 77.192)
+                            )
+                    ).setConstantHeadingInterpolation(Math.toRadians(180))
+
                     .build();
 
-            scoreWithControl = follower.pathBuilder()
-                    .addPath(new BezierCurve(
-                            openGatePose,
-                            shootControlPoint,
-                            scoringPose2
-                    ))
-                    .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(90))
-                    .build();
-            scoreStack1 = follower.pathBuilder()
-                    .addPath(new BezierCurve(
-                            openGatePose,
-                            shootControlPoint,
-                            scoringPose2
-                    ))
-                    .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
+            ScoreStack1 = follower.pathBuilder().addPath(
+                            new BezierLine(
+                                    new Pose(13.518, 77.192),
+
+                                    new Pose(61.900, 79.100)
+                            )
+                    ).setConstantHeadingInterpolation(Math.toRadians(180))
+
                     .build();
 
-            intakeStack2 = follower.pathBuilder()
-                    .addPath(new BezierLine(scoringPose2, intakePose2))
-                    .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
+            IntakeStack2 = follower.pathBuilder().addPath(
+                            new BezierCurve(
+                                    new Pose(61.900, 82.100),
+                                    new Pose(56.4,90),
+                                    new Pose(10, 87.738)
+                            )
+                    ).setTangentHeadingInterpolation()
+
                     .build();
 
-            scoreStack2 = follower.pathBuilder()
-                    .addPath(new BezierLine(intakePose2, scoringPose2))
-                    .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
+            ScoreStack2 = follower.pathBuilder().addPath(
+                            new BezierLine(
+                                    new Pose(14.655, 83.738),
+
+                                    new Pose(62.000, 81.600)
+                            )
+                    ).setConstantHeadingInterpolation(Math.toRadians(180))
+
                     .build();
 
-            intakeStack3 = follower.pathBuilder()
-                    .addPath(new BezierCurve(
-                            scoringPose,
-                            intakePose3Control1,
-                            intakePose3Control2,
-                            intakePose3
-                    ))
-                    .setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(180))
+            IntakeStack3 = follower.pathBuilder().addPath(
+                            new BezierCurve(
+                                    new Pose(62.000, 81.600),
+                                    new Pose(51.200, 28.100),
+                                    new Pose(67.600, 36.300),
+                                    new Pose(0.50, 35.400)
+                            )
+                    ).setConstantHeadingInterpolation(Math.toRadians(180))
+
                     .build();
 
-            scoreStack3 = follower.pathBuilder()
-                    .addPath(new BezierLine(intakePose3, scoringPose))
-                    .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(90))
+            ScoreStack3 = follower.pathBuilder().addPath(
+                            new BezierLine(
+                                    new Pose(0.50, 35.400),
+
+                                    new Pose(61.900, 82.300)
+                            )
+                    ).setConstantHeadingInterpolation(Math.toRadians(180))
+
+                    .build();
+
+            FinishPath = follower.pathBuilder().addPath(
+                            new BezierLine(
+                                    new Pose(61.900, 82.300),
+
+                                    new Pose(25.000, 77.000)
+                            )
+                    ).setConstantHeadingInterpolation(180)
+
                     .build();
         }
+    }
+
+    private boolean pathWait(long timeoutMs) {
+        if(!follower.isBusy() || pathTimer.getElapsedTime() > timeoutMs)  {
+            return true;
+        }
+        return false;
     }
 
     // ---------------- STATE MACHINE ----------------
 
     public int autonomousPathUpdate() {
+        boolean completed = false;
 
         switch (pathState) {
 
             case 0:
                 robot.shooter.startAutoCloseBlueShoot();
-                follower.followPath(paths.shootPreload);
-                robot.gate.gateOpen();
+                follower.followPath(paths.ScorePreload);
                 setPathState(1);
                 break;
             case 1:
-                if (!follower.isBusy() && robot.shooter.reachedSpeed()){
-                    robot.shooter.startAutoMidBlueShoot();
-                    robot.intake.startIntake();
-                    setPathState(2);
+                if (pathWait(1000)) {
+                    completed = robot.autonRapidShoot(follower, 1500);
+                    if (completed) { // shoot preload
+                        robot.intake.startIntake();
+                        follower.followPath(paths.IntakeStack1);
+                        setPathState(3);
+                    }
                 }
                 break;
-            case 2:
-                if (pathTimer.getElapsedTime() > 1500) {
-                    follower.setMaxPower(0.75);
-                    robot.gate.gateClose();
-                    follower.followPath(paths.intakeStack1);
-                    setPathState(3);
-                }
-                break;
-
             case 3:
-                if (!follower.isBusy()) {
-                    follower.setMaxPower(0.75);
-                    robot.intake.stopIntake();
-                    follower.followPath(paths.openGate);
+                if (pathWait(2750)) {
+                    follower.setMaxPower(1.0);
+                    follower.followPath(paths.OpenGate);
                     setPathState(4);
                 }
                 break;
-
             case 4:
-                if (!follower.isBusy() || pathTimer.getElapsedTime()>1500) {
-                    follower.followPath(paths.scoreStack1);
+                if (pathWait(2000)) {
+                    follower.followPath(paths.ScoreStack1);
                     setPathState(5);
                 }
                 break;
-
             case 5:
-                if (!follower.isBusy() && robot.shooter.reachedSpeed()) {
-                    robot.shooter.startAutoCloseBlueShoot();
-                    robot.intake.startIntake();
-                    robot.gate.gateOpen();
-                    follower.setMaxPower(0.75);
-                    setPathState(6);
+                if (pathWait(3000)) {
+                    completed = robot.autonRapidShoot(follower, 1500);
+                    if (completed) { // shoot preload
+                        robot.intake.startIntake();
+                        follower.followPath(paths.IntakeStack2);
+                        setPathState(7);
+                    }
                 }
                 break;
-
-            case 6:
-                if (pathTimer.getElapsedTime() > 2500) {
-                    robot.gate.gateClose();
-//                    robot.intake.stopIntake();
-                    follower.followPath(paths.intakeStack2);
-                    setPathState(7);
-                }
-                break;
-
             case 7:
-                if (!follower.isBusy() || pathTimer.getElapsedTime() > 2000) {
+                if (pathWait(2000)) {
                     follower.setMaxPower(1.0);
-                    follower.followPath(paths.scoreStack2);
+                    follower.followPath(paths.ScoreStack2);
                     setPathState(8);
                 }
                 break;
 
             case 8:
-                if ((!follower.isBusy() || pathTimer.getElapsedTime() > 3500) && robot.shooter.reachedSpeed()) {
-                    robot.intake.startIntake();
-                    robot.gate.gateOpen();
-                    setPathState(9);
+                if (pathWait(2250)) {
+                    completed = robot.autonRapidShoot(follower, 1500);
+                    if (completed) { // shoot preload
+                        robot.intake.startIntake();
+                        follower.followPath(paths.IntakeStack3);
+                        setPathState(10);
+                    }
                 }
                 break;
-
-            case 9:
-                if (pathTimer.getElapsedTime() > 1500) {
-                    follower.setMaxPower(0.75);
-                    robot.gate.gateClose();
-//                    robot.intake.stopIntake();
-                    follower.followPath(paths.intakeStack3);
-                    setPathState(10);
-                }
-                break;
-
             case 10:
-                if (!follower.isBusy() || pathTimer.getElapsedTime() > 5000) {
+                if (pathWait(3000)) {
                     robot.gate.gateClose();
                     follower.setMaxPower(1.0);
-                    follower.followPath(paths.scoreStack3);
+                    follower.followPath(paths.ScoreStack3);
                     setPathState(11);
                 }
                 break;
             case 11:
-                if (!follower.isBusy() || pathTimer.getElapsedTime() > 5000) {
-                    robot.intake.startIntake();
-                    robot.gate.gateOpen();
-                    setPathState(-1);
+                if (pathWait(2500)) {
+                    completed = robot.autonRapidShoot(follower, 1500);
+                    if (completed) { // shoot preload
+                        robot.intake.startIntake();
+                        follower.followPath(paths.FinishPath);
+                        setPathState(-1);
+                    }
                 }
                 break;
 

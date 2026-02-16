@@ -122,7 +122,7 @@ public class BlueFar12 extends OpMode {
 
         switch (pathState) {
             case 0: // start shooter
-                completed = robot.autonShoot(follower, 4500);
+                completed = robot.autonRapidShoot(follower, 4500);
                 if (completed) {
                     follower.followPath(goToThirdPattern, true);
                     robot.intake.startIntake();
@@ -137,7 +137,7 @@ public class BlueFar12 extends OpMode {
 //                }
 //                break;
             case 1:
-                if (pathWait(25000)){ // get first stack
+                if (pathWait(2500)){ // get first stack
                     follower.followPath(intakeThirdPattern, true);
                     setPathState(2);
                 }
@@ -156,7 +156,7 @@ public class BlueFar12 extends OpMode {
                 }
                 break;
             case 4:
-                completed = robot.autonShoot(follower, 4000);
+                completed = robot.autonRapidShoot(follower, 4000);
                 if (completed) {
                     robot.gate.gateClose();
                     follower.setMaxPower(1.0);
@@ -185,7 +185,7 @@ public class BlueFar12 extends OpMode {
                 }
                 break;
             case 8:
-                completed = robot.autonShoot(follower, 4000);
+                completed = robot.autonRapidShoot(follower, 4000);
                 if (completed) {
                     robot.gate.gateClose();
                     follower.setMaxPower(1.0);
@@ -214,7 +214,7 @@ public class BlueFar12 extends OpMode {
                 }
                 break;
             case 12:
-                completed = robot.autonShoot(follower, 4000);
+                completed = robot.autonRapidShoot(follower, 4000);
                 if (completed) {// shoot third stack
                     robot.gate.gateClose();
                     follower.followPath(endingAuton);

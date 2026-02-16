@@ -123,7 +123,7 @@ public class RedFar12 extends OpMode {
 
         switch (pathState) {
             case 0: // start shooter, then go for third pattern
-                completed = robot.autonShoot(follower, 4000);
+                completed = robot.autonRapidShoot(follower, 4000);
                 if (completed) {
                     follower.followPath(goToThirdPattern, true);
                     robot.intake.startIntake();
@@ -157,7 +157,7 @@ public class RedFar12 extends OpMode {
                 }
                 break;
             case 4:
-                completed = robot.autonShoot(follower, 4000);
+                completed = robot.autonRapidShoot(follower, 4000);
                 if (completed) { //shoot first stack, then go to second stack
                     robot.gate.gateClose();
                     follower.setMaxPower(1.0);
@@ -186,7 +186,7 @@ public class RedFar12 extends OpMode {
                 }
                 break;
             case 8:
-                completed = robot.autonShoot(follower, 4000);
+                completed = robot.autonRapidShoot(follower, 4000);
                 if (completed) { //shoot second stack
                     robot.gate.gateClose();
                     follower.setMaxPower(1.0);
@@ -215,7 +215,7 @@ public class RedFar12 extends OpMode {
                 }
                 break;
             case 12:
-                completed = robot.autonShoot(follower, 4000);
+                completed = robot.autonRapidShoot(follower, 4000);
                 if (completed) {// shoot third stack
                     robot.gate.gateClose();
                     follower.followPath(endingAuton);
