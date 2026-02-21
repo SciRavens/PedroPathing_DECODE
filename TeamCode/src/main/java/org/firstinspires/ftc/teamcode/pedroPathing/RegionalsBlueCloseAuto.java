@@ -33,7 +33,7 @@ public class RegionalsBlueCloseAuto extends OpMode {
     // ---------------- POSES ----------------
     // Mirrored over x = 72: new_x = 144 - old_x
 
-    private final Pose startPose = new Pose(32.722, 136.589, Math.toRadians(90));
+    private final Pose startPose = new Pose(25, 131, Math.toRadians(145));
     private final Pose scoringPose = new Pose(96, 96, Math.toRadians(90));
     private final Pose scoringPose2 = new Pose(84, 84, Math.toRadians(180)); // stopped here
     private final Pose scoringPose3 = new Pose(81, 71.5, Math.toRadians(0));
@@ -131,11 +131,11 @@ public class RegionalsBlueCloseAuto extends OpMode {
         public Paths(Follower follower) {
             scorePreload = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(32.722, 136.589),
+                                    new Pose(25, 131),
 
                                     new Pose(64.990, 77.900)
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(135))
+                    ).setLinearHeadingInterpolation(Math.toRadians(145), Math.toRadians(135))
 
                     .build();
 
@@ -156,7 +156,7 @@ public class RegionalsBlueCloseAuto extends OpMode {
                                     new Pose(41.736, 62.467),
                                     new Pose(64.963, 78.127)
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(135))
+                    ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
 
                     .build();
 
@@ -164,19 +164,19 @@ public class RegionalsBlueCloseAuto extends OpMode {
                             new BezierCurve(
                                     new Pose(64.963, 78.127),
                                     new Pose(17.069, 48.905),
-                                    new Pose(8.826, 65.324)
+                                    new Pose(8.826, 68.324)
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(135), Math.toRadians(155))
+                    ).setLinearHeadingInterpolation(Math.toRadians(135), Math.toRadians(160))
 
                     .build();
 
             gateBack = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(8.826, 65.324),
+                                    new Pose(8.826, 68.324),
 
-                                    new Pose(8.565, 54.890)
+                                    new Pose(8.565, 62.890)
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(155), Math.toRadians(155))
+                    ).setLinearHeadingInterpolation(Math.toRadians(160), Math.toRadians(155))
 
                     .build();
 
@@ -186,7 +186,7 @@ public class RegionalsBlueCloseAuto extends OpMode {
                                     new Pose(44.599, 55.064),
                                     new Pose(64.900, 77.686)
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(155), Math.toRadians(155))
+                    ).setLinearHeadingInterpolation(Math.toRadians(155), Math.toRadians(180))
 
                     .build();
         }
@@ -224,7 +224,7 @@ public class RegionalsBlueCloseAuto extends OpMode {
                 break;
 
             case 3:
-                if (pathWait(2000)) {
+                if (pathWait(1500)) {
                     completed = robot.autonRapidShoot(follower, 2000);
                     if (completed) { // shoot first stack
                         robot.intake.startIntake();
@@ -241,7 +241,7 @@ public class RegionalsBlueCloseAuto extends OpMode {
                 break;
 
             case 4:
-                if (pathWait(2500) && pathTimer.getElapsedTime()>3000) { // open gate
+                if (pathWait(2500) && pathTimer.getElapsedTime()>2000) { // open gate
                     robot.intake.stopIntake();
                     follower.followPath(paths.gateScore);
                     setPathState(5);
@@ -249,7 +249,7 @@ public class RegionalsBlueCloseAuto extends OpMode {
                 break;
 
             case 5:
-                if (pathWait(2000)) {
+                if (pathWait(1500)) {
                     completed = robot.autonRapidShoot(follower, 2000);
                     if (completed) { // shoot with gate open
                         robot.intake.startIntake();
@@ -266,7 +266,7 @@ public class RegionalsBlueCloseAuto extends OpMode {
                 break;
 
             case 6:
-                if (pathWait(2500) && pathTimer.getElapsedTime()>3000) { // open gate
+                if (pathWait(2500) && pathTimer.getElapsedTime()>2000) { // open gate
                     robot.intake.stopIntake();
                     follower.followPath(paths.gateScore);
                     setPathState(7);
@@ -274,7 +274,7 @@ public class RegionalsBlueCloseAuto extends OpMode {
                 break;
 
             case 7:
-                if (pathWait(2000)) {
+                if (pathWait(1500)) {
                     completed = robot.autonRapidShoot(follower, 2000);
                     if (completed) { // shoot with gate open
                         robot.intake.startIntake();
@@ -290,14 +290,14 @@ public class RegionalsBlueCloseAuto extends OpMode {
                 }
                 break;
             case 8:
-                if (pathWait(2500) && pathTimer.getElapsedTime()>3000) { // open gate
+                if (pathWait(2500) && pathTimer.getElapsedTime()>2000) { // open gate
                     robot.intake.stopIntake();
                     follower.followPath(paths.gateScore);
                     setPathState(9);
                 }
                 break;
             case 9:
-                if (pathWait(2000)) {
+                if (pathWait(1500)) {
                     completed = robot.autonRapidShoot(follower, 2000);
                     if (completed) { // shoot with gate open
                         robot.intake.startIntake();

@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -21,7 +22,7 @@ public class Intake {
         this.telemetry = telemetry;
         intakeMotor = hardwareMap.get(DcMotorEx.class,"intakeMotor");
         //intakeMotor.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
-        intakeMotor.setDirection(DcMotorEx.Direction.FORWARD);
+        intakeMotor.setDirection(DcMotorEx.Direction.REVERSE);
         intakeMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     }
 
