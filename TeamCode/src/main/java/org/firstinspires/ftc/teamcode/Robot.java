@@ -136,6 +136,31 @@ public class Robot {
     public boolean autonShoot(Follower follower, long timeoutMs) {
         return autonShootByDistance(follower, timeoutMs, getDistanceFromGoal(follower));
     }
+
+    public boolean TeleOpRapidShoot(Follower follower, long timeoutMs, double distance) {
+        gate.gateOpen();
+        shooter.startShooterbyDistance(distance);
+       if (shooter.reachedSpeed() && !is_autonShootTimerOn) {
+           telemetry.addLine("TeleOp Rapid Shoot On");
+           shootTimer.resetTimer();
+            is_autonShootTimerOn = true;
+            intake.feedBalls();
+        }
+
+        if (is_autonShootTimerOn && shootTimer.getElapsedTime() > timeoutMs) {
+            telemetry.addLine("TeleOp Rapid Shoot Off");
+            intake.stopIntake();
+            gate.gateClose();
+            is_autonShootTimerOn = false;
+            return true;
+        }
+        return false;
+    }
+    public boolean TeleOpShoot(Follower follower, long timeoutMs) {
+        return TeleOpRapidShoot(follower, timeoutMs, getDistanceFromGoal(follower));
+    }
+
+
     public boolean autonRapidShoot(Follower follower, long timeoutMs) {
         return autonRapidShootByDistance(follower, timeoutMs, getDistanceFromGoal(follower));
     }

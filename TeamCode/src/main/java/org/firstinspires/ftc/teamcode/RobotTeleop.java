@@ -59,7 +59,6 @@ public class RobotTeleop extends OpMode {
             Robot.currentAlliance = "RED";
         }
         robot = new Robot(hardwareMap, telemetry);
-        gate = new Gate(hardwareMap, telemetry);
 //        turretTracker = new TurretTracker(robot);
         vision = new Vision(hardwareMap, robot, follower, telemetry);
         telemetry.addData("Current Alliance: ", Robot.currentAlliance);
@@ -97,6 +96,7 @@ public class RobotTeleop extends OpMode {
     private boolean is_SmartShooting() {return gamepad2.triangle;}
 
     private boolean is_ReverseIntaking() {return gamepad2.right_bumper;}
+    private boolean cancel_smartShooting() { return gamepad2.x; }
 
     @Override
     public void loop() {
@@ -106,13 +106,16 @@ public class RobotTeleop extends OpMode {
         double turnInput = Math.abs(gamepad1.right_stick_x) > DEAD_ZONE ? -gamepad1.right_stick_x : 0;
 
         double powerScale = gamepad1.right_trigger > 0.5 ? 0.25 : 1.0;
+//        if (robot.isDriveTrainOverLoaded()) {
+//            powerScale = 0.1; // Tweak later
+//        }
         follower.updateErrors();
         follower.updateVectors();
         follower.setTeleOpDrive(
                 yInput * powerScale,  // forward/backward
                 xInput * powerScale,  // strafe
                 turnInput * powerScale, // rotation (negated)
-                true                     // robot-centric
+                false                     // robot-centric
         );
         follower.update();
         currentPose = follower.getPose();
@@ -126,18 +129,26 @@ public class RobotTeleop extends OpMode {
         }
 
         if (smartShooting) {
-            boolean completed = robot.autonShoot(follower, 4000);
+            boolean completed = robot.TeleOpShoot(follower, 2000);
+//            if (distance > 135) {
+//                completed = robot.autonRapidShoot(follower, 2000);
+//            }
             if (completed) {
                 smartShooting = false;
-                //robot.shooter.stopShoot();
-                robot.shooter.startPassiveShoot(); // Keep the flywheel running at lower speed
+                //robot.shooter.startPassiveShoot(); // Keep the flywheel running at lower speed
             }
+        }
+
+        if (cancel_smartShooting() && smartShooting) {
+            robot.gate.gateClose();
+            robot.intake.stopIntake();
+            smartShooting = false;
         }
 
         if (is_FlyWheelOn()) {
             robot.shooter.startShooterbyDistance(distance);
         } else if (is_FlywheelOff()) {
-            robot.shooter.stopShoot();
+            robot.shooter.startPassiveShoot();
         }
 
         if (is_Intaking()) {
@@ -148,10 +159,16 @@ public class RobotTeleop extends OpMode {
             robot.intake.stopIntake();
         }
 
+        if (gamepad2.dpad_up) {
+            targetTracking_enabled = true;
+        } else if (gamepad2.dpad_down) {
+                targetTracking_enabled = false;
+            }
+
         if (is_OpenGate()) {
-            gate.gateOpen();
+            robot.gate.gateOpen();
         } else if (is_CloseGate()) {
-            gate.gateClose();
+            robot.gate.gateClose();
         }
 
         // Turret control (fixed: check gamepad2 on both dpad sides)
@@ -165,12 +182,13 @@ public class RobotTeleop extends OpMode {
         robot.shooter.shooterLightUpdate();
         telemetry.addData("Current Alliance: ", Robot.currentAlliance);
         telemetry.addLine()
-            .addData("Goal X: ", robot.current_goal_x)
-            .addData(" Y: ", robot.current_goal_y);
+                .addData("Goal X: ", robot.current_goal_x)
+                .addData(" Y: ", robot.current_goal_y);
+        telemetry.addData("Tracking Target", targetTracking_enabled);
         telemetry.addLine()
-            .addData("Pose X: ", currentPose.getX())
-            .addData("Y: ", currentPose.getY())
-            .addData(" Heading: ", Math.toDegrees(follower.getPose().getHeading()));
+                .addData("Pose X: ", currentPose.getX())
+                .addData("Y: ", currentPose.getY())
+                .addData(" Heading: ", Math.toDegrees(follower.getPose().getHeading()));
         telemetry.addLine()
                 .addData("RPM Target: ", robot.shooter.getRpmbyDistance(distance))
                 .addData("Actual: ", robot.shooter.getCurrentRPM());
@@ -178,7 +196,7 @@ public class RobotTeleop extends OpMode {
 //        telemetry.addData("Drive X", xInput);
 //        telemetry.addData("Drive Y", yInput);
 //        telemetry.addData("Turn", turnInput);
-        telemetry.addData("Gate: ", gate.isGateClosed() ? "CLOSED" : "OPEN");
+        telemetry.addData("Gate: ", robot.gate.isGateClosed() ? "CLOSED" : "OPEN");
         telemetry.update();
     }
 

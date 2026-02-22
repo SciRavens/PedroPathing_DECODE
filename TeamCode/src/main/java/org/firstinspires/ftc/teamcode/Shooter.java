@@ -3,6 +3,8 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
+import java.util.TreeMap;
+import java.util.Map;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
@@ -28,10 +30,27 @@ public class Shooter {
     public DcMotorEx shooterMotorBack;
     public Servo shooterLight;
     private Telemetry telemetry;
-
+    private double lastTargetDistance = 0;
+    private final double DISTANCE_UPDATE_THRESHOLD = 2.0; // Inches to move before updating RPM
+    private final double RPM_TOLERANCE_LOCK = 50; // More lenient window once already "Ready"
+    private boolean wasAtSpeed = false; // Add this variable to the top of your class
     private double speedThreshold = 20; // Max variance allowed for initial shoot
     private double closeShotVariance = 20; // Additional variance allowed for the second and third shoot for close shot.
     private double longShotVariance = 0; // Additional variance allowed for the second and third shoot for long shot.
+    private static final TreeMap<Double, Double> SHOOTER_LUT = new TreeMap<>();
+
+    static {
+        // FORMAT: SHOOTER_LUT.put(DistanceInInches, TargetRPM);
+        // Replace these with your actual tested values!
+        SHOOTER_LUT.put(82.0, 1100.0);
+        SHOOTER_LUT.put(94.0, 1160.0);
+        SHOOTER_LUT.put(100.0, 1225.0);
+        SHOOTER_LUT.put(115.0, 1300.0);
+        //some more points in between could help with interpolation accuracy
+        SHOOTER_LUT.put(145.0, 1415.0);
+        SHOOTER_LUT.put(152.0, 1440.0);
+        SHOOTER_LUT.put(167.0, 1515.0);
+    }
 
     public Shooter(HardwareMap hardwareMap, Telemetry telemetry) {
         shooterMotorFront = hardwareMap.get(DcMotorEx.class, "shooterMotorFront");
@@ -113,14 +132,48 @@ public class Shooter {
 //        return (int) rpm;
 //    }
 
+//    public int getRpmbyDistance(double distance) {
+//        // Horner's method: Reduces 10 multiplications & 4 pow calls to just 4 multiplications
+//        // y = 4470.38504 - 134.7279x + 1.87252x^2 - 0.0107465x^3 + 0.0000223365x^4
+//        double rpm = 4470.38504 + distance * (-134.7279 + distance * (1.87252 + distance * (-0.0107465 + distance * 0.0000223365)));
+//        return (int) rpm;
+//    }
+
     public int getRpmbyDistance(double distance) {
-        // Horner's method: Reduces 10 multiplications & 4 pow calls to just 4 multiplications
-        // y = 4470.38504 - 134.7279x + 1.87252x^2 - 0.0107465x^3 + 0.0000223365x^4
-        double rpm = 4470.38504 + distance * (-134.7279 + distance * (1.87252 + distance * (-0.0107465 + distance * 0.0000223365)));
-        return (int) rpm;
+        // Handle empty table edge case
+        if (SHOOTER_LUT.isEmpty()) return 0;
+
+        // 1. Check if the distance is exactly in our table
+        if (SHOOTER_LUT.containsKey(distance)) {
+            return SHOOTER_LUT.get(distance).intValue();
+        }
+
+        // 2. Find the points immediately below and above the current distance
+        Map.Entry<Double, Double> lowEntry = SHOOTER_LUT.floorEntry(distance);
+        Map.Entry<Double, Double> highEntry = SHOOTER_LUT.ceilingEntry(distance);
+
+        // 3. Handle out-of-bounds (Clamping)
+        if (lowEntry == null) return highEntry.getValue().intValue(); // Too close
+        if (highEntry == null) return lowEntry.getValue().intValue();  // Too far
+
+        // 4. Perform Linear Interpolation
+        double x1 = lowEntry.getKey();
+        double y1 = lowEntry.getValue();
+        double x2 = highEntry.getKey();
+        double y2 = highEntry.getValue();
+
+        // Formula: y = y1 + (x - x1) * ((y2 - y1) / (x2 - x1))
+        double interpolatedRPM = y1 + (distance - x1) * ((y2 - y1) / (x2 - x1));
+
+        return (int) interpolatedRPM;
     }
     public void startShooterbyDistance(double distance) {
-        setRPM(getRpmbyDistance(distance));
+        // Only update the target if we moved 2+ inches OR if the shooter was off
+        if (Math.abs(distance - lastTargetDistance) > DISTANCE_UPDATE_THRESHOLD || currentRPM == 0) {
+            int targetRPM = getRpmbyDistance(distance);
+            setRPM(targetRPM);
+            lastTargetDistance = distance;
+        }
     }
     public void startRapidShooterByDistance(double distance){setRPM(getRpmbyDistance(distance));}
 
@@ -128,9 +181,15 @@ public class Shooter {
         setRPM(shooterOffRPM);
         shooterLight.setPosition(0);
     }
-
     public boolean reachedSpeed() {
-        return Math.abs(getCurrentRPM() - currentRPM) <= speedThreshold;
+        double error = Math.abs(getCurrentRPM() - currentRPM);
+
+        // If we were already at speed, use the looser lock.
+        // If we weren't, we must get within the tight threshold first.
+        double activeThreshold = wasAtSpeed ? RPM_TOLERANCE_LOCK : speedThreshold;
+
+        wasAtSpeed = (error <= activeThreshold);
+        return wasAtSpeed;
     }
 
     public boolean isSafeToContinueShooting(double distance) {

@@ -14,7 +14,7 @@ public class FlywheelTuner extends OpMode {
     public DcMotorEx shooterMotor;
     public Robot robot;
 
-    double shooterCloseRPM = 1125;
+    double shooterCloseRPM = 1175;
     double shooterFarRPM = 1440;
     double currTargetVelocity = shooterFarRPM;
     double F = 0.0;// 18.2
