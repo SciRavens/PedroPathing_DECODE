@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.pedropathing.control.PIDFController;
+import com.pedropathing.control.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -28,6 +30,11 @@ public class Turret {
     // The new constant for Pedro Pathing math (2 * PI replaces 360)
     private static final double TICKS_PER_RADIAN = (TICKS_PER_REV_MOTOR * EXTERNAL_GEAR_REDUCTION) / (2 * Math.PI);
 
+    // The new constant for Pedro Pathing math (2 * PI replaces 360)
+    private static final double TICKS_PER_RADIAN = (TICKS_PER_REV_MOTOR * EXTERNAL_GEAR_REDUCTION) / (2 * Math.PI);
+
+    public PIDFController turretPIDF;
+
     public Turret(HardwareMap hardwareMap, Telemetry telemetry) {
         // Initialize the motor
         // Ensure your config file names this "turretMotor"
@@ -50,6 +57,7 @@ public class Turret {
         // 4. Mode: Run Without Encoder allows us to use raw power for our Custom PID
         // (We read the encoder manually in the Vision class)
         turretMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        turretPIDF = new PIDFController(new PIDFCoefficients(1.5, 0.0, 0.1, 0.0));
     }
 
     /**

@@ -121,7 +121,8 @@ public class RobotTeleop extends OpMode {
         currentPose = follower.getPose();
         double distance  = robot.getDistanceFromGoal(follower);
         if (targetTracking_enabled) {
-            vision.update(robot.getDistanceFromGoal(follower));
+           // vision.update(robot.getDistanceFromGoal(follower));
+            vision.startTurretTracking();
         }
 
         if (is_SmartShooting()) {
@@ -162,8 +163,9 @@ public class RobotTeleop extends OpMode {
         if (gamepad2.dpad_up) {
             targetTracking_enabled = true;
         } else if (gamepad2.dpad_down) {
-                targetTracking_enabled = false;
-            }
+            targetTracking_enabled = false;
+        }
+
 
         if (is_OpenGate()) {
             robot.gate.gateOpen();
@@ -205,4 +207,6 @@ public class RobotTeleop extends OpMode {
         robot.shooter.stopShoot();
         robot.intake.stopIntake();
     }
+
+
 }

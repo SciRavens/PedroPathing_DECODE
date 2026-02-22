@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.pedropathing.follower.Follower;
+import com.pedropathing.geometry.Pose;
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
@@ -241,5 +242,55 @@ public class Vision {
 //        telemetry.addData("Vision/Err", "%.2f", lastError);
 //        telemetry.addData("Vision/Power", "%.2f", outputPower);
 //        telemetry.addData("Vision/Angle", "%.1f", currentTurretAngle);
+    }
+
+
+
+    public void startTurretTracking() {
+        Pose currentPose = follower.getPose();
+        double robotHeading = currentPose.getHeading();
+
+        // 1. Calculate the global angle to the goal
+        double deltaX = robot.current_goal_x - currentPose.getX();
+        double deltaY = robot.current_goal_y - currentPose.getY();
+        double fieldTargetAngle = Math.atan2(deltaY, deltaX);
+        telemetry.addData("ATAN2:", fieldTargetAngle);
+
+        // 2. Calculate the target angle for the turret relative to the chassis
+        double targetTurretAngle = angleWrap(fieldTargetAngle - robotHeading);
+        telemetry.addData("TARGET TURRET ANGLE:", targetTurretAngle);
+
+        // 3. Enforce your 180-degree physical limits
+        double maxLimit = Math.toRadians(180);
+        targetTurretAngle = Math.max(-maxLimit, Math.min(maxLimit, targetTurretAngle));
+        telemetry.addData("CLAMPED ANGLE: ", targetTurretAngle);
+
+        // -----------------------------------------------------------------
+        // THE FIX: The missing Feedback Loop!
+        // -----------------------------------------------------------------
+        // 4. Get the CURRENT angle of the turret from your hardware encoder
+        // (Replace getTurretAngleRadians() with whatever method you use to read your motor ticks)
+        double currentTurretAngle = turret.getTurretAngleRadians();
+        telemetry.addData("CURRENT TURRET ANGLE Degrees: ", turret.getDegrees());
+
+        // 5. Calculate the exact, shortest-path distance between where we are and where we want to be
+        double error = angleWrap(targetTurretAngle - currentTurretAngle);
+        telemetry.addData("PID ERROR:", error);
+
+        // 6. Send the TRUE error to the PID!
+        turret.turretPIDF.updateError(error);
+        double power = turret.turretPIDF.run(); // Calculate the power
+
+        //turret.setTurretPower(-power);
+
+        // Telemetry
+        telemetry.addData("SET TURRET POWER:", -power);
+        telemetry.addData("CURRENT TURRET ANGLE:", currentTurretAngle);
+    }
+
+    private double angleWrap(double radians) {
+        while (radians > Math.PI) radians -= 2 * Math.PI;
+        while (radians < -Math.PI) radians += 2 * Math.PI;
+        return radians;
     }
 }
