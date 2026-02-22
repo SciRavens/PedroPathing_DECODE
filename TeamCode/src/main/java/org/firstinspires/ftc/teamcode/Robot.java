@@ -111,7 +111,7 @@ public class Robot {
             shooter.startAutoCloseBlueShoot();
         } else if (currentAlliance.equals("RED") && distance < 96){
             shooter.startAutoCloseRedShoot();
-        } else if (distance > 96) {
+        } else {
             shooter.startAutonFarShoot();
         }
 
