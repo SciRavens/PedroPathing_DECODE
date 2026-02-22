@@ -112,7 +112,11 @@ public class RegionalsBlueCloseAuto extends OpMode {
     }
 
     private boolean pathWait(long timeoutMs) {
-        if (!follower.isBusy() || pathTimer.getElapsedTime() > timeoutMs) {
+        Pose targetPose = follower.getPose();
+        double deltaX = Math.abs(follower.getPose().getX() - targetPose.getX());
+        double deltaY = Math.abs(follower.getPose().getY() - targetPose.getY());
+        double tolerance = 2.0;
+        if (pathTimer.getElapsedTime() > timeoutMs || (deltaX < tolerance && deltaY < tolerance)) {
             return true;
         }
         return false;
