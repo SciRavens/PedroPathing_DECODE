@@ -42,9 +42,10 @@ public class Shooter {
     static {
         // FORMAT: SHOOTER_LUT.put(DistanceInInches, TargetRPM);
         // Replace these with your actual tested values!
-        SHOOTER_LUT.put(82.0, 1100.0);
-        SHOOTER_LUT.put(94.0, 1160.0);
-        SHOOTER_LUT.put(100.0, 1225.0);
+        SHOOTER_LUT.put(53.0, 1100.0);//
+        SHOOTER_LUT.put(63.0, 1100.0);//
+        SHOOTER_LUT.put(82.0, 1175.0);//
+        SHOOTER_LUT.put(100.0, 1225.0);//
         SHOOTER_LUT.put(115.0, 1300.0);
         //some more points in between could help with interpolation accuracy
         SHOOTER_LUT.put(145.0, 1415.0);

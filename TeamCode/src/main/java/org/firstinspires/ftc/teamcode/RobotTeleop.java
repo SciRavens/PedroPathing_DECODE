@@ -115,14 +115,14 @@ public class RobotTeleop extends OpMode {
                 yInput * powerScale,  // forward/backward
                 xInput * powerScale,  // strafe
                 turnInput * powerScale, // rotation (negated)
-                false                     // robot-centric
+                true                     // robot-centric
         );
         follower.update();
         currentPose = follower.getPose();
         double distance  = robot.getDistanceFromGoal(follower);
         if (targetTracking_enabled) {
-           // vision.update(robot.getDistanceFromGoal(follower));
-            vision.startTurretTracking();
+            vision.update(robot.getDistanceFromGoal(follower));
+//            vision.startTurretTracking();
         }
 
         if (is_SmartShooting()) {

@@ -88,7 +88,7 @@ public class ShooterRPMTest extends OpMode {
 //        telemetry.addData("Current Hood position: ", hoodservo.getPosition());
         telemetry.update();
 //        follower.update();
-        vision.update(robot.getDistanceFromGoal(follower));
+//        vision.update(robot.getDistanceFromGoal(follower));
     }
 }
 

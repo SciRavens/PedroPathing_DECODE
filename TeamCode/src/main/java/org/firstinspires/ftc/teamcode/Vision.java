@@ -281,10 +281,10 @@ public class Vision {
         turret.turretPIDF.updateError(error);
         double power = turret.turretPIDF.run(); // Calculate the power
 
-        //turret.setTurretPower(-power);
+        turret.setTurretPower(power * 0.45);
 
         // Telemetry
-        telemetry.addData("SET TURRET POWER:", -power);
+        telemetry.addData("SET TURRET POWER:", power);
         telemetry.addData("CURRENT TURRET ANGLE:", currentTurretAngle);
     }
 
