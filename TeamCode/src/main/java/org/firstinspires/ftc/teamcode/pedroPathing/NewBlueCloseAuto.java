@@ -32,6 +32,7 @@ public class NewBlueCloseAuto extends OpMode {
     private int pathState;
     private Paths paths;
     private String currentAlliance = "BLUE";
+    private boolean turretOn = true;
 
     // ---------------- POSES ----------------
 
@@ -76,6 +77,7 @@ public class NewBlueCloseAuto extends OpMode {
 
 //        vision = new Vision(hardwareMap, robot, follower, telemetry);
         turret = new Turret(hardwareMap, telemetry);
+        vision = new Vision(hardwareMap, robot, follower, telemetry);
         telemetry.addData("Saved Position X: ", SavePosition.getSavedPosition().getX());
         telemetry.addData("Saved Position Y: ", SavePosition.getSavedPosition().getY());
         telemetry.addData("Pose X: ", follower.getPose().getX());
@@ -100,7 +102,9 @@ public class NewBlueCloseAuto extends OpMode {
 
     @Override
     public void loop() {
-//        vision.update(robot.getDistanceFromGoal(follower));
+        if(turretOn) {
+            vision.update(robot.getDistanceFromGoal(follower));
+        }
         follower.update();
         SavePosition.saveCurrentPosition(follower.getPose());
 
@@ -238,12 +242,14 @@ public class NewBlueCloseAuto extends OpMode {
             case 0:
                 robot.shooter.startAutoCloseBlueShoot();
                 follower.followPath(paths.ScorePreload);
+                turretOn = true;
                 setPathState(1);
                 break;
             case 1:
                 if (pathWait(1000)) {
                     completed = robot.autonRapidShoot(follower, 1500);
                     if (completed) { // shoot preload
+                        turretOn = false;
                         robot.intake.startIntake();
                         follower.followPath(paths.IntakeStack1);
                         setPathState(3);
@@ -260,6 +266,7 @@ public class NewBlueCloseAuto extends OpMode {
             case 4:
                 if (pathWait(2000)) {
                     follower.followPath(paths.ScoreStack1);
+                    turretOn = true;
                     setPathState(5);
                 }
                 break;
@@ -267,6 +274,7 @@ public class NewBlueCloseAuto extends OpMode {
                 if (pathWait(3000)) {
                     completed = robot.autonRapidShoot(follower, 1500);
                     if (completed) { // shoot preload
+                        turretOn = false;
                         robot.intake.startIntake();
                         follower.followPath(paths.IntakeStack2);
                         setPathState(7);
@@ -277,6 +285,7 @@ public class NewBlueCloseAuto extends OpMode {
                 if (pathWait(2000)) {
                     follower.setMaxPower(1.0);
                     follower.followPath(paths.ScoreStack2);
+                    turretOn = true;
                     setPathState(8);
                 }
                 break;
@@ -285,6 +294,7 @@ public class NewBlueCloseAuto extends OpMode {
                 if (pathWait(2250)) {
                     completed = robot.autonRapidShoot(follower, 1500);
                     if (completed) { // shoot preload
+                        turretOn = false;
                         robot.intake.startIntake();
                         follower.followPath(paths.IntakeStack3);
                         setPathState(10);
@@ -296,6 +306,7 @@ public class NewBlueCloseAuto extends OpMode {
                     robot.gate.gateClose();
                     follower.setMaxPower(1.0);
                     follower.followPath(paths.ScoreStack3);
+                    turretOn = true;
                     setPathState(11);
                 }
                 break;
@@ -303,6 +314,7 @@ public class NewBlueCloseAuto extends OpMode {
                 if (pathWait(2500)) {
                     completed = robot.autonRapidShoot(follower, 1500);
                     if (completed) { // shoot preload
+                        turretOn = false;
                         robot.intake.startIntake();
                         follower.followPath(paths.FinishPath);
                         setPathState(-1);
