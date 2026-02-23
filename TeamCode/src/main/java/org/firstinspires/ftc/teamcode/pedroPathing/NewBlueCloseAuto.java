@@ -13,9 +13,12 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import org.firstinspires.ftc.teamcode.SavePosition;
+import org.firstinspires.ftc.teamcode.Turret;
 import org.firstinspires.ftc.teamcode.Vision;
 import org.firstinspires.ftc.teamcode.Robot;
 import com.pedropathing.util.Timer;
+import com.qualcomm.robotcore.hardware.HardwareMap;
+
 @Autonomous(name = "Blue Close Gate Auto", group = "Autonomous", preselectTeleOp = "RobotTeleop")
 @Configurable
 public class NewBlueCloseAuto extends OpMode {
@@ -23,6 +26,7 @@ public class NewBlueCloseAuto extends OpMode {
     private TelemetryManager panelsTelemetry;
     private Timer pathTimer, opmodeTimer;
     private Vision vision;
+    private Turret turret;
     private Robot robot;
     public Follower follower;
     private int pathState;
@@ -31,7 +35,7 @@ public class NewBlueCloseAuto extends OpMode {
 
     // ---------------- POSES ----------------
 
-    private final Pose startPose = new Pose(33.5, 137, Math.toRadians(90));
+    private final Pose startPose = new Pose(26.7, 132.7, Math.toRadians(145));
     private final Pose scoringPose = new Pose(48, 96, Math.toRadians(90));
     private final Pose scoringPose2 = new Pose(60, 84, Math.toRadians(0)); // stopped here
     private final Pose scoringPose3 = new Pose(63, 71.5, Math.toRadians(180));
@@ -70,9 +74,12 @@ public class NewBlueCloseAuto extends OpMode {
 
 //        pathState = 0;
 
-        vision = new Vision(hardwareMap, robot, follower, telemetry);
+//        vision = new Vision(hardwareMap, robot, follower, telemetry);
+        turret = new Turret(hardwareMap, telemetry);
         telemetry.addData("Saved Position X: ", SavePosition.getSavedPosition().getX());
         telemetry.addData("Saved Position Y: ", SavePosition.getSavedPosition().getY());
+        telemetry.addData("Pose X: ", follower.getPose().getX());
+        telemetry.addData("Pose Y: ", follower.getPose().getY());
 
 
         telemetry.addData("Saved Position Heading (deg): ", Math.toDegrees(SavePosition.getSavedPosition().getHeading()));
@@ -93,7 +100,7 @@ public class NewBlueCloseAuto extends OpMode {
 
     @Override
     public void loop() {
-        vision.update(robot.getDistanceFromGoal(follower));
+//        vision.update(robot.getDistanceFromGoal(follower));
         follower.update();
         SavePosition.saveCurrentPosition(follower.getPose());
 
@@ -123,11 +130,11 @@ public class NewBlueCloseAuto extends OpMode {
         public Paths(Follower follower) {
             ScorePreload = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(32.455, 136.428),
+                                    new Pose(26.7, 132.7),
 
                                     new Pose(62.000, 82.000)
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(135))
+                    ).setLinearHeadingInterpolation(Math.toRadians(145), Math.toRadians(135))
 
                     .build();
 
@@ -136,7 +143,7 @@ public class NewBlueCloseAuto extends OpMode {
                                     new Pose(62.000, 82.000),
                                     new Pose(58.400, 54.500),
                                     new Pose(66.400, 60.000),
-                                    new Pose(0.500, 59.440)
+                                    new Pose(0.500, 60.440)
                             )
                     ).setLinearHeadingInterpolation(Math.toRadians(135), Math.toRadians(180))
 
@@ -144,30 +151,30 @@ public class NewBlueCloseAuto extends OpMode {
 
             OpenGate = follower.pathBuilder().addPath(
                             new BezierCurve(
-                                    new Pose(0.50, 59.440),
+                                    new Pose(0.50, 60.440),
                                     new Pose(32.339, 56.611),
                                     new Pose(27.426, 63.260),
-                                    new Pose(9.518, 77.192)
+                                    new Pose(9.518, 68.192)
                             )
                     ).setConstantHeadingInterpolation(Math.toRadians(180))
 
                     .build();
 
             ScoreStack1 = follower.pathBuilder().addPath(
-                            new BezierLine(
-                                    new Pose(13.518, 77.192),
-
-                                    new Pose(61.900, 79.100)
+                            new BezierCurve(
+                                    new Pose(9.518, 80.192),
+                                    new Pose(58, 50),
+                                    new Pose(61.900, 81.100)
                             )
-                    ).setConstantHeadingInterpolation(Math.toRadians(180))
+                    ).setConstantHeadingInterpolation(Math.toRadians(135))
 
                     .build();
 
             IntakeStack2 = follower.pathBuilder().addPath(
                             new BezierCurve(
-                                    new Pose(61.900, 82.100),
+                                    new Pose(61.900, 75.100),
                                     new Pose(56.4,90),
-                                    new Pose(10, 87.738)
+                                    new Pose(8, 88.738)
                             )
                     ).setTangentHeadingInterpolation()
 
@@ -175,20 +182,18 @@ public class NewBlueCloseAuto extends OpMode {
 
             ScoreStack2 = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(14.655, 83.738),
+                                    new Pose(8, 88.738),
 
                                     new Pose(62.000, 81.600)
                             )
-                    ).setConstantHeadingInterpolation(Math.toRadians(180))
+                    ).setConstantHeadingInterpolation(Math.toRadians(135))
 
                     .build();
 
             IntakeStack3 = follower.pathBuilder().addPath(
-                            new BezierCurve(
-                                    new Pose(62.000, 81.600),
-                                    new Pose(51.200, 28.100),
-                                    new Pose(67.600, 36.300),
-                                    new Pose(0.50, 35.400)
+                            new BezierLine(
+                                    new Pose(62.000, 39.600),
+                                    new Pose(0.50, 39.600)
                             )
                     ).setConstantHeadingInterpolation(Math.toRadians(180))
 
@@ -196,11 +201,11 @@ public class NewBlueCloseAuto extends OpMode {
 
             ScoreStack3 = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(0.50, 35.400),
+                                    new Pose(0.50, 41.400),
 
                                     new Pose(61.900, 82.300)
                             )
-                    ).setConstantHeadingInterpolation(Math.toRadians(180))
+                    ).setConstantHeadingInterpolation(Math.toRadians(135))
 
                     .build();
 

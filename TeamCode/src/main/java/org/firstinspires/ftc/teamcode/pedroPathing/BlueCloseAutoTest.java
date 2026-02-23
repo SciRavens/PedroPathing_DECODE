@@ -9,21 +9,22 @@ import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.PathChain;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import org.firstinspires.ftc.teamcode.SavePosition;
-import org.firstinspires.ftc.teamcode.Vision;
+//import org.firstinspires.ftc.teamcode.Vision;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.Robot;
 import com.pedropathing.util.Timer;
-
+@Disabled
 @Autonomous(name = "New Blue Close Auto Test", group = "Autonomous", preselectTeleOp = "RobotTeleop")
 @Configurable
 public class BlueCloseAutoTest extends OpMode {
 
     private TelemetryManager panelsTelemetry;
     private Timer pathTimer, opmodeTimer;
-    private Vision vision;
+//    private Vision vision;
     private Robot robot;
     public Follower follower;
     private int pathState;
@@ -71,7 +72,7 @@ public class BlueCloseAutoTest extends OpMode {
 
 //        pathState = 0;
 
-        vision = new Vision(hardwareMap, robot, follower, telemetry);
+//        vision = new Vision(hardwareMap, robot, follower, telemetry);
         telemetry.addData("Saved Position X: ", SavePosition.getSavedPosition().getX());
         telemetry.addData("Saved Position Y: ", SavePosition.getSavedPosition().getY());
 
@@ -94,7 +95,7 @@ public class BlueCloseAutoTest extends OpMode {
 
     @Override
     public void loop() {
-        vision.update(robot.getDistanceFromGoal(follower));
+//        vision.update(robot.getDistanceFromGoal(follower));
         follower.update();
         SavePosition.saveCurrentPosition(follower.getPose());
 
@@ -165,8 +166,8 @@ public class BlueCloseAutoTest extends OpMode {
             openGate = follower.pathBuilder().addPath(
                             new BezierCurve(
                                     new Pose(8.829, 64.077),
-                                    new Pose(27.737, 67.025),
-                                    new Pose(14.836, 69.084)
+                                    new Pose(29.737, 69.025),
+                                    new Pose(15.836, 71.084)
                             )
                     ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
 

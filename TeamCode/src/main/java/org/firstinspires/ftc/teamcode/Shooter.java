@@ -11,7 +11,7 @@ public class Shooter {
     public final int shooterCloseRPM = 1000; //950
     public final int shooterFarRPM = 1515;
     public final int shooterPassiveRPM = 500;
-    public final int autonShooterFarRPM = 1470;
+    public final int autonShooterFarRPM = 1440;
     public final int autonMidRPM = 1250;
     public final int autonMidRedRPM = 1250;
     public final int autonMidBlueRPM = 1400;
@@ -20,7 +20,7 @@ public class Shooter {
     public final int shooterHumanRPM = -1200;
     public final int shooterOffRPM = 0;
     public final int autoCloseRed = 1000;
-    public final int autoCloseBlue = 1215;
+    public final int autoCloseBlue = 1200;
 
     public int currentRPM = 0;
 
@@ -47,9 +47,9 @@ public class Shooter {
     // PID coefficients: [][P, I, D, F]
     private static final double[][] VELOCITY_PID_COEFFICIENTS = {
         // index 0: <= 1325
-        {100, 0, 0, 21.1},
+        {200, 0, 0, 20.3},
         // index 1: > 1325
-        {100, 0, 0, 20.5}
+        {200, 0, 0, 19}
     };
 
     private int getCoefficientIndex(int rpm) {

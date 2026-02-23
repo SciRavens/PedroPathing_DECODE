@@ -28,9 +28,9 @@ public class RedFar12 extends OpMode {
     private final Pose firstPattern = new Pose(96.7, 83.6, Math.toRadians(0));
     private final Pose getFirstPattern = new Pose(130, 83.6, Math.toRadians(0));
     private final Pose secondPattern = new Pose(96,58,Math.toRadians(0));
-    private final Pose getSecondPattern = new Pose(143.5, 58, Math.toRadians(0));
+    private final Pose getSecondPattern = new Pose(138, 58, Math.toRadians(0));
     private final Pose thirdPattern = new Pose(96, 36, Math.toRadians(0));
-    private final Pose getThirdPattern = new Pose(143.5, 36, Math.toRadians(0));
+    private final Pose getThirdPattern = new Pose(138, 36, Math.toRadians(0));
     private final Pose shootingPose = new Pose(89, 12, Math.toRadians(0));
     private final Pose finalPose = new Pose(120, 10, Math.toRadians(0));
 
@@ -123,7 +123,7 @@ public class RedFar12 extends OpMode {
 
         switch (pathState) {
             case 0: // start shooter, then go for third pattern
-                completed = robot.autonRapidShoot(follower, 4000);
+                completed = robot.autonShoot(follower, 3500);
                 if (completed) {
                     follower.followPath(goToThirdPattern, true);
                     robot.intake.startIntake();
@@ -138,26 +138,26 @@ public class RedFar12 extends OpMode {
 //                }
 //                break;
             case 1:
-                if (pathWait(25000)){ // get third pattern
+                if (pathWait(1500)){ // get third pattern
                     follower.followPath(intakeThirdPattern, true);
                     setPathState(2);
                 }
                 break;
             case 2:
-                if(pathWait(2000))  { // after getting first stack, stop intake and go to shoot
+                if(pathWait(1500))  { // after getting first stack, stop intake and go to shoot
                     robot.intake.stopIntake();
                     follower.followPath(shootStack1, true);
                     setPathState(3);
                 }
                 break;
             case 3:
-                if(pathWait(2000)) {
+                if(pathWait(2250)) {
                     //robot.gate.gateOpen();
                     setPathState(4);
                 }
                 break;
             case 4:
-                completed = robot.autonRapidShoot(follower, 4000);
+                completed = robot.autonShoot(follower, 3500);
                 if (completed) { //shoot first stack, then go to second stack
                     robot.gate.gateClose();
                     follower.setMaxPower(1.0);
@@ -167,26 +167,26 @@ public class RedFar12 extends OpMode {
                 }
                 break;
             case 5:
-                if (pathWait(2500)){ // get second stack
+                if (pathWait(2000)){ // get second stack
                     follower.followPath(intakeSecondPattern, true);
                     setPathState(6);
                 }
                 break;
             case 6:
-                if(pathWait(2500))  { // go to shoot first stack
+                if(pathWait(2000))  { // go to shoot first stack
                     robot.intake.stopIntake();
                     follower.followPath(shootStack2, true);
                     setPathState(7);
                 }
                 break;
             case 7:
-                if(pathWait(2500)) {
+                if(pathWait(2750)) {
                     //robot.gate.gateOpen();
                     setPathState(12);
                 }
                 break;
             case 8:
-                completed = robot.autonRapidShoot(follower, 4000);
+                completed = robot.autonShoot(follower, 3500);
                 if (completed) { //shoot second stack
                     robot.gate.gateClose();
                     follower.setMaxPower(1.0);
@@ -209,13 +209,13 @@ public class RedFar12 extends OpMode {
                 }
                 break;
             case 11:
-                if(pathWait(2000)) {
+                if(pathWait(2750)) {
                     //robot.gate.gateOpen();
                     setPathState(12);
                 }
                 break;
             case 12:
-                completed = robot.autonRapidShoot(follower, 4000);
+                completed = robot.autonShoot(follower, 4000);
                 if (completed) {// shoot third stack
                     robot.gate.gateClose();
                     follower.followPath(endingAuton);

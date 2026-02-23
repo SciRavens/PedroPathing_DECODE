@@ -49,7 +49,8 @@ public class Vision {
     // - Negative value = aim MORE TO THE LEFT of where tag appears
     // - Start with 0, then adjust based on where shots land at the far position
     private static double BLUE_AIM_OFFSET_DEGREES = -5.0; //-5.0
-    private static double RED_AIM_OFFSET_DEGREES = 3.0; //4.0
+    private static double RED_AIM_OFFSET_DEGREES = 3.0; //4.0\
+    private static double BLUE_CLOSE_AIM_OFFSET_DEGREES = 0;
     private double current_aim_offset = 0;
 
     // Distance threshold for applying offset (in FEET)
@@ -71,15 +72,17 @@ public class Vision {
         this.limelight = hardwareMap.get(Limelight3A.class, "limelight");
         this.limelight.pipelineSwitch(robot.current_pipeline_id);
         this.limelight.start();
-        if (Robot.currentAlliance.equals("BLUE")) {
-            current_aim_offset = BLUE_AIM_OFFSET_DEGREES;
-        } else {
-            current_aim_offset = RED_AIM_OFFSET_DEGREES;
-        }
         this.follower = follower;
         this.turret = robot.turret;
         this.robot = robot;
         this.telemetry = telemetry;
+        if (Robot.currentAlliance.equals("BLUE") && robot.getDistanceFromGoal(follower) > 80) {
+            current_aim_offset = BLUE_AIM_OFFSET_DEGREES;
+        } else if (Robot.currentAlliance.equals("RED") && robot.getDistanceFromGoal(follower) > 80){
+            current_aim_offset = RED_AIM_OFFSET_DEGREES;
+        } else if (Robot.currentAlliance.equals("BLUE") && robot.getDistanceFromGoal(follower) < 80) {
+            current_aim_offset = BLUE_CLOSE_AIM_OFFSET_DEGREES;
+        }
     }
 
     public void setOffset(double offset) {
