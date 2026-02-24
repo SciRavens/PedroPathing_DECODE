@@ -27,6 +27,7 @@ public class RobotTeleop extends OpMode {
 
 
     private Vision vision;
+    private TargetTracker ttracker;
     private static final double DEAD_ZONE = 0.1;
     private final Pose startPose = new Pose(72, 72, Math.toRadians(90));
     private Pose currentPose = new Pose(0,0,0);
@@ -59,8 +60,8 @@ public class RobotTeleop extends OpMode {
             Robot.currentAlliance = "RED";
         }
         robot = new Robot(hardwareMap, telemetry);
-//        turretTracker = new TurretTracker(robot);
-        vision = new Vision(hardwareMap, robot, follower, telemetry);
+       // vision = new Vision(hardwareMap, robot, follower, telemetry);
+       ttracker = new TargetTracker(hardwareMap, robot, follower, telemetry);
         telemetry.addData("Current Alliance: ", Robot.currentAlliance);
         telemetry.addLine()
                 .addData("Current Position X: ", follower.getPose().getX())
@@ -121,8 +122,9 @@ public class RobotTeleop extends OpMode {
         currentPose = follower.getPose();
         double distance  = robot.getDistanceFromGoal(follower);
         if (targetTracking_enabled) {
-            vision.update(robot.getDistanceFromGoal(follower));
+            //vision.update(robot.getDistanceFromGoal(follower));
 //            vision.startTurretTracking();
+            ttracker.update();
         }
 
         if (is_SmartShooting()) {

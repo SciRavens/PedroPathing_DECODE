@@ -30,8 +30,6 @@ public class Turret {
     // The new constant for Pedro Pathing math (2 * PI replaces 360)
     private static final double TICKS_PER_RADIAN = (TICKS_PER_REV_MOTOR * EXTERNAL_GEAR_REDUCTION) / (2 * Math.PI);
 
-    // The new constant for Pedro Pathing math (2 * PI replaces 360)
-    private static final double TICKS_PER_RADIAN = (TICKS_PER_REV_MOTOR * EXTERNAL_GEAR_REDUCTION) / (2 * Math.PI);
 
     public PIDFController turretPIDF;
 
