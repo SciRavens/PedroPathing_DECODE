@@ -175,23 +175,24 @@ public class TargetTracker {
     }
 
     public boolean isRobotStationary() {
-        // 1. Get the translational velocity Vector from Pedro Pathing
-        Vector velocity = follower.getVelocity();
-
-        // 2. Use the built-in magnitude method to get total speed in inches per second
-        double translationalSpeed = velocity.getMagnitude();
-
-        // 3. Define our "Stationary" threshold
-        double maxTranslationalSpeed = 1.0; // inches per second
-
-        // 4. (Optional but recommended) Check rotational speed too.
-        // Depending on your version of Pedro Pathing, you can usually grab
-        // the angular velocity directly from the Follower or PoseUpdater.
-        // Example: double rotationalSpeed = Math.abs(follower.getHeadingVelocity());
-        // If you don't have this method easily accessible, checking translation is often good enough!
-
-        // 5. Return true ONLY if the speed is below the threshold
-        return (translationalSpeed < maxTranslationalSpeed);
+        return true;
+//        // 1. Get the translational velocity Vector from Pedro Pathing
+//        Vector velocity = follower.getVelocity();
+//
+//        // 2. Use the built-in magnitude method to get total speed in inches per second
+//        double translationalSpeed = velocity.getMagnitude();
+//
+//        // 3. Define our "Stationary" threshold
+//        double maxTranslationalSpeed = 1.0; // inches per second
+//
+//        // 4. (Optional but recommended) Check rotational speed too.
+//        // Depending on your version of Pedro Pathing, you can usually grab
+//        // the angular velocity directly from the Follower or PoseUpdater.
+//        // Example: double rotationalSpeed = Math.abs(follower.getHeadingVelocity());
+//        // If you don't have this method easily accessible, checking translation is often good enough!
+//
+//        // 5. Return true ONLY if the speed is below the threshold
+//        return (translationalSpeed < maxTranslationalSpeed);
     }
 
 

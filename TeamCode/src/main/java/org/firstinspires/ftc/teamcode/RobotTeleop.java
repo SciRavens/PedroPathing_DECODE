@@ -60,8 +60,8 @@ public class RobotTeleop extends OpMode {
             Robot.currentAlliance = "RED";
         }
         robot = new Robot(hardwareMap, telemetry);
-        vision = new Vision(hardwareMap, robot, follower, telemetry);
-//       ttracker = new TargetTracker(hardwareMap, robot, follower, telemetry);
+//        vision = new Vision(hardwareMap, robot, follower, telemetry);
+       ttracker = new TargetTracker(hardwareMap, robot, follower, telemetry);
         telemetry.addData("Current Alliance: ", Robot.currentAlliance);
         telemetry.addLine()
                 .addData("Current Position X: ", follower.getPose().getX())
@@ -122,9 +122,9 @@ public class RobotTeleop extends OpMode {
         currentPose = follower.getPose();
         double distance  = robot.getDistanceFromGoal(follower);
         if (targetTracking_enabled) {
-            vision.update(robot.getDistanceFromGoal(follower));
+//            vision.update(robot.getDistanceFromGoal(follower));
 //            vision.startTurretTracking();
-//            ttracker.update();
+            ttracker.update();
         }
 
         if (is_SmartShooting()) {
@@ -132,7 +132,7 @@ public class RobotTeleop extends OpMode {
         }
 
         if (smartShooting) {
-            boolean completed = robot.TeleOpShoot(follower, 2000);
+            boolean completed = robot.autonShoot(follower, 2000);
 //            if (distance > 135) {
 //                completed = robot.autonRapidShoot(follower, 2000);
 //            }
@@ -158,6 +158,7 @@ public class RobotTeleop extends OpMode {
         } else if (gamepad2.x) {
             isFarShootingMode = false; // Intent: Back to normal close shooting
         }
+
         if (isFarShootingMode) {
             // If we are in Far Mode but haven't reached the "Far Zone" yet
             if (distance > 143) {
