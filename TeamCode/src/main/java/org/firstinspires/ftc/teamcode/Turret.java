@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 public class Turret {
-    private DcMotorEx turretMotor;
+    public DcMotorEx turretMotor;
     private Telemetry telemetry;
 
     // --- MOTOR CONSTANTS ---
@@ -25,6 +25,8 @@ public class Turret {
 
     // Calculated Ticks Per Degree
     private static final double TICKS_PER_DEGREE = (TICKS_PER_REV_MOTOR * EXTERNAL_GEAR_REDUCTION) / 360.0;
+    // The new constant for Pedro Pathing math (2 * PI replaces 360)
+    private static final double TICKS_PER_RADIAN = (TICKS_PER_REV_MOTOR * EXTERNAL_GEAR_REDUCTION) / (2 * Math.PI);
 
     public Turret(HardwareMap hardwareMap, Telemetry telemetry) {
         // Initialize the motor
@@ -67,6 +69,11 @@ public class Turret {
     public double getDegrees() {
         double currentTicks = turretMotor.getCurrentPosition();
         return currentTicks / TICKS_PER_DEGREE;
+    }
+
+    public double getTurretAngleRadians() {
+        double currentTicks = turretMotor.getCurrentPosition();
+        return currentTicks / TICKS_PER_RADIAN;
     }
 
     /**
