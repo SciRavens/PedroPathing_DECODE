@@ -54,7 +54,6 @@ public class TargetTracker {
     private double lastResultTimestamp = 0;
     private double offsetX = 0;
     private double offsetY = 0;
-    private PIDFController turretPIDF;
 
     public TargetTracker(HardwareMap hardwareMap, Robot robot, Follower follower, Telemetry telemetry) {
         this.limelight = hardwareMap.get(Limelight3A.class, "limelight");
@@ -64,7 +63,6 @@ public class TargetTracker {
         this.turret = robot.turret;
         this.robot = robot;
         this.telemetry = telemetry;
-        this.turretPIDF = new PIDFController(new PIDFCoefficients(TURRET_KP, 0, TURRET_KD, 0));
         // Change the direction
         this.robot.turret.turretMotor.setDirection(DcMotorSimple.Direction.FORWARD);
     }
@@ -72,59 +70,84 @@ public class TargetTracker {
     public void update() {
         Pose currentPose = follower.getPose();
         double robotHeading = currentPose.getHeading();
+        double angularOffset = 0;
+
+
+        // 1. Get the CURRENT angle of the turret from your hardware encoder
         double currentTurretAngle = turret.getTurretAngleRadians();
-        // 1. Calculate the camera's global angle on the field (in degrees for Limelight)
-        double cameraGlobalHeading = Math.toDegrees(angleWrap(robotHeading + currentTurretAngle));
 
-        // 2. Send it to the Limelight BEFORE grabbing the result
-        limelight.updateRobotOrientation(cameraGlobalHeading);
+        // -----------------------------------------------------------------
+        // STEP 1: ODOMETRY "BEST GUESS" TARGETING
+        // -----------------------------------------------------------------
+        double deltaX = robot.current_goal_x - currentPose.getX();
+        double deltaY = robot.current_goal_y - currentPose.getY();
+        double fieldTargetAngle = Math.atan2(deltaY, deltaX);
 
-        // 1. If Limelight has a good target, update the offsets
+        // Odometry's pure mathematical guess for where the turret should point
+        double odomTargetTurretAngle = angleWrap(fieldTargetAngle - robotHeading);
+
+        // -----------------------------------------------------------------
+        // STEP 2: LIMELIGHT VISION CORRECTION (ANGULAR OFFSET)
+        // -----------------------------------------------------------------
+        // Only trust vision when the robot is stable to avoid motion blur/latency
         if (isRobotStationary()) {
             LLResult result = limelight.getLatestResult();
-            if (result != null && result.isValid() && result.getTa() > 0.5) {
-                double currentTimestamp = result.getTimestamp();
-                if (currentTimestamp > lastResultTimestamp) {
-                    Pose3D botpose = result.getBotpose_MT2();
-                    if (botpose != null) {
-                        double limelightX = botpose.getPosition().x * 39.3701;
-                        double limelightY = botpose.getPosition().y * 39.3701;
 
-                        offsetX = limelightX - currentPose.getX();
-                        offsetY = limelightY - currentPose.getY();
+            if (result != null && result.isValid()) {
+                boolean foundExpectedTag = false;
+                double txDegrees = 0;
+
+                // Search all visible tags for the specific goal ID
+                for (LLResultTypes.FiducialResult tag : result.getFiducialResults()) {
+                    if (tag.getFiducialId() == robot.current_tag_id) {
+                        foundExpectedTag = true;
+                        txDegrees = tag.getTargetXDegrees();
+                        break; // Found it! Stop searching.
                     }
-                    lastResultTimestamp = currentTimestamp;
+                }
+
+                // If we found the correct tag, calculate the drift offset
+                if (foundExpectedTag) {
+                    double txRadians = Math.toRadians(txDegrees);
+
+                    // TRUE ANGLE: Limelight tx is positive when target is to the right.
+                    // Because right is negative radians, we subtract tx.
+                    double trueTargetTurretAngle = currentTurretAngle - txRadians;
+
+                    // The difference between Reality (Vision) and Guess (Odometry)
+                    angularOffset = angleWrap(trueTargetTurretAngle - odomTargetTurretAngle);
+
+                    // Helpful Vision Telemetry
+                    telemetry.addData("Limelight Locked ID:", robot.current_tag_id);
+                    telemetry.addData("Limelight tx (Deg)", txDegrees);
+                    telemetry.addData("Calculated Offset (Deg)", Math.toDegrees(angularOffset));
                 }
             }
         }
 
-        // 2. Calculate the TRUE position by combining Odometry + Offset
-        double trueX = currentPose.getX() + offsetX;
-        double trueY = currentPose.getY() + offsetY;
+        // -----------------------------------------------------------------
+        // STEP 3: APPLY OFFSET AND ENFORCE LIMITS
+        // -----------------------------------------------------------------
+        // Combine Odometry's continuous math with the saved Limelight correction
+        double finalTargetTurretAngle = angleWrap(odomTargetTurretAngle + angularOffset);
 
-        // 3. Aim the turret using the TRUE position
-        double deltaX = robot.current_goal_x - trueX;
-        double deltaY = robot.current_goal_y - trueY;
-        double fieldTargetAngle = Math.atan2(deltaY, deltaX);
+        // Clamp to prevent breaking wires (Ensure MAX_RIGHT and MAX_LEFT are in radians!)
+        finalTargetTurretAngle = Math.max(MAX_RIGHT_LIMIT, Math.min(MAX_LEFT_LIMIT, finalTargetTurretAngle));
 
-        // 4. Calculate the target angle for the turret relative to the chassis
-        double targetTurretAngle = angleWrap(fieldTargetAngle - robotHeading);
+        // -----------------------------------------------------------------
+        // STEP 4: THE PID FEEDBACK LOOP
+        // -----------------------------------------------------------------
+        // Calculate the exact, shortest-path distance to the final target
+        double error = angleWrap(finalTargetTurretAngle - currentTurretAngle);
 
-        // 5. Enforce your 180-degree physical limits on the target
-        double maxLimit = Math.toRadians(180);
-        targetTurretAngle = Math.max(-maxLimit, Math.min(maxLimit, targetTurretAngle));
+        // Feed the true shortest-path error to the PID controller
+        turret.turretPIDF.updateError(error);
+        double power = turret.turretPIDF.run();
 
-
-        // Calculate the exact, shortest-path distance
-        double error = angleWrap(targetTurretAngle - currentTurretAngle);
-
-        // Send the TRUE error to the PID!
-        turretPIDF.updateError(error);
-        double power = turretPIDF.run();
-
-        // ----------------------------------------
-        // SAFETY CLAMPS (Now correctly comparing Radians to Radians)
-        // ----------------------------------------
+        // -----------------------------------------------------------------
+        // STEP 5: HARDWARE SAFETY CLAMPS & MOTOR COMMAND
+        // -----------------------------------------------------------------
+        // If we are at the physical limits, DO NOT allow power to push further!
         if (currentTurretAngle >= MAX_LEFT_LIMIT && power > 0) {
             power = 0;
         }
@@ -132,12 +155,16 @@ public class TargetTracker {
             power = 0;
         }
 
+        // Cap the maximum speed of the turret
         power = Math.max(-TURRET_MAX_POWER, Math.min(TURRET_MAX_POWER, power));
+
+        // Send power to the motor
         turret.setTurretPower(power);
 
-        // Helpful Telemetry
-        telemetry.addData("Turret Target (Deg)", Math.toDegrees(targetTurretAngle));
-        telemetry.addData("Turret Current (Deg)", Math.toDegrees(currentTurretAngle));
+        // Final System Telemetry
+        telemetry.addData("Odom Target (Deg)", Math.toDegrees(odomTargetTurretAngle));
+        telemetry.addData("Final Target (Deg)", Math.toDegrees(finalTargetTurretAngle));
+        telemetry.addData("Current Turret (Deg)", Math.toDegrees(currentTurretAngle));
         telemetry.addData("Turret Power", power);
     }
 
