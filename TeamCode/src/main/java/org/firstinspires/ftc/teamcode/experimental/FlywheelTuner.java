@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.experimental;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -9,6 +10,7 @@ import org.firstinspires.ftc.teamcode.Robot;
 
 import com.pedropathing.util.Timer;
 
+@Disabled
 @TeleOp(name = "Flywheel Tuner", group = "Experimental")
 public class FlywheelTuner extends OpMode {
     public DcMotorEx shooterMotor;
