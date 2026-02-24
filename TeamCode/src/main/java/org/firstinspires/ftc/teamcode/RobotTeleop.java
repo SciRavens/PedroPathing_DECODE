@@ -33,7 +33,7 @@ public class RobotTeleop extends OpMode {
     private Pose currentPose = new Pose(0,0,0);
     private boolean targetTracking_enabled = true;
     private boolean smartShooting = false;
-
+    private boolean isFarShootingMode = false;
 
     @Override
     public void init() {
@@ -60,8 +60,8 @@ public class RobotTeleop extends OpMode {
             Robot.currentAlliance = "RED";
         }
         robot = new Robot(hardwareMap, telemetry);
-       // vision = new Vision(hardwareMap, robot, follower, telemetry);
-       ttracker = new TargetTracker(hardwareMap, robot, follower, telemetry);
+        vision = new Vision(hardwareMap, robot, follower, telemetry);
+//       ttracker = new TargetTracker(hardwareMap, robot, follower, telemetry);
         telemetry.addData("Current Alliance: ", Robot.currentAlliance);
         telemetry.addLine()
                 .addData("Current Position X: ", follower.getPose().getX())
@@ -122,9 +122,9 @@ public class RobotTeleop extends OpMode {
         currentPose = follower.getPose();
         double distance  = robot.getDistanceFromGoal(follower);
         if (targetTracking_enabled) {
-            //vision.update(robot.getDistanceFromGoal(follower));
+            vision.update(robot.getDistanceFromGoal(follower));
 //            vision.startTurretTracking();
-            ttracker.update();
+//            ttracker.update();
         }
 
         if (is_SmartShooting()) {
@@ -138,20 +138,44 @@ public class RobotTeleop extends OpMode {
 //            }
             if (completed) {
                 smartShooting = false;
+                isFarShootingMode = false;
                 //robot.shooter.startPassiveShoot(); // Keep the flywheel running at lower speed
             }
         }
 
-        if (cancel_smartShooting() && smartShooting) {
-            robot.gate.gateClose();
-            robot.intake.stopIntake();
-            smartShooting = false;
-        }
+//        if (cancel_smartShooting() && smartShooting) {
+//            robot.gate.gateClose();
+//            robot.intake.stopIntake();
+//            smartShooting = false;
+//        }
 
-        if (is_FlyWheelOn()) {
-            robot.shooter.startShooterbyDistance(distance);
-        } else if (is_FlywheelOff()) {
-            robot.shooter.startPassiveShoot();
+//        if (is_FlyWheelOn()) {
+//            robot.shooter.startShooterbyDistance(distance);
+//        } else
+
+        if (gamepad2.b) {
+            isFarShootingMode = true; // Intent: I'm going to shoot from far
+        } else if (gamepad2.x) {
+            isFarShootingMode = false; // Intent: Back to normal close shooting
+        }
+        if (isFarShootingMode) {
+            // If we are in Far Mode but haven't reached the "Far Zone" yet
+            if (distance > 143) {
+                // We are in the Far Zone: Use Live LUT for final precision
+                robot.shooter.startShooterbyDistance(distance);
+            } else {
+                // We are Far-minded but moving into position: Keep it at 1400
+                robot.shooter.startFarPassiveShoot();
+            }
+        } else {
+            // CLOSE MODE (Default)
+            if (distance < 120) {
+                // Live LUT for close shooting precision
+                robot.shooter.startShooterbyDistance(distance);
+            } else {
+                // Idle at 1225: Perfect middle ground for entering the close zone
+                robot.shooter.startClosePassiveShoot();
+            }
         }
 
         if (is_Intaking()) {

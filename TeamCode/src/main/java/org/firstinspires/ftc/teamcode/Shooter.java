@@ -12,7 +12,8 @@ public class Shooter {
 
     public final int shooterCloseRPM = 1000; //950
     public final int shooterFarRPM = 1515;
-    public final int shooterPassiveRPM = 500;
+    public final int shooterClosePassiveRPM = 1225;
+    public final int shooterFarPassiveRPM = 1400;
     public final int autonShooterFarRPM = 1440;
     public final int autonMidRPM = 1250;
     public final int autonMidRedRPM = 1250;
@@ -41,15 +42,16 @@ public class Shooter {
 
     static {
         // FORMAT: SHOOTER_LUT.put(DistanceInInches, TargetRPM);
-        // Replace these with your actual tested values!
+        //close data points
         SHOOTER_LUT.put(53.0, 1100.0);//
         SHOOTER_LUT.put(63.0, 1100.0);//
-        SHOOTER_LUT.put(82.0, 1175.0);//
-        SHOOTER_LUT.put(100.0, 1225.0);//
-        SHOOTER_LUT.put(115.0, 1300.0);
-        //some more points in between could help with interpolation accuracy
-        SHOOTER_LUT.put(145.0, 1415.0);
-        SHOOTER_LUT.put(152.0, 1440.0);
+        SHOOTER_LUT.put(82.0, 1125.0);//
+        SHOOTER_LUT.put(100.0, 1215.0);//
+        SHOOTER_LUT.put(115.0, 1200.0);
+//        ------------------------------
+       //far data points
+        SHOOTER_LUT.put(145.0, 1400.0);
+        SHOOTER_LUT.put(152.0, 1425.0);
         SHOOTER_LUT.put(167.0, 1515.0);
     }
 
@@ -116,8 +118,15 @@ public class Shooter {
         setRPM(shooterHumanRPM);
     }
 
-    public void startPassiveShoot() {
-        setRPM(shooterPassiveRPM);
+    public void startShooterOff() {
+        setRPM(shooterOffRPM);
+    }
+
+    public void startClosePassiveShoot() {
+        setRPM(shooterClosePassiveRPM);
+    }
+    public void startFarPassiveShoot() {
+        setRPM(shooterFarPassiveRPM);
     }
 
     public double getCurrentRPM() {
@@ -168,13 +177,24 @@ public class Shooter {
 
         return (int) interpolatedRPM;
     }
+    //CODE FOR TELEOP, IF WE WANT TO ONLY UPDATE THE SHOOTER RPM WHEN WE MOVE A CERTAIN DISTANCE
+    // OR IF THE SHOOTER WAS OFF, UNCOMMENT THIS AND COMMENT OUT THE OTHER startShooterbyDistance() method
+//    public void startShooterbyDistance(double distance) {
+//        // Only update the target if we moved 2+ inches OR if the shooter was off
+//        if (Math.abs(distance - lastTargetDistance) > DISTANCE_UPDATE_THRESHOLD || currentRPM == 0) {
+//            int targetRPM = getRpmbyDistance(distance);
+//            setRPM(targetRPM);
+//            lastTargetDistance = distance;
+//        }
+//    }
+
     public void startShooterbyDistance(double distance) {
-        // Only update the target if we moved 2+ inches OR if the shooter was off
-        if (Math.abs(distance - lastTargetDistance) > DISTANCE_UPDATE_THRESHOLD || currentRPM == 0) {
-            int targetRPM = getRpmbyDistance(distance);
-            setRPM(targetRPM);
-            lastTargetDistance = distance;
-        }
+        // No if-statement, no threshold. Just pure, constant updates.
+        int targetRPM = getRpmbyDistance(distance);
+        setRPM(targetRPM);
+
+        // We keep this just for telemetry or if you use it elsewhere
+        lastTargetDistance = distance;
     }
     public void startRapidShooterByDistance(double distance){setRPM(getRpmbyDistance(distance));}
 
