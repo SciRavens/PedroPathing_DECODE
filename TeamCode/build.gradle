@@ -42,6 +42,13 @@ repositories {
 dependencies {
     implementation project(':FtcRobotController')
     implementation("dev.frozenmilk.sinister:Sloth:0.2.4")
+    // Force downgrade coroutines to prevent ClassValue crashes on older Control Hubs
+    implementation('org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3') {
+        version { strictly('1.7.3') }
+    }
+    implementation('org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3') {
+        version { strictly('1.7.3') }
+    }
 }
 
 
