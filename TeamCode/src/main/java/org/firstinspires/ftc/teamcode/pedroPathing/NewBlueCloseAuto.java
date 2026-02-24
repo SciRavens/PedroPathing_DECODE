@@ -134,9 +134,9 @@ public class NewBlueCloseAuto extends OpMode {
         public Paths(Follower follower) {
             ScorePreload = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(26.7, 132.7),
+                                    new Pose(33.6, 132.7),
 
-                                    new Pose(62.000, 82.000)
+                                    new Pose(60.000, 90.000)
                             )
                     ).setLinearHeadingInterpolation(Math.toRadians(145), Math.toRadians(135))
 
@@ -144,10 +144,10 @@ public class NewBlueCloseAuto extends OpMode {
 
             IntakeStack1 = follower.pathBuilder().addPath(
                             new BezierCurve(
-                                    new Pose(62.000, 82.000),
-                                    new Pose(58.400, 54.500),
-                                    new Pose(66.400, 60.000),
-                                    new Pose(0.500, 60.440)
+                                    new Pose(60.000, 90.000),
+                                    new Pose(58.400, 58.500),
+                                    new Pose(66.400, 62.000),
+                                    new Pose(6.00, 60.440)
                             )
                     ).setLinearHeadingInterpolation(Math.toRadians(135), Math.toRadians(180))
 
@@ -155,7 +155,7 @@ public class NewBlueCloseAuto extends OpMode {
 
             OpenGate = follower.pathBuilder().addPath(
                             new BezierCurve(
-                                    new Pose(0.50, 60.440),
+                                    new Pose(6.0, 60.440),
                                     new Pose(32.339, 56.611),
                                     new Pose(27.426, 63.260),
                                     new Pose(9.518, 68.192)
@@ -168,7 +168,7 @@ public class NewBlueCloseAuto extends OpMode {
                             new BezierCurve(
                                     new Pose(9.518, 80.192),
                                     new Pose(58, 50),
-                                    new Pose(61.900, 81.100)
+                                    new Pose(58.000, 96.000)
                             )
                     ).setConstantHeadingInterpolation(Math.toRadians(135))
 
@@ -176,9 +176,9 @@ public class NewBlueCloseAuto extends OpMode {
 
             IntakeStack2 = follower.pathBuilder().addPath(
                             new BezierCurve(
-                                    new Pose(61.900, 75.100),
+                                    new Pose(60.00, 92.000),
                                     new Pose(56.4,90),
-                                    new Pose(8, 88.738)
+                                    new Pose(6, 88.738)
                             )
                     ).setTangentHeadingInterpolation()
 
@@ -186,7 +186,7 @@ public class NewBlueCloseAuto extends OpMode {
 
             ScoreStack2 = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(8, 88.738),
+                                    new Pose(6, 88.738),
 
                                     new Pose(62.000, 81.600)
                             )
@@ -197,7 +197,7 @@ public class NewBlueCloseAuto extends OpMode {
             IntakeStack3 = follower.pathBuilder().addPath(
                             new BezierLine(
                                     new Pose(62.000, 39.600),
-                                    new Pose(0.50, 39.600)
+                                    new Pose(8.00, 39.600)
                             )
                     ).setConstantHeadingInterpolation(Math.toRadians(180))
 
@@ -205,9 +205,9 @@ public class NewBlueCloseAuto extends OpMode {
 
             ScoreStack3 = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(0.50, 41.400),
+                                    new Pose(8.00, 41.400),
 
-                                    new Pose(61.900, 82.300)
+                                    new Pose(60.00, 87.000)
                             )
                     ).setConstantHeadingInterpolation(Math.toRadians(135))
 
@@ -215,9 +215,9 @@ public class NewBlueCloseAuto extends OpMode {
 
             FinishPath = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(61.900, 82.300),
+                                    new Pose(60.900, 87.000),
 
-                                    new Pose(25.000, 77.000)
+                                    new Pose(28.000, 79.000)
                             )
                     ).setConstantHeadingInterpolation(180)
 
@@ -247,7 +247,7 @@ public class NewBlueCloseAuto extends OpMode {
                 break;
             case 1:
                 if (pathWait(1000)) {
-                    completed = robot.autonRapidShoot(follower, 1500);
+                    completed = robot.autonRapidShoot(follower, 1750);
                     if (completed) { // shoot preload
                         turretOn = false;
                         robot.intake.startIntake();
@@ -257,7 +257,7 @@ public class NewBlueCloseAuto extends OpMode {
                 }
                 break;
             case 3:
-                if (pathWait(2750)) {
+                if (pathWait(2400)) {
                     follower.setMaxPower(1.0);
                     follower.followPath(paths.OpenGate);
                     setPathState(4);
@@ -271,8 +271,8 @@ public class NewBlueCloseAuto extends OpMode {
                 }
                 break;
             case 5:
-                if (pathWait(3000)) {
-                    completed = robot.autonRapidShoot(follower, 1500);
+                if (pathWait(2750)) {
+                    completed = robot.autonRapidShoot(follower, 1750);
                     if (completed) { // shoot preload
                         turretOn = false;
                         robot.intake.startIntake();
@@ -292,7 +292,7 @@ public class NewBlueCloseAuto extends OpMode {
 
             case 8:
                 if (pathWait(2250)) {
-                    completed = robot.autonRapidShoot(follower, 1500);
+                    completed = robot.autonRapidShoot(follower, 1700);
                     if (completed) { // shoot preload
                         turretOn = false;
                         robot.intake.startIntake();
@@ -312,7 +312,7 @@ public class NewBlueCloseAuto extends OpMode {
                 break;
             case 11:
                 if (pathWait(2500)) {
-                    completed = robot.autonRapidShoot(follower, 1500);
+                    completed = robot.autonRapidShoot(follower, 1750);
                     if (completed) { // shoot preload
                         turretOn = false;
                         robot.intake.startIntake();
