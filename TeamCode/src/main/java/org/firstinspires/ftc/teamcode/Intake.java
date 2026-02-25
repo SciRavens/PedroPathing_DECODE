@@ -11,7 +11,7 @@ public class Intake {
     public DcMotorEx intakeMotor;
     private Telemetry telemetry;
     private final double INTAKE_POWER = 1.0;
-    private final double REVERSE_INTAKE_POWER = -0.75;
+    private final double REVERSE_INTAKE_POWER = 0.75;
     private final double SHOOTING_POWER = 0.5;
     private final double INTAKE_OFF = 0.0;
     private final double TRANSFER_INTAKE_POWER = -0.4;

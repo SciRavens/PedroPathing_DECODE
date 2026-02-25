@@ -7,9 +7,11 @@
 //import com.pedropathing.paths.Path;
 //import com.pedropathing.util.Timer;
 //import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+//import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 //import  com.qualcomm.robotcore.eventloop.opmode.OpMode;
 //
 //import org.firstinspires.ftc.teamcode.Robot;
+//
 //@Autonomous(name = "Red Wall Close Auto With LL", group = "Competition", preselectTeleOp="RobotTeleop")
 //public class RedWallCloseAutoWithLL extends OpMode {
 //    private Robot robot;
