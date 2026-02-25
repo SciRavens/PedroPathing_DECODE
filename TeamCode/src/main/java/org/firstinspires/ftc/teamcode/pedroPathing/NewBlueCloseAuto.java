@@ -36,7 +36,7 @@ public class NewBlueCloseAuto extends OpMode {
 
     // ---------------- POSES ----------------
 
-    private final Pose startPose = new Pose(26.7, 132.7, Math.toRadians(145));
+    private final Pose startPose = new Pose(33.61, 136.38, Math.toRadians(90));
     private final Pose scoringPose = new Pose(48, 96, Math.toRadians(90));
     private final Pose scoringPose2 = new Pose(60, 84, Math.toRadians(0)); // stopped here
     private final Pose scoringPose3 = new Pose(63, 71.5, Math.toRadians(180));
@@ -120,7 +120,8 @@ public class NewBlueCloseAuto extends OpMode {
 
     // ---------------- PATHS ----------------
 
-    public class Paths {
+
+    public static class Paths {
         public PathChain ScorePreload;
         public PathChain IntakeStack1;
         public PathChain OpenGate;
@@ -134,31 +135,30 @@ public class NewBlueCloseAuto extends OpMode {
         public Paths(Follower follower) {
             ScorePreload = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(33.6, 132.7),
+                                    new Pose(33.610, 136.380),
 
-                                    new Pose(60.000, 90.000)
+                                    new Pose(50.790, 102.660)
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(145), Math.toRadians(135))
+                    ).setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(135))
 
                     .build();
 
             IntakeStack1 = follower.pathBuilder().addPath(
                             new BezierCurve(
-                                    new Pose(60.000, 90.000),
-                                    new Pose(58.400, 58.500),
-                                    new Pose(66.400, 62.000),
-                                    new Pose(6.00, 60.440)
+                                    new Pose(50.790, 102.660),
+                                    new Pose(50.620, 59.220),
+                                    new Pose(62.510, 61.560),
+                                    new Pose(2.533, 60)
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(135), Math.toRadians(180))
+                    ).setConstantHeadingInterpolation(Math.toRadians(180))
 
                     .build();
 
             OpenGate = follower.pathBuilder().addPath(
                             new BezierCurve(
-                                    new Pose(6.0, 60.440),
-                                    new Pose(32.339, 56.611),
-                                    new Pose(27.426, 63.260),
-                                    new Pose(9.518, 68.192)
+                                    new Pose(2.133, 60),
+                                    new Pose(48.770, 59.810),
+                                    new Pose(14.940, 71.620)
                             )
                     ).setConstantHeadingInterpolation(Math.toRadians(180))
 
@@ -166,9 +166,10 @@ public class NewBlueCloseAuto extends OpMode {
 
             ScoreStack1 = follower.pathBuilder().addPath(
                             new BezierCurve(
-                                    new Pose(9.518, 80.192),
-                                    new Pose(58, 50),
-                                    new Pose(58.000, 96.000)
+                                    new Pose(14.940, 68.620),
+                                    new Pose(56.760, 73.550),
+                                    new Pose(51.340, 69.690),
+                                    new Pose(50.330, 102.240)
                             )
                     ).setConstantHeadingInterpolation(Math.toRadians(135))
 
@@ -176,28 +177,31 @@ public class NewBlueCloseAuto extends OpMode {
 
             IntakeStack2 = follower.pathBuilder().addPath(
                             new BezierCurve(
-                                    new Pose(60.00, 92.000),
-                                    new Pose(56.4,90),
-                                    new Pose(6, 88.738)
+                                    new Pose(50.330, 102.240),
+                                    new Pose(51.180, 83.170),
+                                    new Pose(57.130, 87.550),
+                                    new Pose(9.070, 86.980)
                             )
-                    ).setTangentHeadingInterpolation()
+                    ).setConstantHeadingInterpolation(Math.toRadians(180))
 
                     .build();
 
             ScoreStack2 = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(6, 88.738),
+                                    new Pose(9.070, 83.980),
 
-                                    new Pose(62.000, 81.600)
+                                    new Pose(50.430, 102.050)
                             )
                     ).setConstantHeadingInterpolation(Math.toRadians(135))
 
                     .build();
 
             IntakeStack3 = follower.pathBuilder().addPath(
-                            new BezierLine(
-                                    new Pose(62.000, 39.600),
-                                    new Pose(8.00, 39.600)
+                            new BezierCurve(
+                                    new Pose(50.430, 102.050),
+                                    new Pose(51.020, 30.590),
+                                    new Pose(66.290, 36.190),
+                                    new Pose(2.410, 35.240)
                             )
                     ).setConstantHeadingInterpolation(Math.toRadians(180))
 
@@ -205,9 +209,9 @@ public class NewBlueCloseAuto extends OpMode {
 
             ScoreStack3 = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(8.00, 41.400),
+                                    new Pose(2.410, 35.240),
 
-                                    new Pose(60.00, 87.000)
+                                    new Pose(50.330, 102.740)
                             )
                     ).setConstantHeadingInterpolation(Math.toRadians(135))
 
@@ -215,15 +219,16 @@ public class NewBlueCloseAuto extends OpMode {
 
             FinishPath = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(60.900, 87.000),
+                                    new Pose(50.330, 102.740),
 
-                                    new Pose(28.000, 79.000)
+                                    new Pose(31.480, 78.880)
                             )
-                    ).setConstantHeadingInterpolation(180)
+                    ).setConstantHeadingInterpolation(Math.toRadians(135))
 
                     .build();
         }
     }
+
 
     private boolean pathWait(long timeoutMs) {
         if(!follower.isBusy() || pathTimer.getElapsedTime() > timeoutMs)  {
@@ -292,7 +297,7 @@ public class NewBlueCloseAuto extends OpMode {
 
             case 8:
                 if (pathWait(2250)) {
-                    completed = robot.autonRapidShoot(follower, 1700);
+                    completed = robot.autonRapidShoot(follower, 1750);
                     if (completed) { // shoot preload
                         turretOn = false;
                         robot.intake.startIntake();
@@ -302,7 +307,7 @@ public class NewBlueCloseAuto extends OpMode {
                 }
                 break;
             case 10:
-                if (pathWait(3000)) {
+                if (pathWait(2750)) {
                     robot.gate.gateClose();
                     follower.setMaxPower(1.0);
                     follower.followPath(paths.ScoreStack3);
@@ -311,8 +316,8 @@ public class NewBlueCloseAuto extends OpMode {
                 }
                 break;
             case 11:
-                if (pathWait(2500)) {
-                    completed = robot.autonRapidShoot(follower, 1750);
+                if (pathWait(2700)) {
+                    completed = robot.autonRapidShoot(follower, 2000);
                     if (completed) { // shoot preload
                         turretOn = false;
                         robot.intake.startIntake();
