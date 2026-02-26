@@ -33,7 +33,7 @@ public class BlueClose15 extends OpMode {
     // ---------------- POSES ----------------
     // Mirrored over x = 72: new_x = 144 - old_x
 
-    private final Pose startPose = new Pose(26.7, 132.7, Math.toRadians(145));
+    private final Pose startPose = new Pose(33.097, 135.786, Math.toRadians(90));
 //
 //    // Points extracted from your working Bezier coordinates
 //    private final Pose scorePreloadPose = new Pose(64.990, 77.900, Math.toRadians(135));
@@ -158,7 +158,7 @@ public class BlueClose15 extends OpMode {
                             new BezierLine(
                                     new Pose(18.532, 83.886),
 
-                                    new Pose(58.890, 77.796)
+                                    new Pose(59.890, 77.796)
                             )
                     ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(135))
 
@@ -166,7 +166,7 @@ public class BlueClose15 extends OpMode {
 
             intakeStack2 = follower.pathBuilder().addPath(
                             new BezierCurve(
-                                    new Pose(58.890, 77.796),
+                                    new Pose(59.890, 77.796),
                                     new Pose(58.328, 57.533),
                                     new Pose(62.552, 60.139),
                                     new Pose(13.953, 58.943)
@@ -179,7 +179,7 @@ public class BlueClose15 extends OpMode {
                             new BezierCurve(
                                     new Pose(13.953, 58.943),
                                     new Pose(44.132, 63.446),
-                                    new Pose(58.900, 77.729)
+                                    new Pose(59.900, 77.729)
                             )
                     ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(135))
 
@@ -187,31 +187,31 @@ public class BlueClose15 extends OpMode {
 
             openGate = follower.pathBuilder().addPath(
                             new BezierCurve(
-                                    new Pose(58.900, 77.729),
+                                    new Pose(59.900, 77.729),
                                     new Pose(17.189, 43.590),
-                                    new Pose(13.217, 60.080)
+                                    new Pose(11.217, 80.080)
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(135), Math.toRadians(160))
+                    ).setLinearHeadingInterpolation(Math.toRadians(135), Math.toRadians(180))
 
                     .build();
 
             gateBack = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(13.217, 60.080),
+                                    new Pose(9.217, 80.080),
 
-                                    new Pose(11.348, 54.950)
+                                    new Pose(9.348, 60.950)
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(160), Math.toRadians(150))
+                    ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(110))
 
                     .build();
 
             gateScore = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(11.348, 54.950),
+                                    new Pose(9.348, 70.950),
 
-                                    new Pose(58.963, 78.027)
+                                    new Pose(59.963, 78.027)
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(150), Math.toRadians(135))
+                    ).setLinearHeadingInterpolation(Math.toRadians(110), Math.toRadians(135))
 
                     .build();
         }
@@ -277,7 +277,7 @@ public class BlueClose15 extends OpMode {
                 break;
 
             case 5:
-                if (!follower.isBusy() && pathTimer.getElapsedTime()>3000) {
+                if (!follower.isBusy() || pathTimer.getElapsedTime()>2000) {
                     follower.followPath(paths.gateBack);
                     setPathState(6);
                 }
