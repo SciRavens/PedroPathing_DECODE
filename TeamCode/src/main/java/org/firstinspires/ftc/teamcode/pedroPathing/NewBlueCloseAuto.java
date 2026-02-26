@@ -13,6 +13,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import org.firstinspires.ftc.teamcode.SavePosition;
+import org.firstinspires.ftc.teamcode.TargetTracker;
 import org.firstinspires.ftc.teamcode.Turret;
 import org.firstinspires.ftc.teamcode.Vision;
 import org.firstinspires.ftc.teamcode.Robot;
@@ -26,6 +27,8 @@ public class NewBlueCloseAuto extends OpMode {
     private TelemetryManager panelsTelemetry;
     private Timer pathTimer, opmodeTimer;
     private Vision vision;
+    private TargetTracker ttracker;
+
     private Turret turret;
     private Robot robot;
     public Follower follower;
@@ -36,7 +39,7 @@ public class NewBlueCloseAuto extends OpMode {
 
     // ---------------- POSES ----------------
 
-    private final Pose startPose = new Pose(26.7, 132.7, Math.toRadians(145));
+    private final Pose startPose = new Pose(33.6, 136, Math.toRadians(90));
     private final Pose scoringPose = new Pose(48, 96, Math.toRadians(90));
     private final Pose scoringPose2 = new Pose(60, 84, Math.toRadians(0)); // stopped here
     private final Pose scoringPose3 = new Pose(63, 71.5, Math.toRadians(180));
@@ -65,9 +68,10 @@ public class NewBlueCloseAuto extends OpMode {
         robot = new Robot(hardwareMap, telemetry);
         panelsTelemetry = PanelsTelemetry.INSTANCE.getTelemetry();
 
+
         follower = Constants.createFollower(hardwareMap);
         follower.setStartingPose(startPose);
-
+        ttracker = new TargetTracker(hardwareMap, robot, follower, telemetry);
         pathTimer = new Timer();
         opmodeTimer = new Timer();
 
@@ -102,10 +106,12 @@ public class NewBlueCloseAuto extends OpMode {
 
     @Override
     public void loop() {
-        if(turretOn) {
-            vision.update(robot.getDistanceFromGoal(follower));
-        }
+//        if(turretOn) {
+//            vision.update(robot.getDistanceFromGoal(follower));
+//        }
+
         follower.update();
+        ttracker.update();
         SavePosition.saveCurrentPosition(follower.getPose());
 
 
@@ -134,11 +140,11 @@ public class NewBlueCloseAuto extends OpMode {
         public Paths(Follower follower) {
             ScorePreload = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(33.6, 132.7),
+                                    new Pose(33.6, 136),
 
                                     new Pose(60.000, 90.000)
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(145), Math.toRadians(135))
+                    ).setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(135))
 
                     .build();
 
@@ -156,9 +162,9 @@ public class NewBlueCloseAuto extends OpMode {
             OpenGate = follower.pathBuilder().addPath(
                             new BezierCurve(
                                     new Pose(6.0, 60.440),
-                                    new Pose(32.339, 56.611),
-                                    new Pose(27.426, 63.260),
-                                    new Pose(9.518, 68.192)
+                                    new Pose(32.339, 58.611),
+                                    new Pose(27.426, 64.260),
+                                    new Pose(9.518, 71.192)
                             )
                     ).setConstantHeadingInterpolation(Math.toRadians(180))
 
@@ -166,8 +172,8 @@ public class NewBlueCloseAuto extends OpMode {
 
             ScoreStack1 = follower.pathBuilder().addPath(
                             new BezierCurve(
-                                    new Pose(9.518, 80.192),
-                                    new Pose(58, 50),
+                                    new Pose(9.518, 71.192),
+                                    new Pose(58, 58),
                                     new Pose(58.000, 96.000)
                             )
                     ).setConstantHeadingInterpolation(Math.toRadians(135))
