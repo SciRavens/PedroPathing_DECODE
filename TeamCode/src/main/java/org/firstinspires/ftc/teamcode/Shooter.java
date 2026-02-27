@@ -13,12 +13,12 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 public class Shooter {
 
     // --- TUNED CONSTANTS ---
-    public static final double P = 0.002;
+    public static final double P = 0.01;
     public static final double kS = 0.152;
     public static final double kV = 0.0004025;
 
     // Set this to the battery voltage you had while tuning (usually ~13.0)
-    public static final double NOMINAL_VOLTAGE = 13.0;
+    public static final double NOMINAL_VOLTAGE = 12.58;
     private final double RPM_TOLERANCE_LOCK = 50; // More lenient window once already "Ready"
 
 
