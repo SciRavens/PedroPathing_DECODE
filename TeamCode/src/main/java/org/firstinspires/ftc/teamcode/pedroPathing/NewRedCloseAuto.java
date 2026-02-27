@@ -28,10 +28,11 @@ public class NewRedCloseAuto extends OpMode {
     private int pathState;
     private Paths paths;
     private String currentAlliance = "BLUE";
+    private boolean turretOn = true;
 
     // ---------------- POSES ----------------
 
-    private final Pose startPose = new Pose(33.5, 137, Math.toRadians(90));
+    private final Pose startPose = new Pose(110.4, 136, Math.toRadians(90));
     private final Pose scoringPose = new Pose(48, 96, Math.toRadians(90));
     private final Pose scoringPose2 = new Pose(60, 84, Math.toRadians(0)); // stopped here
     private final Pose scoringPose3 = new Pose(63, 71.5, Math.toRadians(180));
@@ -93,7 +94,11 @@ public class NewRedCloseAuto extends OpMode {
 
     @Override
     public void loop() {
-        vision.update(robot.getDistanceFromGoal(follower));
+
+        if(turretOn) {
+            vision.update(robot.getDistanceFromGoal(follower));
+        }
+
         follower.update();
         robot.shooter.update();
         SavePosition.saveCurrentPosition(follower.getPose());
@@ -124,9 +129,9 @@ public class NewRedCloseAuto extends OpMode {
         public Paths(Follower follower) {
             ScorePreload = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(111.545, 136.428),
+                                    new Pose(110.4, 136.428),
 
-                                    new Pose(82, 82.000)
+                                    new Pose(84, 90.000)
                             )
                     ).setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(45))
 
@@ -134,10 +139,10 @@ public class NewRedCloseAuto extends OpMode {
 
             IntakeStack1 = follower.pathBuilder().addPath(
                             new BezierCurve(
-                                    new Pose(82.000, 82.000),
-                                    new Pose(85.600, 54.500),
-                                    new Pose(77.600, 60.000),
-                                    new Pose(143.000, 59.440)
+                                    new Pose(84.000, 90.000),
+                                    new Pose(85.600, 58.500),
+                                    new Pose(77.600, 62.000),
+                                    new Pose(138.000, 60.440)
                             )
                     ).setLinearHeadingInterpolation(Math.toRadians(45), Math.toRadians(0))
 
@@ -145,30 +150,30 @@ public class NewRedCloseAuto extends OpMode {
 
             OpenGate = follower.pathBuilder().addPath(
                             new BezierCurve(
-                                    new Pose(142.800, 59.440),
-                                    new Pose(111.661, 56.611),
-                                    new Pose(116.574, 63.260),
-                                    new Pose(134.482, 74.192)
+                                    new Pose(138.000, 60.440),
+                                    new Pose(111.661, 58.611),
+                                    new Pose(116.574, 64.260),
+                                    new Pose(134.482, 71.192)
                             )
                     ).setConstantHeadingInterpolation(Math.toRadians(0))
 
                     .build();
 
             ScoreStack1 = follower.pathBuilder().addPath(
-                            new BezierLine(
-                                    new Pose(134.482, 74.192),
-
+                            new BezierCurve(
+                                    new Pose(134.482, 71.192),
+                                    new Pose(86,58),
                                     new Pose(82.100, 82.100)
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(45))
+                    ).setConstantHeadingInterpolation(Math.toRadians(45))
 
                     .build();
 
             IntakeStack2 = follower.pathBuilder().addPath(
                             new BezierCurve(
-                                    new Pose(82.100, 82.100),
+                                    new Pose(84.000, 92.000),
                                     new Pose(87.6,90),
-                                    new Pose(131.5, 87.738)
+                                    new Pose(138, 88.738)
                             )
                     ).setTangentHeadingInterpolation()
 
@@ -176,40 +181,38 @@ public class NewRedCloseAuto extends OpMode {
 
             ScoreStack2 = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(131.5, 87.738),
+                                    new Pose(138, 88.738),
 
                                     new Pose(82, 81.600)
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(45))
+                    ).setConstantHeadingInterpolation(Math.toRadians(45))
 
                     .build();
 
             IntakeStack3 = follower.pathBuilder().addPath(
-                            new BezierCurve(
-                                    new Pose(82, 81.600),
-                                    new Pose(92.800, 28.100),
-                                    new Pose(76.400, 36.300),
-                                    new Pose(142.800, 35.400)
+                            new BezierLine(
+                                    new Pose(82, 39.600),
+                                    new Pose(138.00, 41.400)
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(45), Math.toRadians(0))
+                    ).setConstantHeadingInterpolation(Math.toRadians(0))
 
                     .build();
 
             ScoreStack3 = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(142.800, 35.400),
+                                    new Pose(138.000, 41.400),
 
-                                    new Pose(82.100, 82.300)
+                                    new Pose(84.00, 87.000)
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(45))
+                    ).setConstantHeadingInterpolation(Math.toRadians(45))
 
                     .build();
 
             FinishPath = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(82.100, 82.300),
+                                    new Pose(82.100, 87.00),
 
-                                    new Pose(119.000, 77.000)
+                                    new Pose(116.000, 79.000)
                             )
                     ).setTangentHeadingInterpolation()
 
@@ -232,13 +235,16 @@ public class NewRedCloseAuto extends OpMode {
         switch (pathState) {
 
             case 0:
+                turretOn = true;
+                robot.shooter.startAutoCloseBlueShoot();
                 follower.followPath(paths.ScorePreload);
                 setPathState(1);
                 break;
             case 1:
                 if (pathWait(1000)) {
-                    completed = robot.autonRapidShoot(follower, 2000);
+                    completed = robot.autonRapidShoot(follower, 1750);
                     if (completed) { // shoot preload
+                        turretOn = false;
                         robot.intake.startIntake();
                         follower.followPath(paths.IntakeStack1);
                         setPathState(3);
@@ -246,7 +252,7 @@ public class NewRedCloseAuto extends OpMode {
                 }
                 break;
             case 3:
-                if (pathWait(2500)) {
+                if (pathWait(2400)) {
                     follower.setMaxPower(1.0);
                     follower.followPath(paths.OpenGate);
                     setPathState(4);
@@ -254,14 +260,16 @@ public class NewRedCloseAuto extends OpMode {
                 break;
             case 4:
                 if (pathWait(2000)) {
+                    turretOn = true;
                     follower.followPath(paths.ScoreStack1);
                     setPathState(5);
                 }
                 break;
             case 5:
-                if (pathWait(3000)) {
-                    completed = robot.autonRapidShoot(follower, 2000);
+                if (pathWait(2750)) {
+                    completed = robot.autonRapidShoot(follower, 1750);
                     if (completed) { // shoot preload
+                        turretOn = false;
                         robot.intake.startIntake();
                         follower.followPath(paths.IntakeStack2);
                         setPathState(7);
@@ -270,6 +278,7 @@ public class NewRedCloseAuto extends OpMode {
                 break;
             case 7:
                 if (pathWait(2000)) {
+                    turretOn = true;
                     follower.setMaxPower(1.0);
                     follower.followPath(paths.ScoreStack2);
                     setPathState(8);
@@ -277,9 +286,10 @@ public class NewRedCloseAuto extends OpMode {
                 break;
 
             case 8:
-                if (pathWait(2500)) {
-                    completed = robot.autonRapidShoot(follower, 2000);
+                if (pathWait(2250)) {
+                    completed = robot.autonRapidShoot(follower, 1700);
                     if (completed) { // shoot preload
+                        turretOn = false;
                         robot.intake.startIntake();
                         follower.followPath(paths.IntakeStack3);
                         setPathState(10);
@@ -287,7 +297,8 @@ public class NewRedCloseAuto extends OpMode {
                 }
                 break;
             case 10:
-                if (pathWait(3500)) {
+                if (pathWait(3000)) {
+                    turretOn = true;
                     robot.gate.gateClose();
                     follower.setMaxPower(1.0);
                     follower.followPath(paths.ScoreStack3);
@@ -296,8 +307,9 @@ public class NewRedCloseAuto extends OpMode {
                 break;
             case 11:
                 if (pathWait(2500)) {
-                    completed = robot.autonRapidShoot(follower, 2000);
+                    completed = robot.autonRapidShoot(follower, 1750);
                     if (completed) { // shoot preload
+                        turretOn = false;
                         robot.intake.startIntake();
                         follower.followPath(paths.FinishPath);
                         setPathState(-1);
