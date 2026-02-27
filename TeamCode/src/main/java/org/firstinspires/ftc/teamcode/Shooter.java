@@ -59,11 +59,16 @@ public class Shooter {
     static {
         // FORMAT: SHOOTER_LUT.put(DistanceInInches, TargetRPM);
         //close data points
-        SHOOTER_LUT.put(53.0, 1100.0);//
-        SHOOTER_LUT.put(63.0, 1100.0);//
-        SHOOTER_LUT.put(82.0, 1125.0);//
-        SHOOTER_LUT.put(100.0, 1215.0);//
-        SHOOTER_LUT.put(115.0, 1200.0);
+        SHOOTER_LUT.put(71.0, 1085.0);
+        SHOOTER_LUT.put(101.0, 1150.0);
+        SHOOTER_LUT.put(107.0, 1150.0);
+        SHOOTER_LUT.put(60.0, 1025.0);
+        SHOOTER_LUT.put(95.0, 1150.0);
+        SHOOTER_LUT.put(84.0, 1100.0);
+        SHOOTER_LUT.put(111.25, 1200.0);
+        SHOOTER_LUT.put(121.55, 1275.0);
+        SHOOTER_LUT.put(76.43, 1085.0);
+        SHOOTER_LUT.put(67.74, 1075.0);
 //        ------------------------------
        //far data points
         SHOOTER_LUT.put(145.0, 1400.0);
