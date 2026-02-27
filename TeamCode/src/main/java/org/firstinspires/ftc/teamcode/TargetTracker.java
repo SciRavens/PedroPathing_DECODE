@@ -4,7 +4,6 @@ import com.pedropathing.control.PIDFCoefficients;
 import com.pedropathing.control.PIDFController;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.Pose;
-import com.pedropathing.math.Vector;
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
@@ -12,9 +11,9 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 
-import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 public class TargetTracker {
     private Robot robot;
@@ -24,36 +23,31 @@ public class TargetTracker {
     private Telemetry telemetry;
 
     // --- TUNING VALUES ---
-    // Start with these. If it oscillates, lower KP. If it's sluggish, increase KP.
-    private static final double TURRET_KP = 0.045; //0.045;
-    private static final double TURRET_KD = 0.003; // 0.0035;
-
-    // Minimum power to overcome friction (Kickstart)
-    private static final double TURRET_K_STATIC = 0;// 0.15;
-
-    // Chassis Feedforward: Counters robot rotation.
-    // Set to 0.0 initially. Increase to ~0.01 - 0.05 to make turret stay still when robot spins.
-    private static final double TURRET_HEADING_FF = 0;
-
-    // --- SAFETY LIMITS ---
+    private static final double TURRET_KP = 0.045;
+    private static final double TURRET_KD = 0.003;
+    private static final double TURRET_MAX_POWER = 0.3;
     private static final double MAX_LEFT_LIMIT = Math.toRadians(180.0);
     private static final double MAX_RIGHT_LIMIT = Math.toRadians(-180.0);
-    private static final double TURRET_MAX_POWER = 0.3;
 
-    // Distance threshold for applying offset (in FEET)
-    // Offset is only applied when tag is farther than this distance
-    private static final double FAR_ZONE_THRESHOLD_INCHES = 96.0;
+    // --- VISION STATE & BUFFER ---
+    private double smoothedAngularOffset = 0.0;
+    private static final double OFFSET_EMA_ALPHA = 0.3;
+    private long lastImageTimestamp = 0;
 
-    // Optional: Scale the offset based on how far off-center the tag is (viewing angle)
-    // When tag is centered (0 degrees), no offset is applied
-    // When tag is at an angle, offset scales proportionally
-    // Set to 0.0 to use fixed offset, or ~0.1-0.3 for angle-proportional offset
-    private static final double AIM_OFFSET_SCALE_FACTOR = 0.0;
+    // Buffer to store both Pose and Turret Angle
+    private TreeMap<Long, RobotState> historyBuffer = new TreeMap<>();
+    private static final int MAX_HISTORY_SIZE = 50;
 
-    // State Variables
-    private double lastResultTimestamp = 0;
-    private double offsetX = 0;
-    private double offsetY = 0;
+    // Helper class to store a complete snapshot of the robot
+    private static class RobotState {
+        Pose pose;
+        double turretAngle;
+
+        RobotState(Pose pose, double turretAngle) {
+            this.pose = pose;
+            this.turretAngle = turretAngle;
+        }
+    }
 
     public TargetTracker(HardwareMap hardwareMap, Robot robot, Follower follower, Telemetry telemetry) {
         this.limelight = hardwareMap.get(Limelight3A.class, "limelight");
@@ -63,64 +57,74 @@ public class TargetTracker {
         this.turret = robot.turret;
         this.robot = robot;
         this.telemetry = telemetry;
-        // Change the direction
         this.robot.turret.turretMotor.setDirection(DcMotorSimple.Direction.FORWARD);
     }
 
     public void update() {
+        // 1. Get current states
+        long currentTimeMs = System.currentTimeMillis();
         Pose currentPose = follower.getPose();
-        double robotHeading = currentPose.getHeading();
-        double angularOffset = 0;
-
-
-        // 1. Get the CURRENT angle of the turret from your hardware encoder
         double currentTurretAngle = turret.getTurretAngleRadians();
+        double robotHeading = currentPose.getHeading();
+
+        // 2. Save the current state to the history buffer EVERY loop
+        updateHistoryBuffer(currentTimeMs, currentPose, currentTurretAngle);
 
         // -----------------------------------------------------------------
-        // STEP 1: ODOMETRY "BEST GUESS" TARGETING
+        // STEP 1: ODOMETRY TARGETING (CURRENT)
         // -----------------------------------------------------------------
         double deltaX = robot.current_goal_x - currentPose.getX();
         double deltaY = robot.current_goal_y - currentPose.getY();
         double fieldTargetAngle = Math.atan2(deltaY, deltaX);
 
-        // Odometry's pure mathematical guess for where the turret should point
+        // Where odometry thinks we should point right NOW
         double odomTargetTurretAngle = angleWrap(fieldTargetAngle - robotHeading);
 
         // -----------------------------------------------------------------
-        // STEP 2: LIMELIGHT VISION CORRECTION (ANGULAR OFFSET)
+        // STEP 2: LATENCY-COMPENSATED VISION CORRECTION
         // -----------------------------------------------------------------
-        // Only trust vision when the robot is stable to avoid motion blur/latency
-        if (isRobotStationary()) {
-            LLResult result = limelight.getLatestResult();
+        LLResult result = limelight.getLatestResult();
 
-            if (result != null && result.isValid()) {
-                boolean foundExpectedTag = false;
-                double txDegrees = 0;
+        if (result != null && result.isValid()) {
+            // Ensure we are only processing new frames
+            long captureTimestamp = result.getControlHubTimeStamp();
 
-                // Search all visible tags for the specific goal ID
+            if (captureTimestamp > lastImageTimestamp) {
+                lastImageTimestamp = captureTimestamp;
+
                 for (LLResultTypes.FiducialResult tag : result.getFiducialResults()) {
                     if (tag.getFiducialId() == robot.current_tag_id) {
-                        foundExpectedTag = true;
-                        txDegrees = tag.getTargetXDegrees();
-                        break; // Found it! Stop searching.
+
+                        // Calculate exactly when this image was taken
+                        double latencyMs = result.getTargetingLatency() + result.getCaptureLatency();
+                        long imageTimeMs = currentTimeMs - (long) latencyMs;
+
+                        // Retrieve where the robot and turret were in the past
+                        RobotState pastState = getHistoricalState(imageTimeMs);
+
+                        if (pastState != null) {
+                            // Reconstruct the past odometry geometry
+                            double pastDeltaX = robot.current_goal_x - pastState.pose.getX();
+                            double pastDeltaY = robot.current_goal_y - pastState.pose.getY();
+                            double pastFieldTargetAngle = Math.atan2(pastDeltaY, pastDeltaX);
+
+                            // What odometry THOUGHT the target angle was in the past
+                            double pastOdomTargetAngle = angleWrap(pastFieldTargetAngle - pastState.pose.getHeading());
+
+                            // What vision ACTUALLY saw in the past
+                            double txRadians = Math.toRadians(tag.getTargetXDegrees());
+                            double truePastTargetAngle = pastState.turretAngle - txRadians;
+
+                            // Calculate the offset based entirely on historical data
+                            double rawOffset = angleWrap(truePastTargetAngle - pastOdomTargetAngle);
+
+                            // Apply EMA smoothing to the calculated offset
+                            smoothedAngularOffset = angleWrap(
+                                    (OFFSET_EMA_ALPHA * rawOffset) + ((1.0 - OFFSET_EMA_ALPHA) * smoothedAngularOffset)
+                            );
+                        }
+                        break;
                     }
-                }
-
-                // If we found the correct tag, calculate the drift offset
-                if (foundExpectedTag) {
-                    double txRadians = Math.toRadians(txDegrees);
-
-                    // TRUE ANGLE: Limelight tx is positive when target is to the right.
-                    // Because right is negative radians, we subtract tx.
-                    double trueTargetTurretAngle = currentTurretAngle - txRadians;
-
-                    // The difference between Reality (Vision) and Guess (Odometry)
-                    angularOffset = angleWrap(trueTargetTurretAngle - odomTargetTurretAngle);
-
-                    // Helpful Vision Telemetry
-                    telemetry.addData("Limelight Locked ID:", robot.current_tag_id);
-                    telemetry.addData("Limelight tx (Deg)", txDegrees);
-                    telemetry.addData("Calculated Offset (Deg)", Math.toDegrees(angularOffset));
                 }
             }
         }
@@ -128,44 +132,69 @@ public class TargetTracker {
         // -----------------------------------------------------------------
         // STEP 3: APPLY OFFSET AND ENFORCE LIMITS
         // -----------------------------------------------------------------
-        // Combine Odometry's continuous math with the saved Limelight correction
-        double finalTargetTurretAngle = angleWrap(odomTargetTurretAngle + angularOffset);
-
-        // Clamp to prevent breaking wires (Ensure MAX_RIGHT and MAX_LEFT are in radians!)
+        // Apply our latency-corrected, smoothed offset to our CURRENT odometry
+        double finalTargetTurretAngle = angleWrap(odomTargetTurretAngle + smoothedAngularOffset);
         finalTargetTurretAngle = Math.max(MAX_RIGHT_LIMIT, Math.min(MAX_LEFT_LIMIT, finalTargetTurretAngle));
 
         // -----------------------------------------------------------------
-        // STEP 4: THE PID FEEDBACK LOOP
+        // STEP 4: PID & MOTOR COMMANDS
         // -----------------------------------------------------------------
-        // Calculate the exact, shortest-path distance to the final target
         double error = angleWrap(finalTargetTurretAngle - currentTurretAngle);
-
-        // Feed the true shortest-path error to the PID controller
         turret.turretPIDF.updateError(error);
         double power = turret.turretPIDF.run();
 
-        // -----------------------------------------------------------------
-        // STEP 5: HARDWARE SAFETY CLAMPS & MOTOR COMMAND
-        // -----------------------------------------------------------------
-        // If we are at the physical limits, DO NOT allow power to push further!
-        if (currentTurretAngle >= MAX_LEFT_LIMIT && power > 0) {
-            power = 0;
-        }
-        else if (currentTurretAngle <= MAX_RIGHT_LIMIT && power < 0) {
-            power = 0;
-        }
+        // Safety Clamps
+        if (currentTurretAngle >= MAX_LEFT_LIMIT && power > 0) power = 0;
+        else if (currentTurretAngle <= MAX_RIGHT_LIMIT && power < 0) power = 0;
 
-        // Cap the maximum speed of the turret
         power = Math.max(-TURRET_MAX_POWER, Math.min(TURRET_MAX_POWER, power));
-
-        // Send power to the motor
         turret.setTurretPower(power);
 
-        // Final System Telemetry
+        // Telemetry
         telemetry.addData("Odom Target (Deg)", Math.toDegrees(odomTargetTurretAngle));
+        telemetry.addData("Smoothed Offset (Deg)", Math.toDegrees(smoothedAngularOffset));
         telemetry.addData("Final Target (Deg)", Math.toDegrees(finalTargetTurretAngle));
-        telemetry.addData("Current Turret (Deg)", Math.toDegrees(currentTurretAngle));
-        telemetry.addData("Turret Power", power);
+    }
+
+    // --- BUFFER MANAGEMENT METHODS ---
+
+    private void updateHistoryBuffer(long timestampMs, Pose pose, double turretAngle) {
+        historyBuffer.put(timestampMs, new RobotState(pose, turretAngle));
+        if (historyBuffer.size() > MAX_HISTORY_SIZE) {
+            historyBuffer.pollFirstEntry();
+        }
+    }
+
+    private RobotState getHistoricalState(long targetTimestampMs) {
+        if (historyBuffer.isEmpty()) return null;
+
+        Map.Entry<Long, RobotState> floor = historyBuffer.floorEntry(targetTimestampMs);
+        Map.Entry<Long, RobotState> ceiling = historyBuffer.ceilingEntry(targetTimestampMs);
+
+        if (floor == null) return ceiling.getValue();
+        if (ceiling == null) return floor.getValue();
+        if (floor.getKey().equals(ceiling.getKey())) return floor.getValue();
+
+        // Interpolation
+        RobotState floorState = floor.getValue();
+        RobotState ceilingState = ceiling.getValue();
+
+        double proportion = (double) (targetTimestampMs - floor.getKey()) / (ceiling.getKey() - floor.getKey());
+
+        // Interpolate Pose
+        double interpX = floorState.pose.getX() + (ceilingState.pose.getX() - floorState.pose.getX()) * proportion;
+        double interpY = floorState.pose.getY() + (ceilingState.pose.getY() - floorState.pose.getY()) * proportion;
+
+        double headingDiff = angleWrap(ceilingState.pose.getHeading() - floorState.pose.getHeading());
+        double interpHeading = angleWrap(floorState.pose.getHeading() + (headingDiff * proportion));
+
+        Pose interpPose = new Pose(interpX, interpY, interpHeading);
+
+        // Interpolate Turret Angle
+        double turretDiff = angleWrap(ceilingState.turretAngle - floorState.turretAngle);
+        double interpTurretAngle = angleWrap(floorState.turretAngle + (turretDiff * proportion));
+
+        return new RobotState(interpPose, interpTurretAngle);
     }
 
     private double angleWrap(double radians) {
@@ -173,27 +202,4 @@ public class TargetTracker {
         while (radians < -Math.PI) radians += 2 * Math.PI;
         return radians;
     }
-
-    public boolean isRobotStationary() {
-        return true;
-//        // 1. Get the translational velocity Vector from Pedro Pathing
-//        Vector velocity = follower.getVelocity();
-//
-//        // 2. Use the built-in magnitude method to get total speed in inches per second
-//        double translationalSpeed = velocity.getMagnitude();
-//
-//        // 3. Define our "Stationary" threshold
-//        double maxTranslationalSpeed = 1.0; // inches per second
-//
-//        // 4. (Optional but recommended) Check rotational speed too.
-//        // Depending on your version of Pedro Pathing, you can usually grab
-//        // the angular velocity directly from the Follower or PoseUpdater.
-//        // Example: double rotationalSpeed = Math.abs(follower.getHeadingVelocity());
-//        // If you don't have this method easily accessible, checking translation is often good enough!
-//
-//        // 5. Return true ONLY if the speed is below the threshold
-//        return (translationalSpeed < maxTranslationalSpeed);
-    }
-
-
 }
