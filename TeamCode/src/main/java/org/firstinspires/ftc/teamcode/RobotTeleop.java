@@ -208,7 +208,7 @@ public class RobotTeleop extends OpMode {
         }
 
         SavePosition.saveCurrentPosition(currentPose);
-        robot.shooter.shooterLightUpdate();
+        robot.shooter.update();
         telemetry.addData("Current Alliance: ", Robot.currentAlliance);
         telemetry.addLine()
                 .addData("Goal X: ", robot.current_goal_x)

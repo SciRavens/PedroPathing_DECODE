@@ -106,6 +106,7 @@ public class NewBlueCloseAuto extends OpMode {
             vision.update(robot.getDistanceFromGoal(follower));
         }
         follower.update();
+        robot.shooter.update();
         SavePosition.saveCurrentPosition(follower.getPose());
 
 

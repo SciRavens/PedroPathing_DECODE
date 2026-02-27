@@ -3,12 +3,32 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.VoltageSensor;
+
 import java.util.TreeMap;
 import java.util.Map;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 public class Shooter {
+
+    // --- TUNED CONSTANTS ---
+    public static final double P = 0.002;
+    public static final double kS = 0.152;
+    public static final double kV = 0.0004025;
+
+    // Set this to the battery voltage you had while tuning (usually ~13.0)
+    public static final double NOMINAL_VOLTAGE = 13.0;
+    private final double RPM_TOLERANCE_LOCK = 50; // More lenient window once already "Ready"
+
+
+    private VoltageSensor batteryVoltageSensor;
+    public DcMotorEx shooterMotorFront;
+    //public DcMotorEx shooterMotorBack;
+    private Telemetry telemetry;
+
+
+
 
     public final int shooterCloseRPM = 1000; //950
     public final int shooterFarRPM = 1515;
@@ -25,19 +45,15 @@ public class Shooter {
     public final int autoCloseRed = 1000;
     public final int autoCloseBlue = 1110;
 
-    public int currentRPM = 0;
+    public double targetRPM = 0;
+    public double currentRPM = 0;
 
-    public DcMotorEx shooterMotorFront;
-    public DcMotorEx shooterMotorBack;
     public Servo shooterLight;
-    private Telemetry telemetry;
-    private double lastTargetDistance = 0;
     private final double DISTANCE_UPDATE_THRESHOLD = 2.0; // Inches to move before updating RPM
-    private final double RPM_TOLERANCE_LOCK = 50; // More lenient window once already "Ready"
     private boolean wasAtSpeed = false; // Add this variable to the top of your class
-    private double speedThreshold = 20; // Max variance allowed for initial shoot
-    private double closeShotVariance = 20; // Additional variance allowed for the second and third shoot for close shot.
-    private double longShotVariance = 0; // Additional variance allowed for the second and third shoot for long shot.
+    private final double speedThreshold = 20; // Max variance allowed for initial shoot
+    private final double closeShotVariance = 20; // Additional variance allowed for the second and third shoot for close shot.
+    private final double longShotVariance = 0; // Additional variance allowed for the second and third shoot for long shot.
     private static final TreeMap<Double, Double> SHOOTER_LUT = new TreeMap<>();
 
     static {
@@ -57,40 +73,44 @@ public class Shooter {
 
     public Shooter(HardwareMap hardwareMap, Telemetry telemetry) {
         shooterMotorFront = hardwareMap.get(DcMotorEx.class, "shooterMotorFront");
-        shooterMotorFront.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+        shooterMotorFront.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
         shooterMotorFront.setDirection(DcMotorSimple.Direction.REVERSE);
         shooterLight = hardwareMap.get(Servo.class, "shooterLight");
+        this.batteryVoltageSensor = hardwareMap.voltageSensor.iterator().next();
         this.telemetry = telemetry;
-
     }
 
-    private int curVelocityCoefficient = 0;
+    public void update() {
+        currentRPM = shooterMotorFront.getVelocity();
 
-    // PID coefficients: [][P, I, D, F]
-    private static final double[][] VELOCITY_PID_COEFFICIENTS = {
-        // index 0: <= 1325
-        {200, 0, 0, 20.3},
-        // index 1: > 1325
-        {200, 0, 0, 19}
-    };
+        if (targetRPM <= 0) {
+            shooterMotorFront.setPower(0);
+            return;
+        }
 
-    private int getCoefficientIndex(int rpm) {
-        return (rpm > 1325) ? 1 : 0;
+        // 1. Calculate Error
+        double error = targetRPM - currentRPM;
+
+        // 2. Calculate Power using the formula:
+        // Power = (kV * target) + kS + (P * error)
+        double feedforward = (targetRPM * kV) + kS;
+        double feedback = error * P;
+        double totalPower = feedforward + feedback;
+
+        // 3. Voltage Compensation
+        // Adjusts power based on battery sag (13V nominal)
+        double voltageComp = NOMINAL_VOLTAGE / batteryVoltageSensor.getVoltage();
+
+        // 4. Set final motor power (Clamped between 0 and 1)
+        double finalPower = Math.max(0, Math.min(1.0, totalPower * voltageComp));
+        shooterMotorFront.setPower(finalPower);
+        shooterLightUpdate();
     }
+
+
 
     public void setRPM(int newRPM) {
-        int index = getCoefficientIndex(newRPM);
-        if (index != curVelocityCoefficient) {
-            shooterMotorFront.setVelocityPIDFCoefficients(
-                VELOCITY_PID_COEFFICIENTS[index][0],
-                VELOCITY_PID_COEFFICIENTS[index][1],
-                VELOCITY_PID_COEFFICIENTS[index][2],
-                VELOCITY_PID_COEFFICIENTS[index][3]
-            );
-            curVelocityCoefficient = index;
-        }
-        shooterMotorFront.setVelocity(newRPM); // converting RPM to ticks per second
-        currentRPM = newRPM;
+        this.targetRPM = newRPM;
     }
 
     public void startAutoCloseRedShoot() {
@@ -100,26 +120,8 @@ public class Shooter {
         setRPM(autoCloseBlue);
     }
 
-    public void startAutoMidRedShoot() {
-        setRPM(autonMidRedRPM);
-    }
-    public void startAutoMidBlueShoot() {
-        setRPM(autonMidBlueRPM);
-    }
-
     public void startAutonFarShoot() {
         setRPM(autonShooterFarRPM);
-    }
-    public void startMidRedShoot() {
-        setRPM(shooterMidRedRPM);
-    }
-
-    public void startHumanIntake() {
-        setRPM(shooterHumanRPM);
-    }
-
-    public void startShooterOff() {
-        setRPM(shooterOffRPM);
     }
 
     public void startClosePassiveShoot() {
@@ -130,24 +132,8 @@ public class Shooter {
     }
 
     public double getCurrentRPM() {
-       return shooterMotorFront.getVelocity();
+       return currentRPM;
     }
-
-//    public int getRpmbyDistance(double distance) {
-//        //        y=0.0000223365x^{4}-0.0107465x^{3}+1.87252x^{2}-134.7279x+4470.38504
-//        double rpm = 0.0000223365 * Math.pow(distance, 4)
-//                - 0.0107465 * Math.pow(distance, 3)
-//                + 1.87252 * Math.pow(distance, 2)
-//                - 134.7279 * distance + 4470.38504;
-//        return (int) rpm;
-//    }
-
-//    public int getRpmbyDistance(double distance) {
-//        // Horner's method: Reduces 10 multiplications & 4 pow calls to just 4 multiplications
-//        // y = 4470.38504 - 134.7279x + 1.87252x^2 - 0.0107465x^3 + 0.0000223365x^4
-//        double rpm = 4470.38504 + distance * (-134.7279 + distance * (1.87252 + distance * (-0.0107465 + distance * 0.0000223365)));
-//        return (int) rpm;
-//    }
 
     public int getRpmbyDistance(double distance) {
         // Handle empty table edge case
@@ -177,42 +163,22 @@ public class Shooter {
 
         return (int) interpolatedRPM;
     }
-    //CODE FOR TELEOP, IF WE WANT TO ONLY UPDATE THE SHOOTER RPM WHEN WE MOVE A CERTAIN DISTANCE
-    // OR IF THE SHOOTER WAS OFF, UNCOMMENT THIS AND COMMENT OUT THE OTHER startShooterbyDistance() method
-//    public void startShooterbyDistance(double distance) {
-//        // Only update the target if we moved 2+ inches OR if the shooter was off
-//        if (Math.abs(distance - lastTargetDistance) > DISTANCE_UPDATE_THRESHOLD || currentRPM == 0) {
-//            int targetRPM = getRpmbyDistance(distance);
-//            setRPM(targetRPM);
-//            lastTargetDistance = distance;
-//        }
-//    }
 
     public void startShooterbyDistance(double distance) {
-        // No if-statement, no threshold. Just pure, constant updates.
-        int targetRPM = getRpmbyDistance(distance);
-        setRPM(targetRPM);
-
-        // We keep this just for telemetry or if you use it elsewhere
-        lastTargetDistance = distance;
+        setRPM(getRpmbyDistance(distance));
     }
-    public void startRapidShooterByDistance(double distance){setRPM(getRpmbyDistance(distance));}
 
     public void stopShoot() {
         setRPM(shooterOffRPM);
         shooterLight.setPosition(0);
     }
+
     public boolean reachedSpeed() {
-        double error = Math.abs(getCurrentRPM() - currentRPM);
-
-        // If we were already at speed, use the looser lock.
-        // If we weren't, we must get within the tight threshold first.
+        double error = Math.abs(currentRPM - targetRPM);
         double activeThreshold = wasAtSpeed ? RPM_TOLERANCE_LOCK : speedThreshold;
-
         wasAtSpeed = (error <= activeThreshold);
         return wasAtSpeed;
     }
-
     public boolean isSafeToContinueShooting(double distance) {
         double dynThreshold = speedThreshold; // Default
         if (distance < 130) { // 8ft
@@ -220,18 +186,14 @@ public class Shooter {
         } else {
             dynThreshold = speedThreshold + longShotVariance; // additional variance allowed for long shot
         }
-        return Math.abs(getCurrentRPM() - currentRPM) <= dynThreshold;
+        return Math.abs(getCurrentRPM() - targetRPM) <= dynThreshold;
     }
-    public void shooterLightUpdate() {
-        if(currentRPM > 0) {
-            if (reachedSpeed()) {
-                shooterLight.setPosition(0.5); //sets color to green
-            } else {
-                shooterLight.setPosition(0.3); //sets color to red
-            }
+
+    private void shooterLightUpdate() {
+        if (targetRPM > 0) {
+            shooterLight.setPosition(reachedSpeed() ? 0.5 : 0.3); // Green if ready, Red if spooling
+        } else {
+            shooterLight.setPosition(0);
         }
-    }
-    public void startReverseShoot() {
-        setRPM(-shooterCloseRPM);
     }
 }

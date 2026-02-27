@@ -61,7 +61,7 @@ public class OffsetAngleTest extends OpMode {
             buttontimer.resetTimer();
         }
 
-        robot.shooter.shooterLightUpdate();
+        robot.shooter.update();
         telemetry.addData("Target Offset: ", currentOffset);
         telemetry.addData("Current Velocity Front: ", robot.shooter.shooterMotorFront.getVelocity());
 //        telemetry.addData("Current Velocity Back : ", robot.shooter.shooterMotorBack.getVelocity());
