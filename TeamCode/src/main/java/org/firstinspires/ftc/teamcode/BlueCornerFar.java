@@ -18,24 +18,24 @@ import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.Robot;
 import com.pedropathing.util.Timer;
 
-@Autonomous(name = "Blue Close 15 Auto", group = "Autonomous", preselectTeleOp = "RobotTeleop")
+@Autonomous(name = "Blue Corner Far", group = "Autonomous", preselectTeleOp = "RobotTeleop")
 @Configurable
-public class BlueClose15 extends OpMode {
+public class BlueCornerFar extends OpMode {
 
     private TelemetryManager panelsTelemetry;
     private Timer pathTimer, opmodeTimer;
     private Vision vision;
-    private TargetTracker ttracker;
     private Robot robot;
+    private TargetTracker ttracker;
     public Follower follower;
     private int pathState;
     private Paths paths;
-    private String currentAlliance = "BLUE";
+    private String currentAlliance = "RED";
 
     // ---------------- POSES ----------------
     // Mirrored over x = 72: new_x = 144 - old_x
 
-    private final Pose startPose = new Pose(33.097, 135.786, Math.toRadians(90));
+    private final Pose startPose = new Pose(110.903, 135.786, Math.toRadians(90));
 //
 //    // Points extracted from your working Bezier coordinates
 //    private final Pose scorePreloadPose = new Pose(64.990, 77.900, Math.toRadians(135));
@@ -127,95 +127,81 @@ public class BlueClose15 extends OpMode {
     // ---------------- PATHS ----------------
 
     public static class Paths {
-        public PathChain scorePreload;
+        public PathChain InitialStack1;
         public PathChain intakeStack1;
         public PathChain scoreStack1;
-        public PathChain intakeStack2;
-        public PathChain scoreStack2;
-        public PathChain openGate;
-        public PathChain gateBack;
-        public PathChain gateScore;
+        public PathChain intakeCorner;
+        public PathChain cornerBack;
+        public PathChain cornerAgain;
+        public PathChain cornerScore;
 
         public Paths(Follower follower) {
-            scorePreload = follower.pathBuilder().addPath(
+            InitialStack1 = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(33.097, 135.786),
+                                    new Pose(55.679, 8.321),
 
-                                    new Pose(59.060, 77.753)
+                                    new Pose(56.000, 35.518)
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(135))
+                    ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
 
                     .build();
 
             intakeStack1 = follower.pathBuilder().addPath(
-                            new BezierCurve(
-                                    new Pose(59.060, 77.753),
-                                    new Pose(48.595, 83.097),
-                                    new Pose(65.993, 84.264),
-                                    new Pose(18.532, 83.886)
+                            new BezierLine(
+                                    new Pose(56.000, 35.518),
+
+                                    new Pose(15.134, 35.468)
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(135), Math.toRadians(180))
+                    ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
 
                     .build();
 
             scoreStack1 = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(18.532, 83.886),
+                                    new Pose(15.134, 35.468),
 
-                                    new Pose(59.890, 77.796)
+                                    new Pose(55.652, 8.284)
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(135))
+                    ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
 
                     .build();
 
-            intakeStack2 = follower.pathBuilder().addPath(
-                            new BezierCurve(
-                                    new Pose(59.890, 77.796),
-                                    new Pose(58.328, 57.533),
-                                    new Pose(62.552, 60.139),
-                                    new Pose(13.953, 58.943)
-                            )
-                    ).setLinearHeadingInterpolation(Math.toRadians(135), Math.toRadians(180))
-
-                    .build();
-
-            scoreStack2 = follower.pathBuilder().addPath(
-                            new BezierCurve(
-                                    new Pose(13.953, 58.943),
-                                    new Pose(44.132, 63.446),
-                                    new Pose(59.900, 77.729)
-                            )
-                    ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(135))
-
-                    .build();
-
-            openGate = follower.pathBuilder().addPath(
-                            new BezierCurve(
-                                    new Pose(59.900, 77.729),
-                                    new Pose(17.189, 43.590),
-                                    new Pose(11.217, 80.080)
-                            )
-                    ).setLinearHeadingInterpolation(Math.toRadians(135), Math.toRadians(180))
-
-                    .build();
-
-            gateBack = follower.pathBuilder().addPath(
+            intakeCorner = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(9.217, 80.080),
+                                    new Pose(55.652, 8.284),
 
-                                    new Pose(9.348, 60.950)
+                                    new Pose(9.234, 8.341)
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(110))
+                    ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
 
                     .build();
 
-            gateScore = follower.pathBuilder().addPath(
+            cornerBack = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(9.348, 70.950),
+                                    new Pose(9.234, 8.341),
 
-                                    new Pose(59.963, 78.027)
+                                    new Pose(15.732, 8.348)
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(110), Math.toRadians(135))
+                    ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
+
+                    .build();
+
+            cornerAgain = follower.pathBuilder().addPath(
+                            new BezierLine(
+                                    new Pose(15.732, 8.348),
+
+                                    new Pose(9.187, 8.181)
+                            )
+                    ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
+
+                    .build();
+            cornerScore = follower.pathBuilder().addPath(
+                            new BezierLine(
+                                    new Pose(9.187, 8.181),
+
+                                    new Pose(55.816, 8.331)
+                            )
+                    ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
 
                     .build();
         }
@@ -223,109 +209,105 @@ public class BlueClose15 extends OpMode {
 
     // ---------------- STATE MACHINE ----------------
 
-    public int autonomousPathUpdate() {
-        boolean completed = false;
-        switch (pathState) {
+    public int autonomousPathUpdate() { // <--- THIS WAS MISSING
+        boolean completed = false; // Define this variable for use in cases
 
-            case 0:
-                follower.followPath(paths.scorePreload);
-                robot.shooter.startAutoCloseBlueShoot();
-                setPathState(1);
+        switch (pathState) {
+            case 0: // start shooter
+                completed = robot.autonShoot(follower, 3000);
+                if (completed) {
+                    follower.followPath(paths.InitialStack1, true);
+                    robot.intake.startIntake();
+                    setPathState(1);
+                }
                 break;
 
             case 1:
-                if (pathWait(1500, paths.scorePreload)) {
-                    completed = robot.autonRapidShoot(follower, 2000);
-                    if (completed) { // shoot preload
-                        robot.intake.startIntake();
-                        follower.followPath(paths.intakeStack1);
-                        setPathState(2);
-                    }
+                if (pathWait(800, paths.InitialStack1)){ // Pass the path to pathWait
+                    follower.followPath(paths.intakeStack1, true);
+                    setPathState(2);
                 }
                 break;
 
             case 2:
-                if (pathWait(2500, paths.intakeStack1)) { // intake first stack
+                if(pathWait(1200, paths.intakeStack1))  {
                     robot.intake.stopIntake();
-                    follower.followPath(paths.scoreStack1);
+                    follower.followPath(paths.scoreStack1, true);
                     setPathState(3);
                 }
                 break;
 
             case 3:
-                if (pathWait(1800, paths.scoreStack1)) {
-                    completed = robot.autonRapidShoot(follower, 2000);
-                    if (completed) { // shoot first stack
-                        robot.intake.startIntake();
-                        follower.followPath(paths.intakeStack2);
-                        setPathState(30);
-                    }
-                }
-                break;
-            case 30:
-                if (pathWait(2000, paths.intakeStack2) && pathTimer.getElapsedTime()>1500) {
-                    follower.followPath(paths.scoreStack2);
+                if(pathWait(1800, paths.scoreStack1)) {
                     setPathState(4);
                 }
                 break;
 
             case 4:
-                if (pathWait(1800, paths.scoreStack2)) {
-                    completed = robot.autonRapidShoot(follower, 2000);
-                    if (completed) { // shoot first stack
-                        robot.intake.startIntake();
-                        follower.followPath(paths.openGate);
-                        setPathState(5);
-                    }
+                completed = robot.autonShoot(follower, 2800);
+                if (completed) {
+                    robot.gate.gateClose();
+                    follower.setMaxPower(1.0);
+                    follower.followPath(paths.intakeCorner);
+                    robot.intake.startIntake();
+                    setPathState(5);
                 }
                 break;
 
             case 5:
-                if (!follower.isBusy() || pathTimer.getElapsedTime()>2000) {
-                    follower.followPath(paths.gateBack);
+                if (pathWait(1300, paths.intakeCorner)){
+                    follower.followPath(paths.cornerBack);
                     setPathState(6);
                 }
                 break;
 
             case 6:
-                if (!follower.isBusy() && pathTimer.getElapsedTime()>2000) { // open gate
+                if(pathWait(1300, paths.cornerBack))  {
                     robot.intake.stopIntake();
-                    follower.followPath(paths.gateScore);
+                    follower.followPath(paths.cornerAgain);
                     setPathState(7);
                 }
                 break;
 
             case 7:
-                if (pathWait(1800, paths.gateScore)) {
-                    completed = robot.autonRapidShoot(follower, 2000);
-                    if (completed) { // shoot with gate open
-                        robot.intake.startIntake();
-                        follower.followPath(paths.openGate);
-                        setPathState(70);
-                    }
-                }
-                break;
-            case 70:
-                if (pathWait(2000, paths.openGate)) {
-                    follower.followPath(paths.gateBack);
+                if(pathWait(1900, paths.cornerAgain)) {
+                    follower.followPath(paths.cornerScore);
                     setPathState(8);
                 }
                 break;
+
             case 8:
-                if (!follower.isBusy() && pathTimer.getElapsedTime()>2000) { // open gate
-                    robot.intake.stopIntake();
-                    follower.followPath(paths.gateScore);
+                completed = robot.autonShoot(follower, 2800);
+                if (completed) {
+                    robot.gate.gateClose();
+                    follower.setMaxPower(1.0);
+                    // NOTE: Check if 'goToFirstPattern' is defined elsewhere,
+                    // otherwise this will cause a "cannot find symbol" error.
+                    // follower.followPath(goToFirstPattern);
+                    robot.intake.startIntake();
                     setPathState(9);
                 }
                 break;
+
             case 9:
-                if (pathWait(1800, paths.gateScore)) {
-                    completed = robot.autonRapidShoot(follower, 2000);
-                    if (completed) { // shoot with gate open
-                        robot.intake.startIntake();
-                        follower.followPath(paths.openGate);
-                        setPathState(-1);
-                    }
+                if (pathWait(1800, paths.intakeCorner)){
+                    follower.followPath(paths.intakeCorner);
+                    setPathState(10);
+                }
+                break;
+
+            case 10:
+                if(pathWait(1300, paths.intakeCorner))  {
+                    robot.intake.stopIntake();
+                    follower.followPath(paths.cornerBack);
+                    setPathState(11);
+                }
+                break;
+
+            case 11:
+                if(pathWait(2200, paths.cornerBack)) {
+                    follower.followPath(paths.cornerAgain);
+                    setPathState(-1);
                 }
                 break;
 
@@ -333,7 +315,7 @@ public class BlueClose15 extends OpMode {
                 break;
         }
         return pathState;
-    }
+    } // <--- CLOSE THE METHOD HERE
 
     public void setPathState(int pState) {
         pathState = pState;
