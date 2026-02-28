@@ -55,7 +55,7 @@ public class Turret {
         // 4. Mode: Run Without Encoder allows us to use raw power for our Custom PID
         // (We read the encoder manually in the Vision class)
         turretMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        turretPIDF = new PIDFController(new PIDFCoefficients(1.5, 0.0, 0.1, 0.0));
+        turretPIDF = new PIDFController(new PIDFCoefficients(1.5, 0.0, 0, 0.0)); //1.5, 0.0, 0.1, 0.0
     }
 
     /**
