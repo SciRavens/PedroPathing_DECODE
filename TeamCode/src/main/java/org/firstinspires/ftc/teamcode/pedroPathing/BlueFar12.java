@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode; // make sure this aligns with class location
+package org.firstinspires.ftc.teamcode.pedroPathing; // make sure this aligns with class location
 
 import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.BezierLine;
@@ -8,35 +8,34 @@ import com.pedropathing.util.Timer;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import  com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
+import org.firstinspires.ftc.teamcode.Robot;
+import org.firstinspires.ftc.teamcode.Vision;
 import org.firstinspires.ftc.teamcode.disabled.SavePosition;
-import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
 
-
-@Autonomous(name = "Red Far Auto", group = "Competition", preselectTeleOp="RobotTeleop")
-public class RedFar12 extends OpMode {
+@Autonomous(name = "Blue Far Auto", group = "Competition", preselectTeleOp="RobotTeleop")
+public class BlueFar12 extends OpMode {
     private Robot robot;
     private Follower follower;
     private Vision vision;
     private Timer pathTimer, opmodeTimer;
     private int pathState;
-    private TargetTracker ttracker;
     private Path goToFirstPattern, shootStack1, goToSecondPattern, shootStack2, goToThirdPattern, shootStack3, endingAuton, intakeThirdPattern, intakeSecondPattern, intakeFirstPattern;
-    private final Pose startPose = new Pose(88, 8, Math.toRadians(0));
-    private final Pose firstPattern = new Pose(96.7, 83.6, Math.toRadians(0));
-    private final Pose getFirstPattern = new Pose(134, 83.6, Math.toRadians(0));
-    private final Pose secondPattern = new Pose(96,58,Math.toRadians(0));
-    private final Pose getSecondPattern = new Pose(141, 58, Math.toRadians(0));
-    private final Pose thirdPattern = new Pose(96, 36, Math.toRadians(0));
-    private final Pose getThirdPattern = new Pose(141, 36, Math.toRadians(0));
-    private final Pose shootingPose = new Pose(89, 12, Math.toRadians(0));
-    private final Pose finalPose = new Pose(120, 10, Math.toRadians(0));
+    private final Pose startPose = new Pose(56, 8, Math.toRadians(180));
+    private final Pose firstPattern = new Pose(47.3, 83.6, Math.toRadians(180));
+    private final Pose getFirstPattern = new Pose(11, 83.6, Math.toRadians(180));
+    private final Pose secondPattern = new Pose(48,58,Math.toRadians(180));
+    private final Pose getSecondPattern = new Pose(7, 58, Math.toRadians(180));
+    private final Pose thirdPattern = new Pose(50, 36, Math.toRadians(180));
+    private final Pose getThirdPattern = new Pose(7, 36, Math.toRadians(180));
+    private final Pose shootingPose = new Pose(55, 12, Math.toRadians(180));
+    private final Pose finalPose = new Pose(24, 10, Math.toRadians(180));
 
 
 
     @Override
     public void init() {
-        Robot.currentAlliance = "RED";
+        Robot.currentAlliance = "BLUE";
         // Timers
         pathTimer = new Timer();
         opmodeTimer = new Timer();
@@ -45,7 +44,6 @@ public class RedFar12 extends OpMode {
         telemetry.update();
         robot = new Robot(hardwareMap,telemetry);
         follower = Constants.createFollower(hardwareMap);
-//        ttracker = new TargetTracker(hardwareMap,robot,follower,telemetry);
         buildPaths();
         follower.setStartingPose(startPose);
         vision = new Vision(hardwareMap, robot, follower, telemetry);
@@ -99,7 +97,6 @@ public class RedFar12 extends OpMode {
         robot.shooter.update(robot);
         autonomousPathUpdate();
         SavePosition.saveCurrentPosition(follower.getPose());
-//        ttracker.update();
 
         telemetry.addData("path state", pathState);
         telemetry.addData("path timer", pathTimer.getElapsedTime());
@@ -123,7 +120,7 @@ public class RedFar12 extends OpMode {
 
         switch (pathState) {
             case 0: // start shooter
-                completed = robot.autonShoot(follower, 2900);
+                completed = robot.autonShoot(follower, 3000);
                 if (completed) {
                     follower.followPath(goToThirdPattern, true);
                     robot.intake.startIntake();
@@ -156,7 +153,7 @@ public class RedFar12 extends OpMode {
                 }
                 break;
             case 4:
-                completed = robot.autonShoot(follower, 2700);
+                completed = robot.autonShoot(follower, 2800);
                 if (completed) {
                     robot.gate.gateClose();
                     follower.setMaxPower(1.0);
@@ -184,7 +181,7 @@ public class RedFar12 extends OpMode {
                 }
                 break;
             case 8:
-                completed = robot.autonShoot(follower, 2700);
+                completed = robot.autonShoot(follower, 2800);
                 if (completed) {
                     robot.gate.gateClose();
                     follower.setMaxPower(1.0);
@@ -212,7 +209,7 @@ public class RedFar12 extends OpMode {
                 }
                 break;
             case 12:
-                completed = robot.autonShoot(follower, 2500);
+                completed = robot.autonShoot(follower, 2800);
                 if (completed) {// shoot third stack
                     robot.gate.gateClose();
                     follower.followPath(endingAuton);

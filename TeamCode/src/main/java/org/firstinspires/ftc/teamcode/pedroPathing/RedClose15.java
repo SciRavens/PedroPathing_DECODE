@@ -55,12 +55,13 @@ public class RedClose15 extends OpMode {
 
     @Override
     public void init() {
-        Robot.currentAlliance = "BLUE";
+        Robot.currentAlliance = "RED";
         robot = new Robot(hardwareMap, telemetry);
         panelsTelemetry = PanelsTelemetry.INSTANCE.getTelemetry();
 
         follower = Constants.createFollower(hardwareMap);
         follower.setStartingPose(startPose);
+        ttracker = new TargetTracker(hardwareMap, robot, follower, telemetry);
 
         pathTimer = new Timer();
         opmodeTimer = new Timer();

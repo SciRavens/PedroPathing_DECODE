@@ -26,8 +26,8 @@ public class TargetTracker {
     private static final double TURRET_KP = 0.045;
     private static final double TURRET_KD = 0.003;
     private static final double TURRET_MAX_POWER = 0.6;
-    private static final double MAX_LEFT_LIMIT = Math.toRadians(180.0);
-    private static final double MAX_RIGHT_LIMIT = Math.toRadians(-180.0);
+    private static final double MAX_LEFT_LIMIT = Math.toRadians(160.0);
+    private static final double MAX_RIGHT_LIMIT = Math.toRadians(-160.0);
 
     // --- VISION STATE & BUFFER ---
     private double smoothedAngularOffset = 0.0;
