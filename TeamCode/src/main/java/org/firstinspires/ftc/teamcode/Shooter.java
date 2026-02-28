@@ -71,9 +71,9 @@ public class Shooter {
         SHOOTER_LUT.put(67.74, 1075.0);
 //        ------------------------------
        //far data points
-        SHOOTER_LUT.put(145.0, 1400.0);
-        SHOOTER_LUT.put(152.0, 1425.0);
-        SHOOTER_LUT.put(167.0, 1515.0);
+        SHOOTER_LUT.put(145.0, 1375.0);
+        SHOOTER_LUT.put(152.0, 1400.0);
+        SHOOTER_LUT.put(167.0, 1500.0);
     }
 
     public Shooter(HardwareMap hardwareMap, Telemetry telemetry) {

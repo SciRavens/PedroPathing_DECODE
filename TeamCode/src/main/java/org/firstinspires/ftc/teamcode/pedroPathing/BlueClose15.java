@@ -162,20 +162,20 @@ public class BlueClose15 extends OpMode {
                             new BezierLine(
                                     new Pose(18.532, 83.886),
 
-                                    new Pose(59.890, 77.796)
+                                    new Pose(52.890, 77.796)
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(135))
+                    ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
 
                     .build();
 
             intakeStack2 = follower.pathBuilder().addPath(
                             new BezierCurve(
-                                    new Pose(59.890, 77.796),
+                                    new Pose(52.890, 77.796),
                                     new Pose(58.328, 57.533),
                                     new Pose(62.552, 60.139),
                                     new Pose(13.953, 58.943)
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(135), Math.toRadians(180))
+                    ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
 
                     .build();
 
@@ -183,39 +183,38 @@ public class BlueClose15 extends OpMode {
                             new BezierCurve(
                                     new Pose(13.953, 58.943),
                                     new Pose(44.132, 63.446),
-                                    new Pose(59.900, 77.729)
+                                    new Pose(52.900, 77.729)
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(135))
+                    ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
 
                     .build();
 
             openGate = follower.pathBuilder().addPath(
-                            new BezierCurve(
-                                    new Pose(59.900, 77.729),
-                                    new Pose(17.189, 43.590),
-                                    new Pose(11.217, 75.080)
+                            new BezierLine(
+                                    new Pose(52.900, 77.729),
+                                    new Pose(9, 63)
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(135), Math.toRadians(180))
+                    ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(145))
 
                     .build();
 
             gateBack = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(9.217, 75.080),
+                                    new Pose(9, 63),
 
-                                    new Pose(9.348, 60.950)
+                                    new Pose(9, 60)
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(110))
+                    ).setLinearHeadingInterpolation(Math.toRadians(145), Math.toRadians(145))
 
                     .build();
 
             gateScore = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(9.348, 70.950),
+                                    new Pose(9, 60),
 
-                                    new Pose(59.963, 78.027)
+                                    new Pose(52.900, 78.027)
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(110), Math.toRadians(135))
+                    ).setLinearHeadingInterpolation(Math.toRadians(145), Math.toRadians(180))
 
                     .build();
         }
