@@ -107,13 +107,7 @@ public class Robot {
 
     public boolean autonRapidShootByDistance(Follower follower, long timeoutMs, double distance) {
         gate.gateOpen();
-        if (currentAlliance.equals("BLUE") && distance < 96) {
-            shooter.startAutoCloseBlueShoot();
-        } else if (currentAlliance.equals("RED") && distance < 96){
-            shooter.startAutoCloseRedShoot();
-        } else {
-            shooter.startAutonFarShoot();
-        }
+        shooter.startAutoCloseBlueShoot();
 
         if (is_autonShootTimerOn) {
             intake.feedBalls();

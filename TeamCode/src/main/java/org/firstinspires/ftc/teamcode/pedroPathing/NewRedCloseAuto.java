@@ -13,6 +13,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import org.firstinspires.ftc.teamcode.SavePosition;
+import org.firstinspires.ftc.teamcode.TargetTracker;
 import org.firstinspires.ftc.teamcode.Vision;
 import org.firstinspires.ftc.teamcode.Robot;
 import com.pedropathing.util.Timer;
@@ -26,8 +27,9 @@ public class NewRedCloseAuto extends OpMode {
     private Robot robot;
     public Follower follower;
     private int pathState;
+    private TargetTracker ttracker;
     private Paths paths;
-    private String currentAlliance = "BLUE";
+    private String currentAlliance = "RED";
     private boolean turretOn = true;
 
     // ---------------- POSES ----------------
@@ -57,7 +59,7 @@ public class NewRedCloseAuto extends OpMode {
 
     @Override
     public void init() {
-        Robot.currentAlliance = "BLUE";
+        Robot.currentAlliance = "RED";
         robot = new Robot(hardwareMap, telemetry);
         panelsTelemetry = PanelsTelemetry.INSTANCE.getTelemetry();
 
@@ -68,10 +70,11 @@ public class NewRedCloseAuto extends OpMode {
         opmodeTimer = new Timer();
 
         paths = new Paths(follower);
+        ttracker = new TargetTracker(hardwareMap, robot, follower, telemetry);
 
 //        pathState = 0;
 
-        vision = new Vision(hardwareMap, robot, follower, telemetry);
+//        vision = new Vision(hardwareMap, robot, follower, telemetry);
         telemetry.addData("Saved Position X: ", SavePosition.getSavedPosition().getX());
         telemetry.addData("Saved Position Y: ", SavePosition.getSavedPosition().getY());
 
@@ -95,13 +98,15 @@ public class NewRedCloseAuto extends OpMode {
     @Override
     public void loop() {
 
-        if(turretOn) {
-            vision.update(robot.getDistanceFromGoal(follower));
-        }
+//        if(turretOn) {
+//            vision.update(robot.getDistanceFromGoal(follower));
+//        }
 
         follower.update();
         robot.shooter.update();
+        ttracker.update();
         SavePosition.saveCurrentPosition(follower.getPose());
+
 
 
         pathState = autonomousPathUpdate();
@@ -142,7 +147,7 @@ public class NewRedCloseAuto extends OpMode {
                                     new Pose(84.000, 90.000),
                                     new Pose(85.600, 58.500),
                                     new Pose(77.600, 62.000),
-                                    new Pose(138.000, 60.440)
+                                    new Pose(144.000, 60.440)
                             )
                     ).setLinearHeadingInterpolation(Math.toRadians(45), Math.toRadians(0))
 
@@ -150,7 +155,7 @@ public class NewRedCloseAuto extends OpMode {
 
             OpenGate = follower.pathBuilder().addPath(
                             new BezierCurve(
-                                    new Pose(138.000, 60.440),
+                                    new Pose(144.000, 60.440),
                                     new Pose(111.661, 58.611),
                                     new Pose(116.574, 64.260),
                                     new Pose(134.482, 71.192)
@@ -173,7 +178,7 @@ public class NewRedCloseAuto extends OpMode {
                             new BezierCurve(
                                     new Pose(84.000, 92.000),
                                     new Pose(87.6,90),
-                                    new Pose(138, 88.738)
+                                    new Pose(142, 88.738)
                             )
                     ).setTangentHeadingInterpolation()
 
@@ -181,7 +186,7 @@ public class NewRedCloseAuto extends OpMode {
 
             ScoreStack2 = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(138, 88.738),
+                                    new Pose(142, 88.738),
 
                                     new Pose(82, 81.600)
                             )
@@ -192,7 +197,7 @@ public class NewRedCloseAuto extends OpMode {
             IntakeStack3 = follower.pathBuilder().addPath(
                             new BezierLine(
                                     new Pose(82, 39.600),
-                                    new Pose(138.00, 41.400)
+                                    new Pose(144.00, 41.400)
                             )
                     ).setConstantHeadingInterpolation(Math.toRadians(0))
 
@@ -200,7 +205,7 @@ public class NewRedCloseAuto extends OpMode {
 
             ScoreStack3 = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(138.000, 41.400),
+                                    new Pose(144.000, 41.400),
 
                                     new Pose(84.00, 87.000)
                             )
@@ -242,7 +247,7 @@ public class NewRedCloseAuto extends OpMode {
                 break;
             case 1:
                 if (pathWait(1000)) {
-                    completed = robot.autonRapidShoot(follower, 1750);
+                    completed = robot.autonRapidShoot(follower, 1950);
                     if (completed) { // shoot preload
                         turretOn = false;
                         robot.intake.startIntake();
@@ -267,7 +272,7 @@ public class NewRedCloseAuto extends OpMode {
                 break;
             case 5:
                 if (pathWait(2750)) {
-                    completed = robot.autonRapidShoot(follower, 1750);
+                    completed = robot.autonRapidShoot(follower, 1950);
                     if (completed) { // shoot preload
                         turretOn = false;
                         robot.intake.startIntake();
@@ -287,7 +292,7 @@ public class NewRedCloseAuto extends OpMode {
 
             case 8:
                 if (pathWait(2250)) {
-                    completed = robot.autonRapidShoot(follower, 1700);
+                    completed = robot.autonRapidShoot(follower, 1900);
                     if (completed) { // shoot preload
                         turretOn = false;
                         robot.intake.startIntake();
@@ -307,7 +312,7 @@ public class NewRedCloseAuto extends OpMode {
                 break;
             case 11:
                 if (pathWait(2500)) {
-                    completed = robot.autonRapidShoot(follower, 1750);
+                    completed = robot.autonRapidShoot(follower, 2150);
                     if (completed) { // shoot preload
                         turretOn = false;
                         robot.intake.startIntake();

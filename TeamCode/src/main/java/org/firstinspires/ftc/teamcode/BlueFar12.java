@@ -28,9 +28,9 @@ public class BlueFar12 extends OpMode {
     private final Pose firstPattern = new Pose(47.3, 83.6, Math.toRadians(180));
     private final Pose getFirstPattern = new Pose(11, 83.6, Math.toRadians(180));
     private final Pose secondPattern = new Pose(48,58,Math.toRadians(180));
-    private final Pose getSecondPattern = new Pose(3, 58, Math.toRadians(180));
+    private final Pose getSecondPattern = new Pose(2, 58, Math.toRadians(180));
     private final Pose thirdPattern = new Pose(48, 36, Math.toRadians(180));
-    private final Pose getThirdPattern = new Pose(3, 36, Math.toRadians(180));
+    private final Pose getThirdPattern = new Pose(2, 36, Math.toRadians(180));
     private final Pose shootingPose = new Pose(55, 12, Math.toRadians(180));
     private final Pose finalPose = new Pose(24, 10, Math.toRadians(180));
 
@@ -145,7 +145,6 @@ public class BlueFar12 extends OpMode {
                 break;
             case 2:
                 if(pathWait(1200))  { // after getting first stack, stop intake and go to shoot
-                    robot.intake.stopIntake();
                     follower.followPath(shootStack1, true);
                     setPathState(3);
                 }
@@ -174,7 +173,6 @@ public class BlueFar12 extends OpMode {
                 break;
             case 6:
                 if(pathWait(1300))  { // go to shoot first stack
-                    robot.intake.stopIntake();
                     follower.followPath(shootStack2, true);
                     setPathState(7);
                 }
@@ -203,7 +201,6 @@ public class BlueFar12 extends OpMode {
                 break;
             case 10:
                 if(pathWait(1300))  { // after intaking third stack, go to shoot
-                    robot.intake.stopIntake();
                     follower.followPath(shootStack3, true);
                     setPathState(11);
                 }

@@ -16,6 +16,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 public class TargetTracker {
+    public SavePosition SavePosition;
     private Robot robot;
     private Limelight3A limelight;
     private Turret turret;
