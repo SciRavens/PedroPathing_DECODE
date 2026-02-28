@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode;
 
-import com.pedropathing.control.PIDFCoefficients;
-import com.pedropathing.control.PIDFController;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.Pose;
 import com.qualcomm.hardware.limelightvision.LLResult;
@@ -11,6 +9,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.disabled.SavePosition;
 
 import java.util.Map;
 import java.util.TreeMap;
@@ -105,7 +104,7 @@ public class TargetTracker {
 
                         if (pastState != null) {
                             // Reconstruct the past odometry geometry
-                            double pastDeltaX = robot.current_goal_x - pastState.pose.getX();
+                            double pastDeltaX = robot.current_goal_x - (pastState.pose.getX());
                             double pastDeltaY = robot.current_goal_y - pastState.pose.getY();
                             double pastFieldTargetAngle = Math.atan2(pastDeltaY, pastDeltaX);
 
@@ -129,6 +128,7 @@ public class TargetTracker {
                 }
             }
         }
+
 
         // -----------------------------------------------------------------
         // STEP 3: APPLY OFFSET AND ENFORCE LIMITS

@@ -11,16 +11,15 @@ import com.pedropathing.paths.PathChain;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
-import org.firstinspires.ftc.teamcode.SavePosition;
+import org.firstinspires.ftc.teamcode.disabled.SavePosition;
 import org.firstinspires.ftc.teamcode.TargetTracker;
 import org.firstinspires.ftc.teamcode.Vision;
-import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.Robot;
 import com.pedropathing.util.Timer;
 
-@Autonomous(name = "Blue Corner Far", group = "Autonomous", preselectTeleOp = "RobotTeleop")
+@Autonomous(name = "Blue Corner Far V2", group = "Autonomous", preselectTeleOp = "RobotTeleop")
 @Configurable
-public class BlueCornerFar extends OpMode {
+public class BlueCornerFarV2 extends OpMode {
 
     private TelemetryManager panelsTelemetry;
     private Timer pathTimer, opmodeTimer;
@@ -30,12 +29,12 @@ public class BlueCornerFar extends OpMode {
     public Follower follower;
     private int pathState;
     private Paths paths;
-    private String currentAlliance = "RED";
+    private String currentAlliance = "BLUE";
 
     // ---------------- POSES ----------------
     // Mirrored over x = 72: new_x = 144 - old_x
 
-    private final Pose startPose = new Pose(110.903, 135.786, Math.toRadians(90));
+    private final Pose startPose = new Pose(55.679, 8.321, Math.toRadians(180));
 //
 //    // Points extracted from your working Bezier coordinates
 //    private final Pose scorePreloadPose = new Pose(64.990, 77.900, Math.toRadians(135));
@@ -59,9 +58,13 @@ public class BlueCornerFar extends OpMode {
         Robot.currentAlliance = "BLUE";
         robot = new Robot(hardwareMap, telemetry);
         panelsTelemetry = PanelsTelemetry.INSTANCE.getTelemetry();
+//        vision = vision = new Vision(hardwareMap, robot, follower, telemetry);
 
         follower = Constants.createFollower(hardwareMap);
         follower.setStartingPose(startPose);
+
+        vision = new Vision(hardwareMap, robot, follower, telemetry);
+//        ttracker =  new TargetTracker(hardwareMap, robot, follower, telemetry);
 
         pathTimer = new Timer();
         opmodeTimer = new Timer();
@@ -93,9 +96,9 @@ public class BlueCornerFar extends OpMode {
 
     @Override
     public void loop() {
-//        vision.update(robot.getDistanceFromGoal(follower));
         follower.update();
-        ttracker.update();
+        vision.update(robot.getDistanceFromGoal(follower));
+//        ttracker.update();
         robot.shooter.update();
         SavePosition.saveCurrentPosition(follower.getPose());
 
@@ -107,6 +110,7 @@ public class BlueCornerFar extends OpMode {
         panelsTelemetry.debug("Heading", follower.getPose().getHeading());
         panelsTelemetry.debug("Shooter RPM", robot.shooter.getCurrentRPM());
         panelsTelemetry.debug("current RPM", robot.shooter.currentRPM);
+        panelsTelemetry.debug("current alliance", Robot.currentAlliance);
         panelsTelemetry.update(telemetry);
     }
     private Pose getTarget(PathChain path) {
@@ -127,30 +131,33 @@ public class BlueCornerFar extends OpMode {
     // ---------------- PATHS ----------------
 
     public static class Paths {
-        public PathChain InitialStack1;
-        public PathChain intakeStack1;
+        public PathChain initialIntake1;
+        public PathChain IntakeStack1;
         public PathChain scoreStack1;
-        public PathChain intakeCorner;
+        public PathChain intakeStack2;
+        public PathChain scoreStack2;
+        public PathChain cornerIntake;
         public PathChain cornerBack;
         public PathChain cornerAgain;
         public PathChain cornerScore;
+        public PathChain leave;
 
         public Paths(Follower follower) {
-            InitialStack1 = follower.pathBuilder().addPath(
+            initialIntake1 = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(55.679, 8.321),
+                                    new Pose(56.000, 8.000),
 
-                                    new Pose(56.000, 35.518)
+                                    new Pose(56.000, 36.000)
                             )
                     ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
 
                     .build();
 
-            intakeStack1 = follower.pathBuilder().addPath(
+            IntakeStack1 = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(56.000, 35.518),
+                                    new Pose(56.000, 36.000),
 
-                                    new Pose(15.134, 35.468)
+                                    new Pose(9.161, 35.458)
                             )
                     ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
 
@@ -158,19 +165,41 @@ public class BlueCornerFar extends OpMode {
 
             scoreStack1 = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(15.134, 35.468),
+                                    new Pose(9.161, 35.458),
 
-                                    new Pose(55.652, 8.284)
+                                    new Pose(50.997, 7.769)
                             )
                     ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
 
                     .build();
 
-            intakeCorner = follower.pathBuilder().addPath(
-                            new BezierLine(
-                                    new Pose(55.652, 8.284),
+            intakeStack2 = follower.pathBuilder().addPath(
+                            new BezierCurve(
+                                    new Pose(50.997, 7.769),
+                                    new Pose(58.370, 45.125),
+                                    new Pose(6.788, 42.741),
+                                    new Pose(8.356, 53.436),
+                                    new Pose(8.803, -1.25)
+                            )
+                    ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(270))
 
-                                    new Pose(9.234, 8.341)
+                    .build();
+
+            scoreStack2 = follower.pathBuilder().addPath(
+                            new BezierCurve(
+                                    new Pose(8.803, 8.140),
+                                    new Pose(31.569, 22.508),
+                                    new Pose(53.013, 7.906)
+                            )
+                    ).setLinearHeadingInterpolation(Math.toRadians(270), Math.toRadians(180))
+
+                    .build();
+
+            cornerIntake = follower.pathBuilder().addPath(
+                            new BezierLine(
+                                    new Pose(53.013, 7.906),
+
+                                    new Pose(8.799, 8.007)
                             )
                     ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
 
@@ -178,9 +207,9 @@ public class BlueCornerFar extends OpMode {
 
             cornerBack = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(9.234, 8.341),
+                                    new Pose(8.799, 8.007),
 
-                                    new Pose(15.732, 8.348)
+                                    new Pose(28.033, 8.331)
                             )
                     ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
 
@@ -188,20 +217,31 @@ public class BlueCornerFar extends OpMode {
 
             cornerAgain = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(15.732, 8.348),
+                                    new Pose(28.033, 8.331),
 
-                                    new Pose(9.187, 8.181)
+                                    new Pose(8.722, 8.020)
                             )
                     ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
 
                     .build();
+
             cornerScore = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(9.187, 8.181),
+                                    new Pose(8.722, 8.020),
 
-                                    new Pose(55.816, 8.331)
+                                    new Pose(53.064, 8.030)
                             )
                     ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
+
+                    .build();
+
+            leave = follower.pathBuilder().addPath(
+                            new BezierLine(
+                                    new Pose(53.064, 8.030),
+
+                                    new Pose(47.555, 18.214)
+                            )
+                    ).setTangentHeadingInterpolation()
 
                     .build();
         }
@@ -216,22 +256,22 @@ public class BlueCornerFar extends OpMode {
             case 0: // start shooter
                 completed = robot.autonShoot(follower, 3000);
                 if (completed) {
-                    follower.followPath(paths.InitialStack1, true);
+                    follower.followPath(paths.initialIntake1, true);
                     robot.intake.startIntake();
                     setPathState(1);
                 }
                 break;
 
             case 1:
-                if (pathWait(800, paths.InitialStack1)){ // Pass the path to pathWait
-                    follower.followPath(paths.intakeStack1, true);
+                if (pathWait(2800, paths.initialIntake1)){ // Pass the path to pathWait
+                    follower.followPath(paths.IntakeStack1, true);
                     setPathState(2);
                 }
                 break;
 
             case 2:
-                if(pathWait(1200, paths.intakeStack1))  {
-                    robot.intake.stopIntake();
+                if(pathWait(1200, paths.IntakeStack1))  {
+                    robot.intake.startIntake();
                     follower.followPath(paths.scoreStack1, true);
                     setPathState(3);
                 }
@@ -244,72 +284,40 @@ public class BlueCornerFar extends OpMode {
                 break;
 
             case 4:
-                completed = robot.autonShoot(follower, 2800);
-                if (completed) {
-                    robot.gate.gateClose();
-                    follower.setMaxPower(1.0);
-                    follower.followPath(paths.intakeCorner);
-                    robot.intake.startIntake();
-                    setPathState(5);
+                if (!follower.isBusy() || pathTimer.getElapsedTime()>2000) {
+                    completed = robot.autonShoot(follower, 2800);
+                    if (completed) {
+                        robot.gate.gateClose();
+                        follower.setMaxPower(1.0);
+                        follower.followPath(paths.intakeStack2);
+                        robot.intake.startIntake();
+                        setPathState(5);
+                    }
                 }
                 break;
 
             case 5:
-                if (pathWait(1300, paths.intakeCorner)){
-                    follower.followPath(paths.cornerBack);
+                if (pathWait(3000, paths.intakeStack2)){
+                    follower.followPath(paths.scoreStack2);
                     setPathState(6);
                 }
                 break;
 
             case 6:
-                if(pathWait(1300, paths.cornerBack))  {
-                    robot.intake.stopIntake();
-                    follower.followPath(paths.cornerAgain);
-                    setPathState(7);
+                if (!follower.isBusy() || pathTimer.getElapsedTime()>3000) {
+                    completed = robot.autonShoot(follower, 2800);
+                    if (completed) {
+                        robot.gate.gateClose();
+                        follower.setMaxPower(1.0);
+                        // NOTE: Check if 'goToFirstPattern' is defined elsewhere,
+                        // otherwise this will cause a "cannot find symbol" error.
+                        // follower.followPath(goToFirstPattern);
+                        robot.intake.startIntake();
+                        setPathState(-1);
+                    }
                 }
                 break;
 
-            case 7:
-                if(pathWait(1900, paths.cornerAgain)) {
-                    follower.followPath(paths.cornerScore);
-                    setPathState(8);
-                }
-                break;
-
-            case 8:
-                completed = robot.autonShoot(follower, 2800);
-                if (completed) {
-                    robot.gate.gateClose();
-                    follower.setMaxPower(1.0);
-                    // NOTE: Check if 'goToFirstPattern' is defined elsewhere,
-                    // otherwise this will cause a "cannot find symbol" error.
-                    // follower.followPath(goToFirstPattern);
-                    robot.intake.startIntake();
-                    setPathState(9);
-                }
-                break;
-
-            case 9:
-                if (pathWait(1800, paths.intakeCorner)){
-                    follower.followPath(paths.intakeCorner);
-                    setPathState(10);
-                }
-                break;
-
-            case 10:
-                if(pathWait(1300, paths.intakeCorner))  {
-                    robot.intake.stopIntake();
-                    follower.followPath(paths.cornerBack);
-                    setPathState(11);
-                }
-                break;
-
-            case 11:
-                if(pathWait(2200, paths.cornerBack)) {
-                    follower.followPath(paths.cornerAgain);
-                    setPathState(-1);
-                }
-                break;
 
             default:
                 break;

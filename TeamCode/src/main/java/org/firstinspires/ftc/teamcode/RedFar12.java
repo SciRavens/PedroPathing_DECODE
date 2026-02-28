@@ -1,17 +1,14 @@
 package org.firstinspires.ftc.teamcode; // make sure this aligns with class location
 
 import com.pedropathing.follower.Follower;
-import com.pedropathing.geometry.BezierCurve;
 import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.Path;
 import com.pedropathing.util.Timer;
-import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import  com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import org.firstinspires.ftc.teamcode.Vision;
-import com.qualcomm.robotcore.hardware.CRServo;
 
+import org.firstinspires.ftc.teamcode.disabled.SavePosition;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
 
@@ -29,9 +26,9 @@ public class RedFar12 extends OpMode {
     private final Pose firstPattern = new Pose(96.7, 83.6, Math.toRadians(0));
     private final Pose getFirstPattern = new Pose(134, 83.6, Math.toRadians(0));
     private final Pose secondPattern = new Pose(96,58,Math.toRadians(0));
-    private final Pose getSecondPattern = new Pose(143, 58, Math.toRadians(0));
+    private final Pose getSecondPattern = new Pose(141, 58, Math.toRadians(0));
     private final Pose thirdPattern = new Pose(96, 36, Math.toRadians(0));
-    private final Pose getThirdPattern = new Pose(143, 36, Math.toRadians(0));
+    private final Pose getThirdPattern = new Pose(141, 36, Math.toRadians(0));
     private final Pose shootingPose = new Pose(89, 12, Math.toRadians(0));
     private final Pose finalPose = new Pose(120, 10, Math.toRadians(0));
 

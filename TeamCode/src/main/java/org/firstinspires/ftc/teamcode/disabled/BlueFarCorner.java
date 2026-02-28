@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.pedroPathing;
+package org.firstinspires.ftc.teamcode.disabled;
 
 import com.bylazar.configurables.annotations.Configurable;
 import com.bylazar.telemetry.PanelsTelemetry;
@@ -12,14 +12,15 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
-import org.firstinspires.ftc.teamcode.SavePosition;
 import org.firstinspires.ftc.teamcode.Vision;
 import org.firstinspires.ftc.teamcode.Robot;
+import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
+
 import com.pedropathing.util.Timer;
 @Disabled
-@Autonomous(name = "Red Far Corner", group = "Autonomous", preselectTeleOp = "RobotTeleop")
+@Autonomous(name = "Blue Far Corner", group = "Autonomous", preselectTeleOp = "RobotTeleop")
 @Configurable
-public class RedFarCorner extends OpMode {
+public class BlueFarCorner extends OpMode {
 
     private TelemetryManager panelsTelemetry;
     private Timer pathTimer, opmodeTimer;
@@ -28,11 +29,11 @@ public class RedFarCorner extends OpMode {
     public Follower follower;
     private int pathState;
     private Paths paths;
-    private String currentAlliance = "RED";
+    private String currentAlliance = "BLUE";
 
     // ---------------- POSES ----------------
 
-    private final Pose startPose = new Pose(88, 8, Math.toRadians(0));
+    private final Pose startPose = new Pose(63, 8, Math.toRadians(180));
     private final Pose intakeThirdStackPos = new Pose(134, 83.3, Math.toRadians(0));
 
 
@@ -40,7 +41,7 @@ public class RedFarCorner extends OpMode {
 
     @Override
     public void init() {
-        Robot.currentAlliance = "RED";
+        Robot.currentAlliance = "BLUE";
         robot = new Robot(hardwareMap, telemetry);
         panelsTelemetry = PanelsTelemetry.INSTANCE.getTelemetry();
 
@@ -99,61 +100,61 @@ public class RedFarCorner extends OpMode {
 
             intakeThirdStack = follower.pathBuilder().addPath(
                             new BezierCurve(
-                                    new Pose(88.000, 8.000),
-                                    new Pose(96.665, 41.823),
-                                    new Pose(109.756, 34.388),
-                                    new Pose(120.469, 36.297),
-                                    new Pose(132, 35.000)
+                                    new Pose(63, 8),
+                                    new Pose(47.335, 41.823),
+                                    new Pose(34.244, 34.388),
+                                    new Pose(23.531, 36.297),
+                                    new Pose(12, 35.000)
                             )
-                    ).setConstantHeadingInterpolation(Math.toRadians(0))
+                    ).setConstantHeadingInterpolation(Math.toRadians(180))
 
                     .build();
             shootThirdStack = follower.pathBuilder().addPath(
                             new BezierCurve(
-                                    new Pose(132, 35.000),
-                                    new Pose(94.067, 40.139),
-                                    new Pose(88.000, 8.000)
+                                    new Pose(12, 35.000),
+                                    new Pose(49.933, 40.139),
+                                    new Pose(56.000, 8.000)
                             )
-                    ).setConstantHeadingInterpolation(Math.toRadians(0))
+                    ).setConstantHeadingInterpolation(Math.toRadians(180))
                     .build();
             intakeCornerStack = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(88.000, 8.000),
-                                    new Pose(136, 8.000)
+                                    new Pose(63, 8.000),
+                                    new Pose(8, 8.000)
                             )
-                    ).setConstantHeadingInterpolation(Math.toRadians(0))
+                    ).setConstantHeadingInterpolation(Math.toRadians(180))
                     .build();
             backUpFromIntakingCornerStack = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(136, 8.000),
+                                    new Pose(8, 8.000),
 
-                                    new Pose(110, 8.000)
+                                    new Pose(34, 8.000)
                             )
-                    ).setConstantHeadingInterpolation(Math.toRadians(0))
+                    ).setConstantHeadingInterpolation(Math.toRadians(180))
                     .build();
             goBackIntoCornerToIntake = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(110, 8.000),
+                                    new Pose(34, 8.000),
 
-                                    new Pose(136, 8.000)
+                                    new Pose(8, 8.000)
                             )
-                    ).setConstantHeadingInterpolation(Math.toRadians(0))
+                    ).setConstantHeadingInterpolation(Math.toRadians(180))
                     .build();
             shootingPos = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(136, 8.000),
+                                    new Pose(8, 8.000),
 
-                                    new Pose(88.000, 8.000)
+                                    new Pose(63, 8.000)
                             )
-                    ).setConstantHeadingInterpolation(Math.toRadians(0))
+                    ).setConstantHeadingInterpolation(Math.toRadians(180))
                     .build();
             leave = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(88, 8.000),
+                                    new Pose(63, 8.000),
 
-                                    new Pose(100, 8.000)
+                                    new Pose(44, 8.000)
                             )
-                    ).setConstantHeadingInterpolation(Math.toRadians(0))
+                    ).setConstantHeadingInterpolation(Math.toRadians(180))
                     .build();
         }
     }
@@ -172,10 +173,8 @@ public class RedFarCorner extends OpMode {
             case 0:
                 completed = robot.autonShoot(follower, 5000);
                 if (completed) {
+                    follower.followPath(paths.intakeThirdStack, true);
                     robot.intake.startIntake();
-                    follower.followPath(paths.intakeCornerStack, true);
-                    follower.followPath(paths.backUpFromIntakingCornerStack);
-                    follower.followPath(paths.goBackIntoCornerToIntake);
                     setPathState(2);
                 }
                 break;
@@ -183,7 +182,7 @@ public class RedFarCorner extends OpMode {
             case 2:
                 if (pathWait(2500)) {
                     robot.intake.stopIntake();
-                    follower.followPath(paths.shootingPos, true);
+                    follower.followPath(paths.shootThirdStack, true);
                     setPathState(3);
                 }
                 break;

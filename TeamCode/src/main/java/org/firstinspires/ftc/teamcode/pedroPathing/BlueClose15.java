@@ -11,10 +11,9 @@ import com.pedropathing.paths.PathChain;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
-import org.firstinspires.ftc.teamcode.SavePosition;
+import org.firstinspires.ftc.teamcode.disabled.SavePosition;
 import org.firstinspires.ftc.teamcode.TargetTracker;
 import org.firstinspires.ftc.teamcode.Vision;
-import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.Robot;
 import com.pedropathing.util.Timer;
 
@@ -62,6 +61,7 @@ public class BlueClose15 extends OpMode {
 
         follower = Constants.createFollower(hardwareMap);
         follower.setStartingPose(startPose);
+        ttracker = new TargetTracker(hardwareMap, robot, follower, telemetry);
 
         pathTimer = new Timer();
         opmodeTimer = new Timer();
@@ -193,7 +193,7 @@ public class BlueClose15 extends OpMode {
                             new BezierCurve(
                                     new Pose(59.900, 77.729),
                                     new Pose(17.189, 43.590),
-                                    new Pose(11.217, 80.080)
+                                    new Pose(11.217, 75.080)
                             )
                     ).setLinearHeadingInterpolation(Math.toRadians(135), Math.toRadians(180))
 
@@ -201,7 +201,7 @@ public class BlueClose15 extends OpMode {
 
             gateBack = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(9.217, 80.080),
+                                    new Pose(9.217, 75.080),
 
                                     new Pose(9.348, 60.950)
                             )
