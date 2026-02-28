@@ -11,6 +11,7 @@ import com.pedropathing.paths.PathChain;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
+import org.firstinspires.ftc.teamcode.Turret;
 import org.firstinspires.ftc.teamcode.disabled.SavePosition;
 import org.firstinspires.ftc.teamcode.TargetTracker;
 import org.firstinspires.ftc.teamcode.Vision;
@@ -93,10 +94,18 @@ public class BlueClose15 extends OpMode {
 
     @Override
     public void loop() {
-//        vision.update(robot.getDistanceFromGoal(follower));
+//        if(turretOn) {
+//            vision.update(robot.getDistanceFromGoal(follower));
+//        }
+
         follower.update();
-        ttracker.update();
+
         robot.shooter.update(robot);
+        if (pathState >= 0) {
+            ttracker.update();
+        } else if (!follower.isBusy()) {
+            robot.turret.startCentering(Turret.SearchDirection.LEFT);
+        }
         SavePosition.saveCurrentPosition(follower.getPose());
 
         pathState = autonomousPathUpdate();

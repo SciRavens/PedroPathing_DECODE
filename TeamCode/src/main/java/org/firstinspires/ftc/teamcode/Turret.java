@@ -46,7 +46,7 @@ public class Turret {
     private ElapsedTime searchTimer = new ElapsedTime();
 
     private static final double SEARCH_POWER = 0.2; // Safe speed for homing
-    private static final double MAX_SEARCH_TIME_SECONDS = 3.0; // Safety timeout
+    private static final double MAX_SEARCH_TIME_SECONDS = 5.0; // Safety timeout
 
     public Turret(HardwareMap hardwareMap, Telemetry telemetry) {
         // Initialize the hardware
@@ -106,6 +106,7 @@ public class Turret {
             }
         }
 
+        telemetry.addData("TURRET: ", currentState);
         // You can also feed your custom PIDF controller inside this update
         // method in the future, if the state == IDLE!
     }

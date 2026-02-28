@@ -103,11 +103,13 @@ public class NewRedCloseAuto extends OpMode {
 //        }
 
         follower.update();
-        if (pathState < 0) {
-            robot.turret.startCentering(Turret.SearchDirection.RIGHT);
-        }
+
         robot.shooter.update(robot);
-        ttracker.update();
+        if (pathState >= 0) {
+            ttracker.update();
+        } else if (!follower.isBusy()) {
+                robot.turret.startCentering(Turret.SearchDirection.RIGHT);
+        }
         SavePosition.saveCurrentPosition(follower.getPose());
 
 

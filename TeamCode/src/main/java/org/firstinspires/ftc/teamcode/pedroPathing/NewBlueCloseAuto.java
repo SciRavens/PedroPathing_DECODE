@@ -109,9 +109,13 @@ public class NewBlueCloseAuto extends OpMode {
 //        }
 
         follower.update();
-        ttracker.update();
-        SavePosition.saveCurrentPosition(follower.getPose());
         robot.shooter.update(robot);
+        if (pathState >= 0) {
+            ttracker.update();
+        } else if (!follower.isBusy()) {
+            robot.turret.startCentering(Turret.SearchDirection.LEFT);
+        }
+        SavePosition.saveCurrentPosition(follower.getPose());
 
 
         pathState = autonomousPathUpdate();

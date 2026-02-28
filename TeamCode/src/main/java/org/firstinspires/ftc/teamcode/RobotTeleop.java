@@ -123,7 +123,7 @@ public class RobotTeleop extends OpMode {
         follower.update();
         currentPose = follower.getPose();
         double distance  = robot.getDistanceFromGoal(follower);
-        if (targetTracking_enabled) {
+        if (targetTracking_enabled && !robot.turret.isSearching()) {
 //            vision.update(robot.getDistanceFromGoal(follower));
 //            vision.startTurretTracking();
             ttracker.update();
@@ -168,7 +168,7 @@ public class RobotTeleop extends OpMode {
                 robot.shooter.startShooterbyDistance(distance);
             } else {
                 // We are Far-minded but moving into position: Keep it at 1400
-                robot.shooter.startFarPassiveShoot();
+//                robot.shooter.startFarPassiveShoot();
             }
         } else {
             // CLOSE MODE (Default)
@@ -204,9 +204,15 @@ public class RobotTeleop extends OpMode {
 
         // Turret control (fixed: check gamepad2 on both dpad sides)
         if (gamepad2.dpad_right && !gamepad2.dpad_left) {
-            robot.turret.setTurretPower(0.5); // rotate right
+            robot.turret.setTurretPower(-0.5); // rotate right
         } else if (gamepad2.dpad_left && !gamepad2.dpad_right) {
-            robot.turret.setTurretPower(-0.5); // rotate left
+            robot.turret.setTurretPower(0.5); // rotate left
+        }
+
+        if (gamepad1.x) {
+            robot.turret.startCentering(Turret.SearchDirection.LEFT);
+        } else if (gamepad1.b) {
+            robot.turret.startCentering(Turret.SearchDirection.RIGHT);
         }
 
         SavePosition.saveCurrentPosition(currentPose);
