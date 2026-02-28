@@ -11,6 +11,7 @@ import com.pedropathing.paths.PathChain;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
+import org.firstinspires.ftc.teamcode.Turret;
 import org.firstinspires.ftc.teamcode.disabled.SavePosition;
 import org.firstinspires.ftc.teamcode.TargetTracker;
 import org.firstinspires.ftc.teamcode.Vision;
@@ -102,7 +103,10 @@ public class NewRedCloseAuto extends OpMode {
 //        }
 
         follower.update();
-        robot.shooter.update();
+        if (pathState < 0) {
+            robot.turret.startCentering(Turret.SearchDirection.RIGHT);
+        }
+        robot.shooter.update(robot);
         ttracker.update();
         SavePosition.saveCurrentPosition(follower.getPose());
 

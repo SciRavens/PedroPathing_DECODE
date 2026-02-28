@@ -80,7 +80,7 @@ public class ShooterRPMTest extends OpMode {
 //            buttontimer.resetTimer();
 //        }
 
-        robot.shooter.update();
+        robot.shooter.update(robot);
         telemetry.addData("Target RPM: ", currentRPM);
         telemetry.addData("Current Velocity Front: ", robot.shooter.shooterMotorFront.getVelocity());
 //        telemetry.addData("Current Velocity Back : ", robot.shooter.shooterMotorBack.getVelocity());

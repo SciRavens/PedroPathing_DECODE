@@ -99,7 +99,7 @@ public class BlueCornerFar extends OpMode {
         follower.update();
 //        vision.update(robot.getDistanceFromGoal(follower));
         ttracker.update();
-        robot.shooter.update();
+        robot.shooter.update(robot);
         SavePosition.saveCurrentPosition(follower.getPose());
 
         pathState = autonomousPathUpdate();

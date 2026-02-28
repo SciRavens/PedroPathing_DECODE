@@ -85,7 +85,8 @@ public class Shooter {
         this.telemetry = telemetry;
     }
 
-    public void update() {
+    public void update(Robot robot) {
+        robot.turret.update();
         currentRPM = shooterMotorFront.getVelocity();
 
         if (targetRPM <= 0) {

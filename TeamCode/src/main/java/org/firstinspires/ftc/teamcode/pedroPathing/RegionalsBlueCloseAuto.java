@@ -92,7 +92,7 @@ public class RegionalsBlueCloseAuto extends OpMode {
     public void loop() {
 //        vision.update(robot.getDistanceFromGoal(follower));
         follower.update();
-        robot.shooter.update();
+        robot.shooter.update(robot);
         SavePosition.saveCurrentPosition(follower.getPose());
 
         pathState = autonomousPathUpdate();

@@ -64,7 +64,7 @@ public class RedCornerFarV2 extends OpMode {
     @Override
     public void loop() {
         follower.update();
-        robot.shooter.update();
+        robot.shooter.update(robot);
         SavePosition.saveCurrentPosition(follower.getPose());
 
         pathState = autonomousPathUpdate();

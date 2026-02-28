@@ -95,7 +95,7 @@ public class RedClose15 extends OpMode {
 //        vision.update(robot.getDistanceFromGoal(follower));
         follower.update();
         ttracker.update();
-        robot.shooter.update();
+        robot.shooter.update(robot);
         SavePosition.saveCurrentPosition(follower.getPose());
 
         pathState = autonomousPathUpdate();

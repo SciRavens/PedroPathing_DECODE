@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.pedroPathing;
+package org.firstinspires.ftc.teamcode;
 
 import com.bylazar.configurables.annotations.Configurable;
 import com.bylazar.telemetry.PanelsTelemetry;
@@ -15,6 +15,8 @@ import org.firstinspires.ftc.teamcode.disabled.SavePosition;
 import org.firstinspires.ftc.teamcode.TargetTracker;
 import org.firstinspires.ftc.teamcode.Vision;
 import org.firstinspires.ftc.teamcode.Robot;
+import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
+
 import com.pedropathing.util.Timer;
 
 @Autonomous(name = "Blue Corner Far V2", group = "Autonomous", preselectTeleOp = "RobotTeleop")
@@ -99,7 +101,7 @@ public class BlueCornerFarV2 extends OpMode {
         follower.update();
         vision.update(robot.getDistanceFromGoal(follower));
 //        ttracker.update();
-        robot.shooter.update();
+        robot.shooter.update(robot);
         SavePosition.saveCurrentPosition(follower.getPose());
 
         pathState = autonomousPathUpdate();

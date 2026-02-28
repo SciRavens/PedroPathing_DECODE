@@ -111,7 +111,7 @@ public class NewBlueCloseAuto extends OpMode {
         follower.update();
         ttracker.update();
         SavePosition.saveCurrentPosition(follower.getPose());
-        robot.shooter.update();
+        robot.shooter.update(robot);
 
 
         pathState = autonomousPathUpdate();

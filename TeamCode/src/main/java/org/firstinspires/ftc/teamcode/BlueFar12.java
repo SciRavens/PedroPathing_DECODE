@@ -94,7 +94,7 @@ public class BlueFar12 extends OpMode {
     public void loop() {
         vision.update(robot.getDistanceFromGoal(follower));
         follower.update();
-        robot.shooter.update();
+        robot.shooter.update(robot);
         autonomousPathUpdate();
         SavePosition.saveCurrentPosition(follower.getPose());
 
