@@ -122,14 +122,14 @@ public class RedCornerFarV2 extends OpMode {
                                     new Pose(85.630, 45.125),
                                     new Pose(137.212, 42.741),
                                     new Pose(135.644, 53.436),
-                                    new Pose(135.197, 0)
+                                    new Pose(138.197, 0)
                             )
                     ).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(-90))
                     .build();
 
             scoreStack2 = follower.pathBuilder().addPath(
                             new BezierCurve(
-                                    new Pose(135.197, 0),
+                                    new Pose(138.197, 0),
                                     new Pose(112.431, 22.508),
                                     new Pose(90.987, 7.906)
                             )
