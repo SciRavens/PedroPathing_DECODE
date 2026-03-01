@@ -9,15 +9,14 @@ import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
 import com.pedropathing.util.Timer;
 
-
 /**
  * Standard Robot TeleOp for FTC using Pedro Pathing.
  * Handles robot driving, shooter motor control, and turret control (CRServo).
  *
  * Author:
- *   Baron Henderson – 20077 The Indubitables (modified by Kushal Madhabhaktula)
+ * Baron Henderson – 20077 The Indubitables (modified by Kushal Madhabhaktula)
  * Version:
- *   3.1, 10/2025
+ * 3.2, Added Slew Rate Limiting
  */
 @TeleOp(name = "RobotTeleop", group = "Competition")
 public class RobotTeleop extends OpMode {
@@ -26,7 +25,6 @@ public class RobotTeleop extends OpMode {
     private Follower follower;
     private Robot robot;
     public Gate gate;
-
 
     private Vision vision;
     private TargetTracker ttracker;
@@ -37,9 +35,15 @@ public class RobotTeleop extends OpMode {
     private boolean smartShooting = false;
     private boolean isFarShootingMode = false;
 
+    // --- SLEW RATE LIMITERS ---
+    // The number represents the maximum allowed change per second.
+    // 2.5 means it takes 0.4 seconds to go from 0 to 1.0 power.
+    private SlewRateLimiter forwardLimiter = new SlewRateLimiter(2.5);
+    private SlewRateLimiter strafeLimiter = new SlewRateLimiter(2.5);
+    private SlewRateLimiter turnLimiter = new SlewRateLimiter(3.0);
+
     @Override
     public void init() {
-
         timer = new Timer();
         // Get the Saved position but only if the saved position valid.
         // Holding the circle button will set the default position
@@ -62,8 +66,7 @@ public class RobotTeleop extends OpMode {
             Robot.currentAlliance = "RED";
         }
         robot = new Robot(hardwareMap, telemetry);
-//        vision = new Vision(hardwareMap, robot, follower, telemetry);
-       ttracker = new TargetTracker(hardwareMap, robot, follower, telemetry);
+        ttracker = new TargetTracker(hardwareMap, robot, follower, telemetry);
         telemetry.addData("Current Alliance: ", Robot.currentAlliance);
         telemetry.addLine()
                 .addData("Current Position X: ", follower.getPose().getX())
@@ -79,39 +82,35 @@ public class RobotTeleop extends OpMode {
         follower.startTeleopDrive();
         follower.setMaxPower(1.0);
     }
-    private boolean is_Intaking() {
-        return gamepad2.right_trigger > 0.1;
-    }
 
-    private boolean is_OpenGate() {
-        return gamepad2.left_trigger > 0.1;
-    }
-
+    private boolean is_Intaking() { return gamepad2.right_trigger > 0.1; }
+    private boolean is_OpenGate() { return gamepad2.left_trigger > 0.1; }
     private boolean is_CloseGate() { return gamepad2.left_bumper; }
-
     private boolean is_ShootingClose() {return gamepad2.circle;}
     private boolean is_ShootingMiddle() {return gamepad2.triangle;}
     private boolean is_ShootingFar() {return gamepad2.square;}
-
-
     private boolean is_FlywheelOff() {return gamepad2.a;}
     private boolean is_FlyWheelOn() {return gamepad2.b;}
     private boolean is_SmartShooting() {return gamepad2.triangle;}
-
     private boolean is_ReverseIntaking() {return gamepad2.right_bumper;}
     private boolean cancel_smartShooting() { return gamepad2.x; }
 
     @Override
     public void loop() {
-        double xInput = Math.abs(gamepad1.left_stick_x) > DEAD_ZONE ? -gamepad1.left_stick_x : 0;
-        double yInput = Math.abs(gamepad1.left_stick_y) > DEAD_ZONE ? -gamepad1.left_stick_y : 0;
-        // NOTE: rotation is negated to match PedroPathing's TeleOp example (prevents reversed/odd rotation behavior)
-        double turnInput = Math.abs(gamepad1.right_stick_x) > DEAD_ZONE ? -gamepad1.right_stick_x : 0;
+        // 1. Get raw inputs from gamepad
+        double rawX = Math.abs(gamepad1.left_stick_x) > DEAD_ZONE ? -gamepad1.left_stick_x : 0;
+        double rawY = Math.abs(gamepad1.left_stick_y) > DEAD_ZONE ? -gamepad1.left_stick_y : 0;
+        double rawTurn = Math.abs(gamepad1.right_stick_x) > DEAD_ZONE ? -gamepad1.right_stick_x : 0;
 
+        // 2. Apply Slew Rate Limiter using current time
+        double currentTime = timer.getElapsedTimeSeconds();
+        double xInput = strafeLimiter.calculate(rawX, currentTime);
+        double yInput = forwardLimiter.calculate(rawY, currentTime);
+        double turnInput = turnLimiter.calculate(rawTurn, currentTime);
+
+        // 3. Apply Power Scaling
         double powerScale = gamepad1.right_trigger > 0.5 ? 0.25 : 1.0;
-//        if (robot.isDriveTrainOverLoaded()) {
-//            powerScale = 0.1; // Tweak later
-//        }
+
         follower.updateErrors();
         follower.updateVectors();
         follower.setTeleOpDrive(
@@ -121,11 +120,10 @@ public class RobotTeleop extends OpMode {
                 true                     // robot-centric
         );
         follower.update();
+
         currentPose = follower.getPose();
         double distance  = robot.getDistanceFromGoal(follower);
         if (targetTracking_enabled && !robot.turret.isSearching()) {
-//            vision.update(robot.getDistanceFromGoal(follower));
-//            vision.startTurretTracking();
             ttracker.update();
         }
 
@@ -135,25 +133,11 @@ public class RobotTeleop extends OpMode {
 
         if (smartShooting) {
             boolean completed = robot.autonShoot(follower, 2000);
-//            if (distance > 135) {
-//                completed = robot.autonRapidShoot(follower, 2000);
-//            }
             if (completed) {
                 smartShooting = false;
                 isFarShootingMode = false;
-                //robot.shooter.startPassiveShoot(); // Keep the flywheel running at lower speed
             }
         }
-
-//        if (cancel_smartShooting() && smartShooting) {
-//            robot.gate.gateClose();
-//            robot.intake.stopIntake();
-//            smartShooting = false;
-//        }
-
-//        if (is_FlyWheelOn()) {
-//            robot.shooter.startShooterbyDistance(distance);
-//        } else
 
         if (gamepad2.b) {
             isFarShootingMode = true; // Intent: I'm going to shoot from far
@@ -162,21 +146,13 @@ public class RobotTeleop extends OpMode {
         }
 
         if (isFarShootingMode) {
-            // If we are in Far Mode but haven't reached the "Far Zone" yet
             if (distance > 143) {
-                // We are in the Far Zone: Use Live LUT for final precision
                 robot.shooter.startShooterbyDistance(distance);
-            } else {
-                // We are Far-minded but moving into position: Keep it at 1400
-//                robot.shooter.startFarPassiveShoot();
             }
         } else {
-            // CLOSE MODE (Default)
             if (distance < 120) {
-                // Live LUT for close shooting precision
                 robot.shooter.startShooterbyDistance(distance);
             } else {
-                // Idle at 1225: Perfect middle ground for entering the close zone
                 robot.shooter.startClosePassiveShoot();
             }
         }
@@ -195,18 +171,16 @@ public class RobotTeleop extends OpMode {
             targetTracking_enabled = false;
         }
 
-
         if (is_OpenGate()) {
             robot.gate.gateOpen();
         } else if (is_CloseGate()) {
             robot.gate.gateClose();
         }
 
-        // Turret control (fixed: check gamepad2 on both dpad sides)
         if (gamepad2.dpad_right && !gamepad2.dpad_left) {
-            robot.turret.setTurretPower(-0.5); // rotate right
+            robot.turret.setTurretPower(-0.5);
         } else if (gamepad2.dpad_left && !gamepad2.dpad_right) {
-            robot.turret.setTurretPower(0.5); // rotate left
+            robot.turret.setTurretPower(0.5);
         }
 
         if (gamepad1.x) {
@@ -217,6 +191,7 @@ public class RobotTeleop extends OpMode {
 
         SavePosition.saveCurrentPosition(currentPose);
         robot.shooter.update(robot);
+
         telemetry.addData("Current Alliance: ", Robot.currentAlliance);
         telemetry.addLine()
                 .addData("Goal X: ", robot.current_goal_x)
@@ -230,9 +205,6 @@ public class RobotTeleop extends OpMode {
                 .addData("RPM Target: ", robot.shooter.getRpmbyDistance(distance))
                 .addData("Actual: ", robot.shooter.getCurrentRPM());
         telemetry.addData("Goal Distance: ", distance);
-//        telemetry.addData("Drive X", xInput);
-//        telemetry.addData("Drive Y", yInput);
-//        telemetry.addData("Turn", turnInput);
         telemetry.addData("Gate: ", robot.gate.isGateClosed() ? "CLOSED" : "OPEN");
         telemetry.update();
     }
@@ -243,5 +215,38 @@ public class RobotTeleop extends OpMode {
         robot.intake.stopIntake();
     }
 
+    /**
+     * Helper Class: Slew Rate Limiter
+     * Limits the rate of change of a value to prevent sudden, jerky movements.
+     */
+    private static class SlewRateLimiter {
+        private final double rateLimit;
+        private double prevVal = 0;
+        private double prevTime = 0;
 
+        public SlewRateLimiter(double rateLimit) {
+            this.rateLimit = rateLimit;
+        }
+
+        public double calculate(double targetVal, double currentTime) {
+            double dt = currentTime - prevTime;
+
+            // Handle initialization gap or massive lag spikes
+            if (dt < 0 || dt > 1.0) {
+                dt = 0;
+            }
+
+            double error = targetVal - prevVal;
+            double maxChange = rateLimit * dt;
+
+            if (Math.abs(error) > maxChange) {
+                prevVal += Math.signum(error) * maxChange;
+            } else {
+                prevVal = targetVal;
+            }
+
+            prevTime = currentTime;
+            return prevVal;
+        }
+    }
 }
