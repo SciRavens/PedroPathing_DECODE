@@ -33,8 +33,8 @@ public class Shooter {
     public final int shooterCloseRPM = 1000; //950
     public final int shooterFarRPM = 1325;
     public final int shooterClosePassiveRPM = 1225;
-    public final int shooterFarPassiveRPM = 1400;
-    public final int autonShooterFarRPM = 1440;
+    public final int shooterFarPassiveRPM = 6000;
+    public final int autonShooterFarRPM = 6000;
     public final int autonMidRPM = 1250;
     public final int autonMidRedRPM = 1250;
     public final int autonMidBlueRPM = 1400;

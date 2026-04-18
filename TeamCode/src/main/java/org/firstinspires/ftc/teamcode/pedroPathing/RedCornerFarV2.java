@@ -22,7 +22,7 @@ import com.pedropathing.util.Timer;
 @Configurable
 public class RedCornerFarV2 extends OpMode {
 
-    private TelemetryManager panelsTelemetry;
+//    private TelemetryManager panelsTelemetry;
     private Timer pathTimer, opmodeTimer;
     private Vision vision;
     private Robot robot;
@@ -42,7 +42,7 @@ public class RedCornerFarV2 extends OpMode {
     public void init() {
         Robot.currentAlliance = "RED";
         robot = new Robot(hardwareMap, telemetry);
-        panelsTelemetry = PanelsTelemetry.INSTANCE.getTelemetry();
+//        panelsTelemetry = PanelsTelemetry.INSTANCE.getTelemetry();
 
         follower = Constants.createFollower(hardwareMap);
         follower.setStartingPose(startPose);
@@ -75,12 +75,12 @@ public class RedCornerFarV2 extends OpMode {
             vision.update(robot.getDistanceFromGoal(follower));
         }
 
-        panelsTelemetry.debug("Path State", pathState);
-        panelsTelemetry.debug("X", follower.getPose().getX());
-        panelsTelemetry.debug("Y", follower.getPose().getY());
-        panelsTelemetry.debug("Heading", Math.toDegrees(follower.getPose().getHeading()));
-        panelsTelemetry.debug("current alliance", Robot.currentAlliance);
-        panelsTelemetry.update(telemetry);
+        telemetry.addData("Path State", pathState);
+        telemetry.addData("X", follower.getPose().getX());
+        telemetry.addData("Y", follower.getPose().getY());
+        telemetry.addData("Heading", Math.toDegrees(follower.getPose().getHeading()));
+        telemetry.addData("current alliance", Robot.currentAlliance);
+        telemetry.update();
     }
 
     private Pose getTarget(PathChain path) {
@@ -98,7 +98,7 @@ public class RedCornerFarV2 extends OpMode {
     // ---------------- MIRRORED PATHS ----------------
 
     public static class Paths {
-        public PathChain initialIntake1, IntakeStack1, scoreStack1, intakeStack2, scoreStack2;
+        public PathChain initialIntake1, IntakeStack1, scoreStack1, intakeStack2, scoreStack2, leave;
 
         public Paths(Follower follower) {
             initialIntake1 = follower.pathBuilder().addPath(
@@ -134,6 +134,10 @@ public class RedCornerFarV2 extends OpMode {
                                     new Pose(90.987, 7.906)
                             )
                     ).setLinearHeadingInterpolation(Math.toRadians(-90), Math.toRadians(0))
+                    .build();
+            leave = follower.pathBuilder().addPath(
+                            new BezierLine(new Pose(90.987, 7.906), new Pose(138, 7.906))
+                    ).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
                     .build();
         }
     }
@@ -206,6 +210,7 @@ public class RedCornerFarV2 extends OpMode {
                         turretOn = false;
                         robot.gate.gateClose();
                         follower.setMaxPower(1.0);
+                        follower.followPath(paths.leave);
                         robot.intake.startIntake();
                         setPathState(-1);
                     }
